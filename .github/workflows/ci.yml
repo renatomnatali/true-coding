@@ -104,13 +104,21 @@ jobs:
 
       - name: Validate commit messages
         run: |
-          COMMITS=$(git log origin/main..HEAD --pretty=format:"%s")
+          # Get commits excluding merge commits
+          COMMITS=$(git log origin/main..HEAD --pretty=format:"%s" --no-merges)
           echo "Checking commits:"
           echo "$COMMITS"
+
+          if [ -z "$COMMITS" ]; then
+            echo "No commits to validate (or all are merge commits)"
+            exit 0
+          fi
 
           PATTERN="^(feat|fix|refactor|test|docs|chore|style|perf|ci)(\([a-z0-9-]+\))?: .+"
 
           while IFS= read -r commit; do
+            # Skip empty lines
+            [ -z "$commit" ] && continue
             if [[ ! "$commit" =~ $PATTERN ]]; then
               echo "::error::Invalid commit message format: $commit"
               echo "Expected format: tipo(escopo): descricao"
