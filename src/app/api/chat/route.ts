@@ -5,6 +5,7 @@ import { streamChat, type Message } from '@/lib/ai/claude'
 import { DISCOVERY_SYSTEM_PROMPT } from '@/lib/ai/prompts/discovery'
 import { isPlanReady, extractBusinessPlan } from '@/lib/ai/parsers'
 import { prisma } from '@/lib/db/prisma'
+import { Prisma } from '@prisma/client'
 
 const chatRequestSchema = z.object({
   projectId: z.string(),
@@ -117,7 +118,7 @@ export async function POST(request: Request) {
               await prisma.project.update({
                 where: { id: projectId },
                 data: {
-                  businessPlan: plan as unknown as Record<string, unknown>,
+                  businessPlan: plan as unknown as Prisma.JsonObject,
                   status: 'PLANNING',
                 },
               })
