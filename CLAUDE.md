@@ -31,6 +31,17 @@ npm run db:studio # Abre Prisma Studio
 
 Leia `docs/trunk-based-development.md` para detalhes completos.
 
+## Fluxo de PR (OBRIGATORIO)
+
+1. Criar branch e fazer commits
+2. Criar PR via `gh pr create`
+3. **Rodar Code-Reviewer em background**
+4. **AGUARDAR o resultado do review antes de prosseguir**
+5. Se houver **blockers**: corrigir ANTES de fazer merge
+6. Somente apos blockers resolvidos: `gh pr merge --squash`
+
+**IMPORTANTE**: NUNCA fazer merge de PR enquanto o Code-Reviewer estiver rodando ou tiver retornado blockers nao resolvidos. O resultado do review DEVE ser aguardado e considerado.
+
 ## Agentes
 
 - `@Code-Reviewer` - Review de PRs seguindo TBD
