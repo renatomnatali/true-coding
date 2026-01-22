@@ -93,6 +93,27 @@ Usar `--no-merges` no git log:
 
 ---
 
+## API Clients
+
+### Validar env vars antes de instanciar clientes
+
+**Problema:**
+Clientes de API instanciados sem validacao de env vars causam erros cripticos em runtime.
+
+**Solucao:**
+Usar factory function com validacao:
+```typescript
+function getAnthropicClient(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY environment variable is required')
+  }
+  return new Anthropic({ apiKey })
+}
+```
+
+---
+
 ## TypeScript
 
 ### Strict mode com JSON de API
