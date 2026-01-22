@@ -65,13 +65,14 @@ Sugestão de correção (se aplicável).
 ```
 
 ### Exemplo
+
 ```
-[suggestion] src/service/TributarioService.java:42
+[suggestion] src/services/user-service.ts:42
 
-O cálculo de ICMS está duplicado no método abaixo.
+A validacao de email esta duplicada no metodo abaixo.
 
-Considere extrair para um método privado:
-private BigDecimal calcularAliquota(Produto p) { ... }
+Considere extrair para uma funcao utilitaria:
+const isValidEmail = (email: string): boolean => { ... }
 ```
 
 ## Princípios de Review em TBD

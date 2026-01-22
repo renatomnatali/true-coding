@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// USER
+// ============================================================================
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+
+  // OAuth tokens (encrypted)
+  githubAccessToken  String?
+  githubRefreshToken String?
+  githubTokenExpiry  DateTime?
+
+  vercelAccessToken  String?
+  vercelRefreshToken String?
+  vercelTokenExpiry  DateTime?
+
+  // Relations
+  projects Project[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ============================================================================
+// PROJECT
+// ============================================================================
+
+model Project {
+  id     String        @id @default(cuid())
+  userId String
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+  status ProjectStatus @default(IDEATION)
+
+  // Discovery Phase
+  businessPlan Json?
+
+  // Planning Phase
+  technicalPlan Json?
+
+  // Generation Phase
+  githubRepoUrl   String?
+  githubRepoOwner String?
+  githubRepoName  String?
+
+  // Deploy Phase
+  vercelProjectId String?
+  vercelTeamId    String?
+  productionUrl   String?
+  lastDeployAt    DateTime?
+
+  // Relations
+  conversations  Conversation[]
+  generatedFiles GeneratedFile[]
+  deployments    Deployment[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  IDEATION
+  PLANNING
+  CONNECTING
+  GENERATING
+  DEPLOYING
+  LIVE
+  FAILED
+}
+
+// ============================================================================
+// CONVERSATION
+// ============================================================================
+
+model Conversation {
+  id        String             @id @default(cuid())
+  projectId String
+  project   Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase     ConversationPhase
+  status    ConversationStatus @default(ACTIVE)
+
+  // Relations
+  messages Message[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@map("conversations")
+}
+
+enum ConversationPhase {
+  DISCOVERY
+  PLANNING
+  ITERATION
+}
+
+enum ConversationStatus {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+}
+
+// ============================================================================
+// MESSAGE
+// ============================================================================
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role    MessageRole
+  content String      @db.Text
+
+  // Metadata
+  tokenCount Int?
+  model      String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ============================================================================
+// GENERATED FILE
+// ============================================================================
+
+model GeneratedFile {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  path      String  @db.VarChar(500)
+  content   String  @db.Text
+  commitSha String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, path])
+  @@index([projectId])
+  @@map("generated_files")
+}
+
+// ============================================================================
+// DEPLOYMENT
+// ============================================================================
+
+model Deployment {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  vercelDeploymentId String           @unique
+  status             DeploymentStatus @default(QUEUED)
+  url                String?
+  errorMessage       String?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([projectId])
+  @@map("deployments")
+}
+
+enum DeploymentStatus {
+  QUEUED
+  BUILDING
+  READY
+  ERROR
+  CANCELED
+}
