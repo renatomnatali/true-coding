@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import Handlebars from 'handlebars'
 import { renderTemplate, kebabCase, TemplateContext } from './templates'
 
