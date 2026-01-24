@@ -44,11 +44,12 @@ model User {
 // ============================================================================
 
 model Project {
-  id     String        @id @default(cuid())
-  userId String
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name   String
-  status ProjectStatus @default(IDEATION)
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  status      ProjectStatus @default(IDEATION)
 
   // Discovery Phase
   businessPlan Json?
