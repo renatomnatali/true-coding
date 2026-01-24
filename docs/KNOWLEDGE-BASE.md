@@ -56,6 +56,44 @@ await prisma.project.update({
 
 ## Clerk
 
+### useSession can only be used within ClerkProvider
+
+**Problema:**
+```
+Runtime Error
+useSession can only be used within the <ClerkProvider /> component.
+```
+
+Componentes Clerk (SignIn, SignUp) falham quando as chaves nao estao configuradas.
+
+**Solucao:**
+1. Criar componente `ClerkGuard` que verifica se a chave esta configurada
+2. Exibir mensagem util ao inves de erro
+
+```typescript
+// src/components/clerk-guard.tsx
+'use client'
+
+export function ClerkGuard({ children }: { children: React.ReactNode }) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+  if (!publishableKey || publishableKey.startsWith('pk_test_dummy')) {
+    return (
+      <div>Clerk not configured. Add keys to .env.local</div>
+    )
+  }
+
+  return <>{children}</>
+}
+
+// Usage in pages
+<ClerkGuard>
+  <SignUp />
+</ClerkGuard>
+```
+
+---
+
 ### Build falha com chave dummy
 
 **Problema:**
