@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db/prisma'
@@ -60,11 +60,19 @@ export async function POST(request: Request) {
     })
 
     if (!user) {
-      // Create user if doesn't exist (happens on first project)
+      // Fetch user data from Clerk
+      const client = await clerkClient()
+      const clerkUser = await client.users.getUser(userId)
+      const email = clerkUser.emailAddresses[0]?.emailAddress
+
+      if (!email) {
+        return NextResponse.json({ error: 'USER_EMAIL_NOT_FOUND' }, { status: 400 })
+      }
+
       user = await prisma.user.create({
         data: {
           clerkId: userId,
-          email: `${userId}@placeholder.com`, // Will be updated via webhook
+          email,
         },
       })
     }
