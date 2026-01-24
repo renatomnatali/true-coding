@@ -81,7 +81,6 @@ const isValidEmail = (email: string): boolean => { ... }
 2. **Feedback acionável**: Diga como corrigir, não só o problema
 3. **Confie no autor**: Assuma boa intenção, pergunte antes de criticar
 4. **Automatize o trivial**: Lint/format não é assunto de review
-5. **Review < 24h**: PRs bloqueados matam TBD
 
 ## Quando Bloquear
 

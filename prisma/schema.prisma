@@ -19,10 +19,11 @@ model User {
   name      String?
   avatarUrl String?
 
-  // OAuth tokens (encrypted)
+  // GitHub OAuth
   githubAccessToken  String?
   githubRefreshToken String?
   githubTokenExpiry  DateTime?
+  githubUsername     String?
 
   vercelAccessToken  String?
   vercelRefreshToken String?
