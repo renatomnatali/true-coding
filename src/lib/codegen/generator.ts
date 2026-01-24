@@ -10,6 +10,69 @@ import {
 import { validateGeneratedFiles, ValidationResult } from './validator'
 import { extractJSON } from '@/lib/ai/parsers'
 
+/**
+ * Validates and sanitizes a file path to prevent path traversal attacks.
+ * Returns null if the path is invalid/malicious.
+ */
+export function sanitizePath(path: string): string | null {
+  // Reject empty paths
+  if (!path || path.trim() === '') {
+    return null
+  }
+
+  // Normalize path and remove leading/trailing whitespace
+  let normalized = path.trim()
+
+  // Reject absolute paths
+  if (normalized.startsWith('/') || /^[a-zA-Z]:/.test(normalized)) {
+    return null
+  }
+
+  // Reject paths with .. components (path traversal)
+  if (normalized.includes('..')) {
+    return null
+  }
+
+  // Reject paths with null bytes (null byte injection)
+  if (normalized.includes('\0')) {
+    return null
+  }
+
+  // Normalize multiple slashes to single slash
+  normalized = normalized.replace(/\/+/g, '/')
+
+  // Remove leading ./ if present
+  if (normalized.startsWith('./')) {
+    normalized = normalized.slice(2)
+  }
+
+  // Ensure path doesn't start with a dot followed by nothing (hidden files at root are ok)
+  // but reject paths that are just "." or ".."
+  if (normalized === '.' || normalized === '..') {
+    return null
+  }
+
+  return normalized
+}
+
+/**
+ * Sanitizes all generated files, filtering out those with invalid paths.
+ */
+export function sanitizeGeneratedFiles(
+  files: GeneratedFile[]
+): GeneratedFile[] {
+  return files
+    .map((file) => {
+      const sanitizedPath = sanitizePath(file.path)
+      if (!sanitizedPath) {
+        console.warn(`Rejecting file with invalid path: ${file.path}`)
+        return null
+      }
+      return { ...file, path: sanitizedPath }
+    })
+    .filter((file): file is GeneratedFile => file !== null)
+}
+
 export interface GenerationEvent {
   type:
     | 'stage'
@@ -83,7 +146,8 @@ async function generateFileWithAI(
     message.content[0].type === 'text' ? message.content[0].text : ''
   const result = extractJSON<{ files: GeneratedFile[] }>(responseText)
 
-  return result?.files ?? []
+  // Sanitize all file paths to prevent path traversal attacks
+  return sanitizeGeneratedFiles(result?.files ?? [])
 }
 
 async function generatePageWithAI(
