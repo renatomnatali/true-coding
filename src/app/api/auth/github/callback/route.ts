@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { exchangeCodeForToken } from '@/lib/github/oauth'
 import { createGitHubClient, getAuthenticatedUser } from '@/lib/github/client'
 import { prisma } from '@/lib/db/prisma'
+import { encrypt } from '@/lib/crypto'
 
 export async function GET(request: Request) {
   try {
@@ -60,12 +61,14 @@ export async function GET(request: Request) {
       tokenExpiry = new Date(Date.now() + tokenResponse.expires_in * 1000)
     }
 
-    // Save tokens to user record
+    // Save tokens to user record (encrypted)
     await prisma.user.update({
       where: { clerkId: userId },
       data: {
-        githubAccessToken: tokenResponse.access_token,
-        githubRefreshToken: tokenResponse.refresh_token || null,
+        githubAccessToken: encrypt(tokenResponse.access_token),
+        githubRefreshToken: tokenResponse.refresh_token
+          ? encrypt(tokenResponse.refresh_token)
+          : null,
         githubTokenExpiry: tokenExpiry,
         githubUsername: githubUser.login,
       },
