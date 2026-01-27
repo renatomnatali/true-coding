@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Pre-commit hook: Block commits directly to main
+# Part of True Coding TBD workflow enforcement
+
+current_branch=$(git symbolic-ref --short HEAD)
+
+if [ "$current_branch" = "main" ]; then
+  echo ""
+  echo "❌ ERROR: Direct commits to 'main' are not allowed!"
+  echo ""
+  echo "📋 True Coding Workflow (CLAUDE.md):"
+  echo "  1. Create feature branch: git checkout -b feat/your-feature"
+  echo "  2. Make commits on feature branch"
+  echo "  3. Create PR: gh pr create"
+  echo "  4. Run Code-Reviewer agent"
+  echo "  5. Wait for review results"
+  echo "  6. Fix blockers if any"
+  echo "  7. Merge PR: gh pr merge --squash"
+  echo ""
+  echo "💡 Current branch: $current_branch"
+  echo ""
+  exit 1
+fi
+
+echo "✅ Branch: $current_branch (OK to commit)"
+exit 0

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation Panel | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { padding: var(--space-8); max-width: 900px; margin: 0 auto; }
+    h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-8); }
+    .summary-panel { background: var(--color-bg-primary); border: 2px solid var(--color-primary); border-radius: var(--border-radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
+    .summary-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-primary); margin-bottom: var(--space-5); display: flex; align-items: center; gap: var(--space-2); }
+    .summary-section { margin-bottom: var(--space-5); }
+    .summary-section:last-child { margin-bottom: 0; }
+    .summary-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2); }
+    .summary-content { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .summary-list { list-style: none; padding: 0; margin: 0; }
+    .summary-list li { padding: var(--space-1) 0; font-size: var(--font-size-sm); color: var(--color-text-primary); }
+    .summary-list li:before { content: "•"; margin-right: var(--space-2); color: var(--color-primary); }
+    .action-buttons { display: flex; gap: var(--space-3); }
+    .action-btn { flex: 1; padding: var(--space-4); border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); cursor: pointer; transition: all var(--transition-fast); border: none; font-family: var(--font-family); }
+    .action-btn.primary { background: var(--color-primary); color: white; }
+    .action-btn.primary:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+    .action-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border); }
+    .action-btn.secondary:hover { background: var(--color-gray-300); }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <h1>Confirmation Panel Component</h1>
+  <p class="subtitle">Resumo das 5 respostas antes de gerar o Business Plan</p>
+
+  <div class="summary-panel">
+    <div class="summary-title">
+      <span>📋</span> Resumo do Discovery
+    </div>
+    <div class="summary-section">
+      <div class="summary-label">1. Problema e Público</div>
+      <div class="summary-content">
+        Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples, sem ferramentas complexas.
+      </div>
+    </div>
+    <div class="summary-section">
+      <div class="summary-label">2. Features Core</div>
+      <ul class="summary-list">
+        <li>Criar e gerenciar tarefas</li>
+        <li>Atribuir responsáveis</li>
+        <li>Definir prazos e prioridades</li>
+        <li>Dashboard com visão geral</li>
+      </ul>
+    </div>
+    <div class="summary-section">
+      <div class="summary-label">3. Diferenciais</div>
+      <div class="summary-content">
+        Interface mais simples que Trello, sem complexidade desnecessária. Foco em pequenos times (até 15 pessoas).
+      </div>
+    </div>
+    <div class="summary-section">
+      <div class="summary-label">4. Nice-to-Have</div>
+      <ul class="summary-list">
+        <li>Integrações com Slack e email</li>
+        <li>Relatórios de produtividade</li>
+        <li>App mobile (iOS/Android)</li>
+      </ul>
+    </div>
+    <div class="summary-section">
+      <div class="summary-label">5. Monetização</div>
+      <div class="summary-content">
+        Freemium - Grátis até 5 usuários, R$19/mês por usuário adicional.
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="action-btn secondary">✏️ Ajustar Respostas</button>
+    <button class="action-btn primary" onclick="confirm()">✅ Confirmar e Gerar Plano</button>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="live-preview.html" class="nav-btn secondary">← Live Preview</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="version-history.html" class="nav-btn">Version History →</a>
+  </div>
+
+  <script>
+    function confirm() {
+      alert('✓ Confirmado! Gerando Business Plan...');
+    }
+  </script>
+</body>
+</html>

@@ -103,6 +103,11 @@ model Conversation {
   phase     ConversationPhase
   status    ConversationStatus @default(ACTIVE)
 
+  // Discovery Progress Tracking (ADR-0002)
+  discoveryState     Json? @db.JsonB
+  currentQuestion    Int?  @default(1)
+  completedQuestions Int[] @default([])
+
   // Relations
   messages Message[]
 
@@ -111,6 +116,7 @@ model Conversation {
   updatedAt DateTime @updatedAt
 
   @@index([projectId])
+  @@index([currentQuestion])
   @@map("conversations")
 }
 

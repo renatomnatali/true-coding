@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Preview Cards | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { padding: var(--space-8); max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-8); }
+    .demo-section { background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
+    .demo-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-4); }
+    .preview-card { background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-5); animation: slideIn 0.3s ease-out; margin-bottom: var(--space-4); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .preview-card-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .preview-card-icon { width: 40px; height: 40px; background: var(--color-primary-light); border-radius: var(--border-radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); flex-shrink: 0; }
+    .preview-card-icon.success { background: var(--color-success-light); }
+    .preview-card-icon.warning { background: var(--color-warning-light); }
+    .preview-card-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+    .preview-card-content { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .preview-card-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2); }
+    .feature-list { list-style: none; padding: 0; margin: 0; }
+    .feature-item { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) 0; font-size: var(--font-size-sm); }
+    .feature-item:before { content: "✓"; color: var(--color-success); font-weight: bold; flex-shrink: 0; }
+    .control-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); margin-right: var(--space-2); }
+    .control-btn:hover { background: var(--color-primary-hover); }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <h1>Live Preview Cards Component</h1>
+  <p class="subtitle">Cards que aparecem no Workspace durante Discovery mostrando o plano sendo construído</p>
+
+  <div class="demo-section">
+    <div class="demo-title">Exemplo: Sequência de Cards Durante Discovery</div>
+    <p style="margin-bottom: var(--space-4); color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+      Simula como cards vão aparecendo conforme usuário responde perguntas
+    </p>
+    <button class="control-btn" onclick="addCard(1)">Adicionar Card 1</button>
+    <button class="control-btn" onclick="addCard(2)">Adicionar Card 2</button>
+    <button class="control-btn" onclick="addCard(3)">Adicionar Card 3</button>
+    <button class="control-btn" onclick="clearCards()">Limpar</button>
+    <div id="cardContainer" style="margin-top: var(--space-5);"></div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">Card 1: Problema</div>
+    <div class="preview-card">
+      <div class="preview-card-label">Problema</div>
+      <div class="preview-card-header">
+        <div class="preview-card-icon">🎯</div>
+        <div class="preview-card-title">Gestão de Tarefas para Times</div>
+      </div>
+      <div class="preview-card-content">
+        Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples, sem a complexidade de ferramentas enterprise.
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">Card 2: Features Core</div>
+    <div class="preview-card">
+      <div class="preview-card-label">Features Core</div>
+      <div class="preview-card-header">
+        <div class="preview-card-icon">⚡</div>
+        <div class="preview-card-title">Funcionalidades Must-Have</div>
+      </div>
+      <ul class="feature-list">
+        <li class="feature-item">Criar e gerenciar tarefas</li>
+        <li class="feature-item">Atribuir responsáveis</li>
+        <li class="feature-item">Definir prazos e prioridades</li>
+        <li class="feature-item">Dashboard com visão geral</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">Card 3: Diferenciais</div>
+    <div class="preview-card">
+      <div class="preview-card-label">Diferenciais</div>
+      <div class="preview-card-header">
+        <div class="preview-card-icon success">🌟</div>
+        <div class="preview-card-title">O que nos torna únicos</div>
+      </div>
+      <div class="preview-card-content">
+        Interface mais simples que Trello, sem complexidade desnecessária. Foco em pequenos times (até 15 pessoas) com preço acessível.
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="quick-replies.html" class="nav-btn secondary">← Quick Replies</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="confirmation-panel.html" class="nav-btn">Confirmation →</a>
+  </div>
+
+  <script>
+    const cards = [
+      {
+        label: 'Problema',
+        icon: '🎯',
+        title: 'Gestão de Tarefas para Times',
+        content: 'Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples.'
+      },
+      {
+        label: 'Features Core',
+        icon: '⚡',
+        title: 'Funcionalidades Must-Have',
+        content: '<ul class="feature-list"><li class="feature-item">Criar e gerenciar tarefas</li><li class="feature-item">Atribuir responsáveis</li><li class="feature-item">Dashboard com visão geral</li></ul>'
+      },
+      {
+        label: 'Diferenciais',
+        icon: '🌟',
+        title: 'O que nos torna únicos',
+        content: 'Interface mais simples que Trello, foco em pequenos times com preço acessível.'
+      }
+    ];
+
+    function addCard(index) {
+      const container = document.getElementById('cardContainer');
+      const card = cards[index - 1];
+      
+      const cardHTML = `
+        <div class="preview-card">
+          <div class="preview-card-label">${card.label}</div>
+          <div class="preview-card-header">
+            <div class="preview-card-icon">${card.icon}</div>
+            <div class="preview-card-title">${card.title}</div>
+          </div>
+          <div class="preview-card-content">${card.content}</div>
+        </div>
+      `;
+      
+      container.insertAdjacentHTML('beforeend', cardHTML);
+    }
+
+    function clearCards() {
+      document.getElementById('cardContainer').innerHTML = '';
+    }
+  </script>
+</body>
+</html>

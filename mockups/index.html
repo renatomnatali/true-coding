@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>True Coding - Mockups Hub</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--color-bg-primary);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .hub-header {
+      text-align: center;
+      margin-bottom: var(--space-10);
+      padding-bottom: var(--space-6);
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .hub-header h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .hub-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-lg);
+    }
+
+    .section {
+      margin-bottom: var(--space-10);
+    }
+
+    .section-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-sm);
+    }
+
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .mockup-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      transition: all var(--transition-normal);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .mockup-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .mockup-card-title {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+      font-size: var(--font-size-base);
+    }
+
+    .mockup-card-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      margin-top: var(--space-2);
+    }
+
+    .badge-primary {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .badge-success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .badge-warning {
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+    }
+
+    .stats {
+      display: flex;
+      gap: var(--space-8);
+      margin-top: var(--space-6);
+      padding: var(--space-6);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-lg);
+    }
+
+    .stat {
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-1);
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    <div class="hub-header">
+      <h1>🎨 True Coding - Mockups Hub</h1>
+      <p>Protótipos navegáveis para validação visual</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Telas Discovery</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Telas Planning</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Componentes</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Estados</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discovery Flow -->
+    <section class="section">
+      <h2 class="section-title">Discovery Flow (5 Perguntas)</h2>
+      <div class="mockup-grid">
+        <a href="discovery/01-initial.html" class="mockup-card">
+          <div class="mockup-card-title">01 - Estado Inicial</div>
+          <div class="mockup-card-description">
+            Primeira pergunta do discovery. Mostra indicador "Pergunta 1 de 5" e quick replies iniciais.
+          </div>
+          <span class="badge badge-primary">Pergunta 1</span>
+        </a>
+
+        <a href="discovery/02-pergunta-2.html" class="mockup-card">
+          <div class="mockup-card-title">02 - Pergunta 2</div>
+          <div class="mockup-card-description">
+            Segunda pergunta sobre features core. Preview cards começam a aparecer no workspace.
+          </div>
+          <span class="badge badge-primary">Pergunta 2</span>
+        </a>
+
+        <a href="discovery/03-pergunta-3.html" class="mockup-card">
+          <div class="mockup-card-title">03 - Pergunta 3</div>
+          <div class="mockup-card-description">
+            Diferenciais e concorrentes. Workspace mostra cards de problema e features.
+          </div>
+          <span class="badge badge-primary">Pergunta 3</span>
+        </a>
+
+        <a href="discovery/04-pergunta-4.html" class="mockup-card">
+          <div class="mockup-card-title">04 - Pergunta 4</div>
+          <div class="mockup-card-description">
+            Nice-to-have features. Quick replies mostram sugestões de integrações comuns.
+          </div>
+          <span class="badge badge-primary">Pergunta 4</span>
+        </a>
+
+        <a href="discovery/05-confirmacao.html" class="mockup-card">
+          <div class="mockup-card-title">05 - Confirmação</div>
+          <div class="mockup-card-description">
+            Última pergunta sobre monetização. Resumo completo das respostas anteriores.
+          </div>
+          <span class="badge badge-warning">Pergunta 5</span>
+        </a>
+
+        <a href="discovery/06-gerando.html" class="mockup-card">
+          <div class="mockup-card-title">06 - Gerando Plano</div>
+          <div class="mockup-card-description">
+            Loading overlay enquanto AI gera o Business Plan. Animação e feedback visual.
+          </div>
+          <span class="badge badge-success">Geração</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Planning Views -->
+    <section class="section">
+      <h2 class="section-title">Planning Views</h2>
+      <div class="mockup-grid">
+        <a href="planning/01-plan-view.html" class="mockup-card">
+          <div class="mockup-card-title">01 - Visualização do Plano</div>
+          <div class="mockup-card-description">
+            Business Plan gerado exibido no workspace. Seções navegáveis, formatação rica.
+          </div>
+          <span class="badge badge-success">View</span>
+        </a>
+
+        <a href="planning/02-plan-edit.html" class="mockup-card">
+          <div class="mockup-card-title">02 - Edição Inline</div>
+          <div class="mockup-card-description">
+            Edição de campos do plano. Validação inline, auto-save, preview changes.
+          </div>
+          <span class="badge badge-warning">Edit</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Components -->
+    <section class="section">
+      <h2 class="section-title">Componentes Isolados</h2>
+      <div class="mockup-grid">
+        <a href="components/progress-indicator.html" class="mockup-card">
+          <div class="mockup-card-title">Progress Indicator</div>
+          <div class="mockup-card-description">
+            Indicador "Pergunta X de 5". Barra horizontal com steps, estados pending/current/completed.
+          </div>
+          <span class="badge badge-primary">Component</span>
+        </a>
+
+        <a href="components/quick-replies.html" class="mockup-card">
+          <div class="mockup-card-title">Quick Reply Buttons</div>
+          <div class="mockup-card-description">
+            Botões pill contextuais. Estados hover, selected, disabled. Exemplos por pergunta.
+          </div>
+          <span class="badge badge-primary">Component</span>
+        </a>
+
+        <a href="components/live-preview.html" class="mockup-card">
+          <div class="mockup-card-title">Live Preview Cards</div>
+          <div class="mockup-card-description">
+            Cards que aparecem no workspace durante discovery. Animação de entrada, ícones, conteúdo.
+          </div>
+          <span class="badge badge-primary">Component</span>
+        </a>
+
+        <a href="components/confirmation-panel.html" class="mockup-card">
+          <div class="mockup-card-title">Confirmation Panel</div>
+          <div class="mockup-card-description">
+            Resumo das 5 respostas antes de gerar plano. Botões "Ajustar" e "Confirmar".
+          </div>
+          <span class="badge badge-warning">Component</span>
+        </a>
+
+        <a href="components/version-history.html" class="mockup-card">
+          <div class="mockup-card-title">Version History</div>
+          <div class="mockup-card-description">
+            Timeline de versões do projeto. Diff view, restauração, metadata.
+          </div>
+          <span class="badge badge-success">Component</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- States -->
+    <section class="section">
+      <h2 class="section-title">Estados do Sistema</h2>
+      <div class="mockup-grid">
+        <a href="states/loading.html" class="mockup-card">
+          <div class="mockup-card-title">Loading States</div>
+          <div class="mockup-card-description">
+            Skeletons, spinners, progress bars. Estados durante carregamento de dados.
+          </div>
+          <span class="badge badge-primary">State</span>
+        </a>
+
+        <a href="states/error.html" class="mockup-card">
+          <div class="mockup-card-title">Error States</div>
+          <div class="mockup-card-description">
+            Mensagens de erro, retry buttons, fallback UI. Diferentes níveis de severidade.
+          </div>
+          <span class="badge badge-warning">State</span>
+        </a>
+
+        <a href="states/empty.html" class="mockup-card">
+          <div class="mockup-card-title">Empty States</div>
+          <div class="mockup-card-description">
+            Ilustrações, call-to-actions. Estados quando não há dados ainda.
+          </div>
+          <span class="badge badge-success">State</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

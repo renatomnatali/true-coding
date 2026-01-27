@@ -2,6 +2,39 @@
 
 Instrucoes para o Claude Code neste projeto.
 
+---
+
+## ⚠️ WORKFLOW OBRIGATÓRIO - LEIA ANTES DE COMMITAR
+
+**NUNCA commite direto na `main`. SEMPRE siga este fluxo:**
+
+```bash
+# 1. Crie feature branch
+git checkout -b feat/sua-feature
+
+# 2. Faça commits na branch
+git commit -m "feat: sua mudança"
+
+# 3. Crie PR
+gh pr create --title "..." --body "..."
+
+# 4. Rode Code-Reviewer em BACKGROUND
+# (Use Task tool com subagent_type: general-purpose)
+
+# 5. AGUARDE resultado do review (OBRIGATÓRIO!)
+
+# 6. Corrija TODOS os blockers encontrados
+
+# 7. Merge somente após aprovação
+gh pr merge --squash
+```
+
+**Proteção técnica**: Git hook bloqueará commits diretos na `main` automaticamente.
+
+**Detalhes**: Ver `docs/WORKFLOW-ENFORCEMENT.md` para enforcement completo.
+
+---
+
 ## Projeto
 
 **True Coding** - Plataforma SaaS para criar aplicacoes web profissionais a partir de linguagem natural.

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Version History Component | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { padding: var(--space-8); max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-8); }
+    .demo-section { background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
+    .demo-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-4); }
+    
+    .version-timeline { position: relative; padding-left: var(--space-8); }
+    .version-timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: var(--color-border); }
+    
+    .version-item { position: relative; padding-bottom: var(--space-6); margin-bottom: var(--space-6); }
+    .version-item:last-child { margin-bottom: 0; padding-bottom: 0; }
+    
+    .version-dot { position: absolute; left: -31px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-bg-primary); border: 2px solid var(--color-primary); z-index: 1; }
+    .version-item.current .version-dot { background: var(--color-primary); box-shadow: 0 0 0 4px var(--color-primary-light); }
+    
+    .version-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3); }
+    .version-number { font-weight: var(--font-weight-bold); color: var(--color-primary); font-size: var(--font-size-base); }
+    .version-item.current .version-number { color: var(--color-primary); }
+    .version-time { font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
+    
+    .version-title { font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2); font-size: var(--font-size-base); }
+    .version-description { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: var(--line-height-relaxed); margin-bottom: var(--space-3); }
+    
+    .version-changes { background: var(--color-bg-secondary); border-radius: var(--border-radius-md); padding: var(--space-3); margin-bottom: var(--space-3); }
+    .change-item { font-size: var(--font-size-sm); color: var(--color-text-primary); padding: var(--space-1) 0; display: flex; align-items: flex-start; gap: var(--space-2); }
+    .change-item.added::before { content: "+"; color: var(--color-success); font-weight: bold; flex-shrink: 0; }
+    .change-item.modified::before { content: "~"; color: var(--color-warning); font-weight: bold; flex-shrink: 0; }
+    .change-item.removed::before { content: "-"; color: var(--color-error); font-weight: bold; flex-shrink: 0; }
+    
+    .version-actions { display: flex; gap: var(--space-2); }
+    .version-btn { padding: var(--space-2) var(--space-3); background: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .version-btn:hover { background: var(--color-bg-tertiary); }
+    .version-btn.primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .version-btn.primary:hover { background: var(--color-primary-hover); }
+    
+    .current-badge { display: inline-block; padding: var(--space-1) var(--space-2); background: var(--color-success-light); color: var(--color-success); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); margin-left: var(--space-2); }
+    
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <h1>Version History Component</h1>
+  <p class="subtitle">Timeline de versões do projeto com diff e restauração</p>
+
+  <div class="demo-section">
+    <div class="demo-title">Histórico de Versões - TaskFlow</div>
+    
+    <div class="version-timeline">
+      <div class="version-item current">
+        <div class="version-dot"></div>
+        <div class="version-header">
+          <div>
+            <span class="version-number">v4</span>
+            <span class="current-badge">ATUAL</span>
+          </div>
+          <span class="version-time">Hoje, 15:45</span>
+        </div>
+        <div class="version-title">Business Plan ajustado</div>
+        <div class="version-description">
+          Usuário ajustou features core e modelo de monetização
+        </div>
+        <div class="version-changes">
+          <div class="change-item modified">Atualizado: Features Core (adicionado "Relatórios")</div>
+          <div class="change-item modified">Atualizado: Monetização (alterado de R$15 para R$19/mês)</div>
+        </div>
+        <div class="version-actions">
+          <button class="version-btn">👁️ Ver Diff</button>
+          <button class="version-btn">💾 Exportar</button>
+        </div>
+      </div>
+
+      <div class="version-item">
+        <div class="version-dot"></div>
+        <div class="version-header">
+          <span class="version-number">v3</span>
+          <span class="version-time">Hoje, 15:20</span>
+        </div>
+        <div class="version-title">Technical Plan gerado</div>
+        <div class="version-description">
+          AI criou Technical Plan baseado no Business Plan aprovado
+        </div>
+        <div class="version-changes">
+          <div class="change-item added">Criado: Technical Plan completo</div>
+          <div class="change-item added">Definido: Stack (Next.js, Prisma, Clerk)</div>
+          <div class="change-item added">Criado: Estrutura de pastas</div>
+        </div>
+        <div class="version-actions">
+          <button class="version-btn">👁️ Ver Diff</button>
+          <button class="version-btn primary">↩️ Restaurar</button>
+        </div>
+      </div>
+
+      <div class="version-item">
+        <div class="version-dot"></div>
+        <div class="version-header">
+          <span class="version-number">v2</span>
+          <span class="version-time">Hoje, 14:55</span>
+        </div>
+        <div class="version-title">Business Plan inicial aprovado</div>
+        <div class="version-description">
+          Usuário aprovou Business Plan gerado após Discovery
+        </div>
+        <div class="version-changes">
+          <div class="change-item added">Criado: Business Plan completo</div>
+          <div class="change-item added">Definido: Nome "TaskFlow"</div>
+          <div class="change-item added">Definido: Tagline e público-alvo</div>
+        </div>
+        <div class="version-actions">
+          <button class="version-btn">👁️ Ver Diff</button>
+          <button class="version-btn primary">↩️ Restaurar</button>
+        </div>
+      </div>
+
+      <div class="version-item">
+        <div class="version-dot"></div>
+        <div class="version-header">
+          <span class="version-number">v1</span>
+          <span class="version-time">Hoje, 14:30</span>
+        </div>
+        <div class="version-title">Projeto criado</div>
+        <div class="version-description">
+          Projeto inicial criado pelo usuário
+        </div>
+        <div class="version-changes">
+          <div class="change-item added">Criado: Projeto "TaskFlow"</div>
+          <div class="change-item added">Iniciado: Discovery phase</div>
+        </div>
+        <div class="version-actions">
+          <button class="version-btn">👁️ Ver Diff</button>
+          <button class="version-btn primary">↩️ Restaurar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="confirmation-panel.html" class="nav-btn secondary">← Confirmation</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="../states/loading.html" class="nav-btn">States →</a>
+  </div>
+
+  <script>
+    // Event listeners for version actions
+    document.querySelectorAll('.version-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const action = this.textContent.trim();
+        if (action.includes('Restaurar')) {
+          if (confirm('Restaurar esta versão? Isso criará uma nova versão (não sobrescreve histórico).')) {
+            alert('✓ Versão restaurada como v5');
+          }
+        } else if (action.includes('Ver Diff')) {
+          alert('Abrindo diff viewer...');
+        } else if (action.includes('Exportar')) {
+          alert('Exportando versão...');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
