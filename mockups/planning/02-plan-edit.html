@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Business Plan | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { margin: 0; height: 100vh; overflow: hidden; }
+    .project-layout { display: flex; height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--color-bg-primary); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .project-name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .project-phase { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .workspace-header { background: var(--color-bg-primary); border-bottom: 1px solid var(--color-border); padding: var(--space-5); display: flex; justify-content: space-between; align-items: center; }
+    .workspace-title-section h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .workspace-subtitle { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .workspace-actions { display: flex; gap: var(--space-2); }
+    .action-btn { padding: var(--space-2) var(--space-4); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); border: 1px solid var(--color-border); font-family: var(--font-family); background: var(--color-bg-primary); color: var(--color-text-primary); }
+    .action-btn:hover { background: var(--color-bg-secondary); }
+    .action-btn.primary { background: var(--color-success); color: white; border-color: var(--color-success); }
+    .action-btn.primary:hover { background: var(--color-success-hover); }
+    .workspace { flex: 1; background: var(--color-bg-secondary); padding: var(--space-8); overflow-y: auto; }
+    .plan-content { max-width: 900px; margin: 0 auto; background: var(--color-bg-primary); border-radius: var(--border-radius-lg); padding: var(--space-8); box-shadow: var(--shadow-md); }
+    .edit-section { margin-bottom: var(--space-8); padding-bottom: var(--space-6); border-bottom: 1px solid var(--color-border); }
+    .edit-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .edit-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2); display: block; }
+    .edit-input { width: 100%; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: var(--font-size-base); font-family: var(--font-family); transition: all var(--transition-fast); }
+    .edit-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+    .edit-textarea { width: 100%; min-height: 100px; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: var(--font-size-base); font-family: var(--font-family); resize: vertical; line-height: var(--line-height-relaxed); }
+    .edit-textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+    .edit-hint { font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-top: var(--space-1); }
+    .saved-indicator { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--font-size-xs); color: var(--color-success); opacity: 0; transition: opacity var(--transition-normal); }
+    .saved-indicator.show { opacity: 1; }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <div class="project-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="project-name">TaskFlow</div>
+        <div class="project-phase">Fase: Planning (Editando)</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="workspace-header">
+        <div class="workspace-title-section">
+          <h1>Editar Business Plan</h1>
+          <p class="workspace-subtitle">
+            Auto-save ativado 
+            <span id="savedIndicator" class="saved-indicator">✓ Salvo</span>
+          </p>
+        </div>
+        <div class="workspace-actions">
+          <a href="01-plan-view.html" class="action-btn">❌ Cancelar</a>
+          <a href="01-plan-view.html" class="action-btn primary">✅ Salvar e Voltar</a>
+        </div>
+      </div>
+      <section class="workspace">
+        <div class="plan-content">
+          <div class="edit-section">
+            <label class="edit-label" for="projectName">Nome do Projeto</label>
+            <input
+              type="text"
+              id="projectName"
+              class="edit-input"
+              value="TaskFlow"
+              oninput="autoSave()"
+            />
+          </div>
+
+          <div class="edit-section">
+            <label class="edit-label" for="tagline">Tagline</label>
+            <input
+              type="text"
+              id="tagline"
+              class="edit-input"
+              value="Organize seu time em minutos, não em semanas"
+              oninput="autoSave()"
+            />
+            <div class="edit-hint">Uma frase curta e impactante sobre o projeto</div>
+          </div>
+
+          <div class="edit-section">
+            <label class="edit-label" for="problem">Problema</label>
+            <textarea
+              id="problem"
+              class="edit-textarea"
+              oninput="autoSave()"
+            >Freelancers e pequenos times (5-15 pessoas) enfrentam dificuldade para organizar projetos e tarefas sem ferramentas complexas e caras como Asana ou Monday.</textarea>
+            <div class="edit-hint">Qual problema você está resolvendo?</div>
+          </div>
+
+          <div class="edit-section">
+            <label class="edit-label" for="solution">Solução</label>
+            <textarea
+              id="solution"
+              class="edit-textarea"
+              oninput="autoSave()"
+            >TaskFlow é uma plataforma de gestão de tarefas ultra-simples, focada em pequenos times que precisam de organização sem complexidade enterprise.</textarea>
+            <div class="edit-hint">Como seu projeto resolve esse problema?</div>
+          </div>
+
+          <div class="edit-section">
+            <label class="edit-label" for="audience">Público-Alvo Principal</label>
+            <textarea
+              id="audience"
+              class="edit-textarea"
+              oninput="autoSave()"
+            >Freelancers, agências criativas, startups e pequenas empresas com 2-15 pessoas que precisam coordenar projetos e tarefas.</textarea>
+          </div>
+
+          <div class="edit-section">
+            <label class="edit-label" for="monetization">Modelo de Monetização</label>
+            <textarea
+              id="monetization"
+              class="edit-textarea"
+              oninput="autoSave()"
+            >Freemium: Grátis até 5 usuários, com features core completas.
+Pro: R$19/mês por usuário adicional (acima de 5). Inclui integrações, relatórios e suporte prioritário.</textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <div class="mockup-nav">
+    <a href="01-plan-view.html" class="nav-btn secondary">← Cancelar</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="01-plan-view.html" class="nav-btn primary">Salvar →</a>
+  </div>
+
+  <script>
+    let saveTimeout;
+    const indicator = document.getElementById('savedIndicator');
+
+    function autoSave() {
+      clearTimeout(saveTimeout);
+      indicator.classList.remove('show');
+      
+      saveTimeout = setTimeout(() => {
+        // Simular save
+        console.log('Auto-saving...');
+        indicator.classList.add('show');
+        
+        setTimeout(() => {
+          indicator.classList.remove('show');
+        }, 2000);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

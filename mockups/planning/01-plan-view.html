@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Plan | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { margin: 0; height: 100vh; overflow: hidden; }
+    .project-layout { display: flex; height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--color-bg-primary); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .project-name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .project-phase { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .sidebar-nav { flex: 1; padding: var(--space-4); overflow-y: auto; }
+    .nav-section { margin-bottom: var(--space-6); }
+    .nav-section-title { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-3); }
+    .nav-item { padding: var(--space-2) var(--space-3); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1); }
+    .nav-item:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-item.active { background: var(--color-primary-light); color: var(--color-primary); font-weight: var(--font-weight-medium); }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .workspace-header { background: var(--color-bg-primary); border-bottom: 1px solid var(--color-border); padding: var(--space-5); display: flex; justify-content: space-between; align-items: center; }
+    .workspace-title-section h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .workspace-subtitle { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .workspace-actions { display: flex; gap: var(--space-2); }
+    .action-btn { padding: var(--space-2) var(--space-4); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); border: 1px solid var(--color-border); font-family: var(--font-family); text-decoration: none; background: var(--color-bg-primary); color: var(--color-text-primary); }
+    .action-btn:hover { background: var(--color-bg-secondary); }
+    .action-btn.primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .action-btn.primary:hover { background: var(--color-primary-hover); }
+    .workspace { flex: 1; background: var(--color-bg-secondary); padding: var(--space-8); overflow-y: auto; }
+    .plan-content { max-width: 900px; margin: 0 auto; background: var(--color-bg-primary); border-radius: var(--border-radius-lg); padding: var(--space-8); box-shadow: var(--shadow-md); }
+    .plan-section { margin-bottom: var(--space-10); padding-bottom: var(--space-8); border-bottom: 1px solid var(--color-border); }
+    .plan-section:last-child { border-bottom: none; margin-bottom: 0; }
+    .plan-section-title { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2); }
+    .plan-section-icon { font-size: var(--font-size-2xl); }
+    .plan-text { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); margin-bottom: var(--space-4); }
+    .plan-tagline { font-size: var(--font-size-lg); color: var(--color-text-secondary); font-style: italic; margin-bottom: var(--space-6); }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+    .feature-card { background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); padding: var(--space-4); }
+    .feature-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--space-3); }
+    .feature-card-title { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); }
+    .feature-priority { padding: var(--space-1) var(--space-2); background: var(--color-success-light); color: var(--color-success); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); }
+    .feature-priority.should-have { background: var(--color-warning-light); color: var(--color-warning); }
+    .feature-card-description { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: var(--line-height-relaxed); }
+    .audience-info { background: var(--color-bg-secondary); border-radius: var(--border-radius-md); padding: var(--space-5); margin-top: var(--space-4); }
+    .audience-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2); }
+    .audience-text { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .pain-points-list { list-style: none; padding: 0; margin: var(--space-4) 0 0 0; }
+    .pain-points-list li { padding: var(--space-2) 0; font-size: var(--font-size-sm); color: var(--color-text-primary); display: flex; align-items: flex-start; gap: var(--space-2); }
+    .pain-points-list li:before { content: "❌"; flex-shrink: 0; }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <div class="project-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="project-name">TaskFlow</div>
+        <div class="project-phase">Fase: Planning</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Navegação</div>
+          <div class="nav-item active">📋 Visão Geral</div>
+          <div class="nav-item">🎯 Problema</div>
+          <div class="nav-item">👥 Público-Alvo</div>
+          <div class="nav-item">⚡ Features</div>
+          <div class="nav-item">🌟 Diferenciais</div>
+          <div class="nav-item">💰 Monetização</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Fases</div>
+          <div class="nav-item"><span style="opacity: 0.5">✓</span> Discovery</div>
+          <div class="nav-item active"><span>📋</span> Planning</div>
+          <div class="nav-item"><span>🔗</span> Connect</div>
+          <div class="nav-item"><span>⚡</span> Generate</div>
+          <div class="nav-item"><span>🚀</span> Deploy</div>
+        </div>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="workspace-header">
+        <div class="workspace-title-section">
+          <h1>TaskFlow</h1>
+          <p class="workspace-subtitle">Business Plan gerado em 26 Jan 2026, 15:30</p>
+        </div>
+        <div class="workspace-actions">
+          <a href="02-plan-edit.html" class="action-btn">✏️ Editar</a>
+          <button class="action-btn">💾 Exportar PDF</button>
+          <button class="action-btn primary">✅ Aprovar e Continuar</button>
+        </div>
+      </div>
+      <section class="workspace">
+        <div class="plan-content">
+          <div class="plan-section">
+            <div class="plan-section-title">
+              <span class="plan-section-icon">🎯</span> Problema e Solução
+            </div>
+            <p class="plan-text">
+              <strong>Problema:</strong> Freelancers e pequenos times (5-15 pessoas) enfrentam dificuldade para organizar projetos e tarefas sem ferramentas complexas e caras como Asana ou Monday.
+            </p>
+            <p class="plan-text">
+              <strong>Solução:</strong> TaskFlow é uma plataforma de gestão de tarefas ultra-simples, focada em pequenos times que precisam de organização sem complexidade enterprise.
+            </p>
+            <p class="plan-tagline">"Organize seu time em minutos, não em semanas"</p>
+          </div>
+
+          <div class="plan-section">
+            <div class="plan-section-title">
+              <span class="plan-section-icon">👥</span> Público-Alvo
+            </div>
+            <div class="audience-info">
+              <div class="audience-label">Primary Audience</div>
+              <p class="audience-text">
+                Freelancers, agências criativas, startups e pequenas empresas com 2-15 pessoas que precisam coordenar projetos e tarefas.
+              </p>
+              <div class="audience-label" style="margin-top: var(--space-4);">Pain Points</div>
+              <ul class="pain-points-list">
+                <li>Ferramentas enterprise são muito complexas e caras</li>
+                <li>Planilhas não escalam e geram confusão</li>
+                <li>Falta de visibilidade sobre quem está fazendo o quê</li>
+                <li>Prazos perdidos por falta de notificações</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="plan-section">
+            <div class="plan-section-title">
+              <span class="plan-section-icon">⚡</span> Features Core (Must-Have)
+            </div>
+            <div class="features-grid">
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Gestão de Tarefas</div>
+                  <span class="feature-priority">Must-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Criar, editar, deletar tarefas com título, descrição, responsável e prazo.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Atribuição de Responsáveis</div>
+                  <span class="feature-priority">Must-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Cada tarefa pode ser atribuída a um membro do time.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Dashboard com Visão Geral</div>
+                  <span class="feature-priority">Must-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Ver todas as tarefas, filtradas por status, responsável ou prazo.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Autenticação e Times</div>
+                  <span class="feature-priority">Must-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Login seguro, criação de times e convite de membros.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Integrações</div>
+                  <span class="feature-priority should-have">Should-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Notificações via Slack e email para prazos e atribuições.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-card-header">
+                  <div class="feature-card-title">Relatórios de Produtividade</div>
+                  <span class="feature-priority should-have">Should-Have</span>
+                </div>
+                <p class="feature-card-description">
+                  Gráficos simples de tarefas completas vs pendentes por membro.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="plan-section">
+            <div class="plan-section-title">
+              <span class="plan-section-icon">🌟</span> Diferenciais
+            </div>
+            <p class="plan-text">
+              <strong>1. Simplicidade Extrema:</strong> Sem features desnecessárias. Setup em menos de 5 minutos.
+            </p>
+            <p class="plan-text">
+              <strong>2. Foco em Pequenos Times:</strong> Limite de 15 usuários por time garante interface otimizada.
+            </p>
+            <p class="plan-text">
+              <strong>3. Preço Acessível:</strong> Freemium até 5 usuários, R$19/mês por usuário adicional (vs R$50+ nos concorrentes).
+            </p>
+          </div>
+
+          <div class="plan-section">
+            <div class="plan-section-title">
+              <span class="plan-section-icon">💰</span> Modelo de Monetização
+            </div>
+            <p class="plan-text">
+              <strong>Freemium:</strong> Grátis até 5 usuários, com features core completas.
+            </p>
+            <p class="plan-text">
+              <strong>Pro:</strong> R$19/mês por usuário adicional (acima de 5). Inclui integrações, relatórios e suporte prioritário.
+            </p>
+            <p class="plan-text">
+              <strong>Projeção:</strong> 1.000 times pagantes no ano 1 = R$228k ARR.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <div class="mockup-nav">
+    <a href="../discovery/06-gerando.html" class="nav-btn secondary">← Voltar</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="02-plan-edit.html" class="nav-btn">Editar →</a>
+  </div>
+</body>
+</html>

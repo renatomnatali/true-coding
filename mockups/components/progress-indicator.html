@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Indicator Component | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    .demo-section {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .demo-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Progress Indicator Styles */
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-full);
+      transition: width var(--transition-slow);
+    }
+
+    .progress-text {
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary);
+      white-space: nowrap;
+    }
+
+    /* Step-based Progress */
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      flex: 1;
+      position: relative;
+    }
+
+    .progress-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--color-gray-200);
+      z-index: 0;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-gray-200);
+      color: var(--color-gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+      z-index: 1;
+      position: relative;
+    }
+
+    .progress-step.completed .step-circle {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .progress-step.current .step-circle {
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+
+    .progress-step.completed::after {
+      background: var(--color-success);
+    }
+
+    .step-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-align: center;
+    }
+
+    .progress-step.completed .step-label,
+    .progress-step.current .step-label {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .controls {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    .control-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: var(--font-family);
+    }
+
+    .control-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .control-btn.secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .control-btn.secondary:hover {
+      background: var(--color-gray-300);
+    }
+
+    .mockup-nav {
+      position: fixed;
+      bottom: var(--space-6);
+      right: var(--space-6);
+      display: flex;
+      gap: var(--space-2);
+      background: white;
+      padding: var(--space-3);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: var(--font-family);
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .nav-btn.secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+
+    .nav-btn.secondary:hover {
+      background: var(--color-gray-300);
+    }
+  </style>
+</head>
+<body>
+  <h1>Progress Indicator Component</h1>
+  <p class="subtitle">Demonstração de indicadores de progresso para o fluxo de Discovery</p>
+
+  <!-- Bar Progress -->
+  <div class="demo-section">
+    <div class="demo-title">1. Barra de Progresso Simples</div>
+    <p style="margin-bottom: var(--space-4); color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+      Usado no header do ChatPanel durante Discovery
+    </p>
+
+    <div class="progress-indicator">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%;"></div>
+      </div>
+      <span class="progress-text" id="progressText">Pergunta 1 de 5</span>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn secondary" onclick="setProgress(1)">Pergunta 1</button>
+      <button class="control-btn secondary" onclick="setProgress(2)">Pergunta 2</button>
+      <button class="control-btn secondary" onclick="setProgress(3)">Pergunta 3</button>
+      <button class="control-btn secondary" onclick="setProgress(4)">Pergunta 4</button>
+      <button class="control-btn secondary" onclick="setProgress(5)">Pergunta 5</button>
+    </div>
+  </div>
+
+  <!-- Step-based Progress -->
+  <div class="demo-section">
+    <div class="demo-title">2. Progresso com Steps</div>
+    <p style="margin-bottom: var(--space-4); color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+      Visualização alternativa mostrando cada pergunta como um step
+    </p>
+
+    <div class="progress-steps">
+      <div class="progress-step completed">
+        <div class="step-circle">✓</div>
+        <div class="step-label">Problema</div>
+      </div>
+      <div class="progress-step completed">
+        <div class="step-circle">✓</div>
+        <div class="step-label">Features</div>
+      </div>
+      <div class="progress-step current">
+        <div class="step-circle">3</div>
+        <div class="step-label">Diferenciais</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-circle">4</div>
+        <div class="step-label">Nice-to-Have</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-circle">5</div>
+        <div class="step-label">Monetização</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All States -->
+  <div class="demo-section">
+    <div class="demo-title">3. Todos os Estados</div>
+    
+    <div style="margin-bottom: var(--space-5);">
+      <p style="margin-bottom: var(--space-2); font-weight: var(--font-weight-medium);">Estado: Início (0%)</p>
+      <div class="progress-indicator">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 0%;"></div>
+        </div>
+        <span class="progress-text">Pergunta 0 de 5</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom: var(--space-5);">
+      <p style="margin-bottom: var(--space-2); font-weight: var(--font-weight-medium);">Estado: Meio (60%)</p>
+      <div class="progress-indicator">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%;"></div>
+        </div>
+        <span class="progress-text">Pergunta 3 de 5</span>
+      </div>
+    </div>
+
+    <div>
+      <p style="margin-bottom: var(--space-2); font-weight: var(--font-weight-medium);">Estado: Completo (100%)</p>
+      <div class="progress-indicator">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 100%; background: var(--color-success);"></div>
+        </div>
+        <span class="progress-text" style="color: var(--color-success);">Completo!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="../index.html" class="nav-btn secondary">← Hub</a>
+    <a href="quick-replies.html" class="nav-btn">Quick Replies →</a>
+  </div>
+
+  <script>
+    function setProgress(question) {
+      const fill = document.getElementById('progressFill');
+      const text = document.getElementById('progressText');
+      
+      const percentage = (question / 5) * 100;
+      fill.style.width = percentage + '%';
+      text.textContent = `Pergunta ${question} de 5`;
+
+      if (question === 5) {
+        fill.style.background = 'var(--color-success)';
+        text.style.color = 'var(--color-success)';
+        text.textContent = 'Completo!';
+      } else {
+        fill.style.background = 'var(--color-primary)';
+        text.style.color = 'var(--color-primary)';
+      }
+    }
+  </script>
+</body>
+</html>

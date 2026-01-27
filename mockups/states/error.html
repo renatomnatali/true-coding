@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error States | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { padding: var(--space-8); max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-8); }
+    .demo-section { background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
+    .demo-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-4); }
+    
+    .error-card { background: var(--color-error-light); border: 1px solid var(--color-error); border-radius: var(--border-radius-lg); padding: var(--space-5); }
+    .error-icon { font-size: 48px; text-align: center; margin-bottom: var(--space-3); }
+    .error-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-error); text-align: center; margin-bottom: var(--space-2); }
+    .error-message { font-size: var(--font-size-base); color: var(--color-text-primary); text-align: center; line-height: var(--line-height-relaxed); margin-bottom: var(--space-4); }
+    .error-actions { display: flex; gap: var(--space-2); justify-content: center; }
+    .error-btn { padding: var(--space-2) var(--space-4); background: var(--color-error); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .error-btn:hover { background: var(--color-error-hover); }
+    .error-btn.secondary { background: white; color: var(--color-error); border: 1px solid var(--color-error); }
+    .error-btn.secondary:hover { background: var(--color-error-light); }
+    
+    .warning-card { background: var(--color-warning-light); border: 1px solid var(--color-warning); border-radius: var(--border-radius-lg); padding: var(--space-5); }
+    .warning-title { font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-warning); margin-bottom: var(--space-2); }
+    .warning-message { font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    
+    .inline-error { padding: var(--space-3) var(--space-4); background: var(--color-error-light); border-left: 3px solid var(--color-error); border-radius: var(--border-radius-sm); font-size: var(--font-size-sm); color: var(--color-error); }
+    
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <h1>Error States</h1>
+  <p class="subtitle">Mensagens de erro e feedback visual para falhas</p>
+
+  <div class="demo-section">
+    <div class="demo-title">1. Error Card (Critical)</div>
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">Erro ao Gerar Business Plan</div>
+      <div class="error-message">
+        Não foi possível gerar o Business Plan. A API do Claude está temporariamente indisponível.
+        Por favor, tente novamente em alguns minutos.
+      </div>
+      <div class="error-actions">
+        <button class="error-btn">🔄 Tentar Novamente</button>
+        <button class="error-btn secondary">← Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">2. Warning Card</div>
+    <div class="warning-card">
+      <div class="warning-title">⚠️ Atenção: Respostas Incompletas</div>
+      <div class="warning-message">
+        Você pulou a pergunta 4. Recomendamos responder todas as perguntas para gerar um Business Plan mais completo.
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">3. Inline Error Messages</div>
+    <div style="margin-bottom: var(--space-4);">
+      <label style="display: block; margin-bottom: var(--space-2); font-weight: var(--font-weight-medium);">Nome do Projeto</label>
+      <input type="text" style="width: 100%; padding: var(--space-3); border: 2px solid var(--color-error); border-radius: var(--border-radius-md); font-size: var(--font-size-base);" value="">
+      <div class="inline-error" style="margin-top: var(--space-2);">
+        ❌ O nome do projeto não pode estar vazio
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">4. Network Error</div>
+    <div class="error-card">
+      <div class="error-icon">📡</div>
+      <div class="error-title">Sem Conexão com a Internet</div>
+      <div class="error-message">
+        Verifique sua conexão e tente novamente.
+      </div>
+      <div class="error-actions">
+        <button class="error-btn">🔄 Reconectar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <div class="demo-title">5. Validation Error</div>
+    <div class="error-card">
+      <div class="error-icon">✋</div>
+      <div class="error-title">Dados Inválidos</div>
+      <div class="error-message">
+        Por favor, corrija os seguintes erros:
+      </div>
+      <div style="text-align: left; background: white; padding: var(--space-4); border-radius: var(--border-radius-md); margin-bottom: var(--space-4);">
+        <div style="font-size: var(--font-size-sm); color: var(--color-error); margin-bottom: var(--space-2);">
+          • Nome do projeto: mínimo 3 caracteres
+        </div>
+        <div style="font-size: var(--font-size-sm); color: var(--color-error); margin-bottom: var(--space-2);">
+          • Tagline: não pode estar vazia
+        </div>
+        <div style="font-size: var(--font-size-sm); color: var(--color-error);">
+          • Features: mínimo 2 features obrigatórias
+        </div>
+      </div>
+      <div class="error-actions">
+        <button class="error-btn">✅ Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="loading.html" class="nav-btn secondary">← Loading</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="empty.html" class="nav-btn">Empty States →</a>
+  </div>
+</body>
+</html>

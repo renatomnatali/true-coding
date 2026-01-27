@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discovery - Pergunta 4 | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { margin: 0; height: 100vh; overflow: hidden; }
+    .project-layout { display: flex; height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--color-bg-primary); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .project-name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .project-phase { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .sidebar-nav { flex: 1; padding: var(--space-4); }
+    .nav-section { margin-bottom: var(--space-6); }
+    .nav-section-title { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-3); }
+    .nav-item { padding: var(--space-2) var(--space-3); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1); }
+    .nav-item:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-item.active { background: var(--color-primary-light); color: var(--color-primary); font-weight: var(--font-weight-medium); }
+    .main-content { flex: 1; display: flex; overflow: hidden; }
+    .workspace { flex: 1; background: var(--color-bg-secondary); padding: var(--space-8); overflow-y: auto; }
+    .workspace-header { margin-bottom: var(--space-6); }
+    .workspace-title { font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .workspace-subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); }
+    .preview-cards { display: grid; gap: var(--space-4); }
+    .preview-card { background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-5); }
+    .preview-card-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .preview-card-icon { width: 40px; height: 40px; background: var(--color-primary-light); border-radius: var(--border-radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); }
+    .preview-card-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+    .preview-card-content { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .preview-card-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2); }
+    .feature-list { list-style: none; padding: 0; margin: 0; }
+    .feature-item { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) 0; font-size: var(--font-size-sm); }
+    .feature-item:before { content: "✓"; color: var(--color-success); font-weight: bold; }
+    .chat-panel { width: var(--chat-width); background: var(--color-bg-primary); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .chat-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .chat-title { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .progress-indicator { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .progress-bar { flex: 1; height: 4px; background: var(--color-gray-200); border-radius: var(--border-radius-full); overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--color-primary); border-radius: var(--border-radius-full); transition: width var(--transition-slow); width: 80%; }
+    .progress-text { font-weight: var(--font-weight-medium); color: var(--color-primary); white-space: nowrap; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+    .message { display: flex; gap: var(--space-3); }
+    .message-avatar { width: 32px; height: 32px; border-radius: var(--border-radius-full); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); flex-shrink: 0; }
+    .message.user .message-avatar { background: var(--color-gray-200); color: var(--color-gray-700); }
+    .message-content { flex: 1; min-width: 0; }
+    .message-author { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); margin-bottom: var(--space-1); }
+    .message-text { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .quick-replies { padding: 0 var(--space-5) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+    .quick-replies-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+    .quick-replies-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .quick-reply-btn { padding: var(--space-2) var(--space-4); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-full); font-size: var(--font-size-sm); color: var(--color-text-primary); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .quick-reply-btn:hover { background: var(--color-primary-light); border-color: var(--color-primary); color: var(--color-primary); }
+    .chat-input-container { padding: var(--space-5); border-top: 1px solid var(--color-border); }
+    .chat-input-wrapper { display: flex; gap: var(--space-2); align-items: flex-end; }
+    .chat-input { flex: 1; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-family: var(--font-family); resize: none; min-height: 44px; max-height: 120px; line-height: var(--line-height-normal); }
+    .chat-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+    .send-button { padding: var(--space-3) var(--space-5); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .send-button:hover { background: var(--color-primary-hover); }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <div class="project-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="project-name">Meu Projeto SaaS</div>
+        <div class="project-phase">Fase: Discovery</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Fases</div>
+          <div class="nav-item active"><span>💬</span> Discovery</div>
+          <div class="nav-item"><span>📋</span> Planning</div>
+          <div class="nav-item"><span>🔗</span> Connect</div>
+          <div class="nav-item"><span>⚡</span> Generate</div>
+          <div class="nav-item"><span>🚀</span> Deploy</div>
+        </div>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <h2 class="workspace-title">Business Plan em Construção</h2>
+          <p class="workspace-subtitle">80% completo - Quase lá!</p>
+        </div>
+        <div class="preview-cards">
+          <div class="preview-card">
+            <div class="preview-card-label">Problema</div>
+            <div class="preview-card-header">
+              <div class="preview-card-icon">🎯</div>
+              <div class="preview-card-title">Gestão de Tarefas para Times</div>
+            </div>
+            <div class="preview-card-content">
+              Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples.
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-label">Features Core</div>
+            <div class="preview-card-header">
+              <div class="preview-card-icon">⚡</div>
+              <div class="preview-card-title">Funcionalidades Must-Have</div>
+            </div>
+            <ul class="feature-list">
+              <li class="feature-item">Criar e gerenciar tarefas</li>
+              <li class="feature-item">Atribuir responsáveis</li>
+              <li class="feature-item">Definir prazos e prioridades</li>
+              <li class="feature-item">Dashboard com visão geral</li>
+            </ul>
+          </div>
+          <div class="preview-card">
+            <div class="preview-card-label">Diferenciais</div>
+            <div class="preview-card-header">
+              <div class="preview-card-icon">🌟</div>
+              <div class="preview-card-title">O que nos torna únicos</div>
+            </div>
+            <div class="preview-card-content">
+              Interface mais simples que Trello, sem complexidade desnecessária. Foco em pequenos times (até 15 pessoas).
+            </div>
+          </div>
+        </div>
+      </section>
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-title">Discovery</div>
+          <div class="progress-indicator">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <span class="progress-text">Pergunta 4 de 5</span>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">Claude</div>
+              <div class="message-text">
+                Perfeito! Agora me diz: <strong>Quais features seriam "nice-to-have" para o futuro?</strong> 💡
+                <br><br>
+                Exemplo: "Integrações com Slack, relatórios avançados, app mobile"
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">Sugestões rápidas</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="selectReply(this)">🔗 Integrações</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">🔔 Notificações</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">📊 Relatórios</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">📱 App mobile</button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Digite sua resposta..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div class="mockup-nav">
+    <a href="03-pergunta-3.html" class="nav-btn secondary">← Anterior</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="05-confirmacao.html" class="nav-btn">Próximo →</a>
+  </div>
+  <script>
+    function selectReply(btn) { document.querySelector('.chat-input').value = btn.textContent.trim(); }
+    document.querySelector('.chat-input').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>

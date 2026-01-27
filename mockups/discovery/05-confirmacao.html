@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discovery - Confirmação | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body { margin: 0; height: 100vh; overflow: hidden; }
+    .project-layout { display: flex; height: 100vh; }
+    .sidebar { width: var(--sidebar-width); background: var(--color-bg-primary); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .sidebar-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .project-name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-1); }
+    .project-phase { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .sidebar-nav { flex: 1; padding: var(--space-4); }
+    .nav-section { margin-bottom: var(--space-6); }
+    .nav-section-title { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-3); }
+    .nav-item { padding: var(--space-2) var(--space-3); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1); }
+    .nav-item:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-item.active { background: var(--color-primary-light); color: var(--color-primary); font-weight: var(--font-weight-medium); }
+    .main-content { flex: 1; display: flex; overflow: hidden; }
+    .workspace { flex: 1; background: var(--color-bg-secondary); padding: var(--space-8); overflow-y: auto; }
+    .workspace-header { margin-bottom: var(--space-6); }
+    .workspace-title { font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .workspace-subtitle { font-size: var(--font-size-base); color: var(--color-text-secondary); }
+    .summary-panel { background: var(--color-bg-primary); border: 2px solid var(--color-primary); border-radius: var(--border-radius-lg); padding: var(--space-6); margin-bottom: var(--space-6); }
+    .summary-title { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-primary); margin-bottom: var(--space-5); display: flex; align-items: center; gap: var(--space-2); }
+    .summary-section { margin-bottom: var(--space-5); }
+    .summary-section:last-child { margin-bottom: 0; }
+    .summary-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-2); }
+    .summary-content { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .summary-list { list-style: none; padding: 0; margin: 0; }
+    .summary-list li { padding: var(--space-1) 0; font-size: var(--font-size-sm); color: var(--color-text-primary); }
+    .summary-list li:before { content: "•"; margin-right: var(--space-2); color: var(--color-primary); }
+    .action-buttons { display: flex; gap: var(--space-3); }
+    .action-btn { flex: 1; padding: var(--space-4); border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); cursor: pointer; transition: all var(--transition-fast); border: none; font-family: var(--font-family); }
+    .action-btn.primary { background: var(--color-primary); color: white; }
+    .action-btn.primary:hover { background: var(--color-primary-hover); }
+    .action-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border); }
+    .action-btn.secondary:hover { background: var(--color-gray-300); }
+    .chat-panel { width: var(--chat-width); background: var(--color-bg-primary); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; }
+    .chat-header { padding: var(--space-5); border-bottom: 1px solid var(--color-border); }
+    .chat-title { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); color: var(--color-text-primary); margin-bottom: var(--space-2); }
+    .progress-indicator { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .progress-bar { flex: 1; height: 4px; background: var(--color-gray-200); border-radius: var(--border-radius-full); overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--color-warning); border-radius: var(--border-radius-full); transition: width var(--transition-slow); width: 100%; }
+    .progress-text { font-weight: var(--font-weight-medium); color: var(--color-warning); white-space: nowrap; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+    .message { display: flex; gap: var(--space-3); }
+    .message-avatar { width: 32px; height: 32px; border-radius: var(--border-radius-full); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); flex-shrink: 0; }
+    .message.user .message-avatar { background: var(--color-gray-200); color: var(--color-gray-700); }
+    .message-content { flex: 1; min-width: 0; }
+    .message-author { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); margin-bottom: var(--space-1); }
+    .message-text { font-size: var(--font-size-base); color: var(--color-text-primary); line-height: var(--line-height-relaxed); }
+    .quick-replies { padding: 0 var(--space-5) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+    .quick-replies-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+    .quick-replies-buttons { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .quick-reply-btn { padding: var(--space-2) var(--space-4); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-full); font-size: var(--font-size-sm); color: var(--color-text-primary); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .quick-reply-btn:hover { background: var(--color-primary-light); border-color: var(--color-primary); color: var(--color-primary); }
+    .chat-input-container { padding: var(--space-5); border-top: 1px solid var(--color-border); }
+    .chat-input-wrapper { display: flex; gap: var(--space-2); align-items: flex-end; }
+    .chat-input { flex: 1; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-family: var(--font-family); resize: none; min-height: 44px; max-height: 120px; line-height: var(--line-height-normal); }
+    .chat-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+    .send-button { padding: var(--space-3) var(--space-5); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-lg); font-size: var(--font-size-base); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); }
+    .send-button:hover { background: var(--color-primary-hover); }
+    .mockup-nav { position: fixed; bottom: var(--space-6); right: var(--space-6); display: flex; gap: var(--space-2); background: white; padding: var(--space-3); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+    .nav-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-family); text-decoration: none; }
+    .nav-btn:hover { background: var(--color-primary-hover); }
+    .nav-btn.secondary { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+    .nav-btn.secondary:hover { background: var(--color-gray-300); }
+  </style>
+</head>
+<body>
+  <div class="project-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="project-name">Meu Projeto SaaS</div>
+        <div class="project-phase">Fase: Discovery</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Fases</div>
+          <div class="nav-item active"><span>💬</span> Discovery</div>
+          <div class="nav-item"><span>📋</span> Planning</div>
+          <div class="nav-item"><span>🔗</span> Connect</div>
+          <div class="nav-item"><span>⚡</span> Generate</div>
+          <div class="nav-item"><span>🚀</span> Deploy</div>
+        </div>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <h2 class="workspace-title">Resumo do seu Projeto</h2>
+          <p class="workspace-subtitle">Confira as informações antes de gerar o plano completo</p>
+        </div>
+        <div class="summary-panel">
+          <div class="summary-title">
+            <span>📋</span> Resumo do Discovery
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">1. Problema e Público</div>
+            <div class="summary-content">Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples.</div>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">2. Features Core</div>
+            <ul class="summary-list">
+              <li>Criar e gerenciar tarefas</li>
+              <li>Atribuir responsáveis</li>
+              <li>Definir prazos e prioridades</li>
+              <li>Dashboard com visão geral</li>
+            </ul>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">3. Diferenciais</div>
+            <div class="summary-content">Interface mais simples que Trello, sem complexidade desnecessária. Foco em pequenos times (até 15 pessoas).</div>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">4. Nice-to-Have</div>
+            <ul class="summary-list">
+              <li>Integrações com Slack e email</li>
+              <li>Relatórios de produtividade</li>
+              <li>App mobile (iOS/Android)</li>
+            </ul>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">5. Monetização</div>
+            <div class="summary-content">Aguardando resposta...</div>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="action-btn secondary">✏️ Ajustar Respostas</button>
+          <button class="action-btn primary" onclick="window.location.href='06-gerando.html'">✅ Confirmar e Gerar Plano</button>
+        </div>
+      </section>
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-title">Discovery</div>
+          <div class="progress-indicator">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <span class="progress-text">Pergunta 5 de 5</span>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">Claude</div>
+              <div class="message-text">
+                Última pergunta! <strong>Como pretende monetizar o projeto?</strong> 💰
+                <br><br>
+                Exemplo: "Freemium - grátis até 5 usuários, pago acima disso"
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">Sugestões rápidas</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="selectReply(this)">💳 Freemium</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">📅 Assinatura</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">🎁 Gratuito</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">💼 Enterprise</button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Digite sua resposta..." rows="1"></textarea>
+            <button class="send-button" onclick="window.location.href='06-gerando.html'">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div class="mockup-nav">
+    <a href="04-pergunta-4.html" class="nav-btn secondary">← Anterior</a>
+    <a href="../index.html" class="nav-btn secondary">Hub</a>
+    <a href="06-gerando.html" class="nav-btn">Próximo →</a>
+  </div>
+  <script>
+    function selectReply(btn) { document.querySelector('.chat-input').value = btn.textContent.trim(); }
+    document.querySelector('.chat-input').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>
