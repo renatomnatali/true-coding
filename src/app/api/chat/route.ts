@@ -14,6 +14,7 @@ import {
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 import type { DiscoveryState, QuestionProgress } from '@/types'
+import { FEATURES } from '@/config/features'
 
 const chatRequestSchema = z.object({
   projectId: z.string(),
@@ -162,10 +163,11 @@ export async function POST(request: Request) {
             },
           })
 
-          // Discovery Phase: Track progress
-          if (phase === 'discovery' && discoveryState) {
+          // Discovery Phase: Track progress (if feature enabled)
+          if (phase === 'discovery' && discoveryState && FEATURES.STRUCTURED_DISCOVERY) {
             const questionNumber = extractQuestionNumber(fullResponse)
             console.log('[CHAT API] Question detected:', questionNumber)
+            console.log('[CHAT API] Feature flag STRUCTURED_DISCOVERY:', FEATURES.STRUCTURED_DISCOVERY)
 
             if (questionNumber) {
               // Update discoveryState with the question that was just asked
@@ -218,9 +220,12 @@ export async function POST(request: Request) {
             }
           }
 
-          // Check if plan is ready (only after all 5 questions in discovery, or anytime in planning)
-          const shouldCheckPlan =
-            phase !== 'discovery' || completedQuestions.length >= 5
+          // Check if plan is ready
+          // With feature flag: only after all 5 questions in discovery
+          // Without feature flag: check anytime (original behavior)
+          const shouldCheckPlan = phase !== 'discovery'
+            || !FEATURES.STRUCTURED_DISCOVERY
+            || completedQuestions.length >= 5
 
           if (shouldCheckPlan) {
             console.log('[CHAT API] Checking if plan is ready...')

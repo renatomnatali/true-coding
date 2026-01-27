@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useProjectLayout } from './ProjectLayout'
 import { QuickReplyButtons } from './QuickReplyButtons'
+import { FEATURES } from '@/config/features'
 
 interface Message {
   id: string
@@ -192,7 +193,7 @@ export function ChatPanel({
       <div className="flex items-center justify-between border-b px-4 py-3">
         <div>
           <h2 className="font-semibold">Discovery</h2>
-          {questionProgress ? (
+          {FEATURES.PROGRESS_TRACKING && questionProgress ? (
             <p className="text-xs text-muted-foreground">
               Pergunta {questionProgress.current} de {questionProgress.total}
             </p>
@@ -272,11 +273,13 @@ export function ChatPanel({
       </div>
 
       {/* Quick Reply Buttons */}
-      <QuickReplyButtons
-        currentQuestion={questionProgress?.current ?? null}
-        onSelect={(text) => sendMessage(text)}
-        disabled={isLoading}
-      />
+      {FEATURES.QUICK_REPLIES && (
+        <QuickReplyButtons
+          currentQuestion={questionProgress?.current ?? null}
+          onSelect={(text) => sendMessage(text)}
+          disabled={isLoading}
+        />
+      )}
 
       {/* Input */}
       <div className="border-t p-4">

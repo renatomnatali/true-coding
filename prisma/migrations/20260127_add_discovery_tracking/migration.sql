@@ -10,8 +10,11 @@ ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "currentQuestion" INTEGER D
 -- Add completedQuestions column (array of completed question numbers)
 ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "completedQuestions" INTEGER[] DEFAULT '{}';
 
--- Create index on currentQuestion for efficient queries
-CREATE INDEX IF NOT EXISTS "conversations_currentQuestion_idx" ON "conversations"("currentQuestion");
+-- Create partial index on currentQuestion (only non-NULL values for discovery phase)
+-- Partial index is more efficient since planning/iteration phases have NULL currentQuestion
+CREATE INDEX IF NOT EXISTS "conversations_currentQuestion_idx"
+  ON "conversations"("currentQuestion")
+  WHERE "currentQuestion" IS NOT NULL;
 
 -- Add comment for documentation
 COMMENT ON COLUMN "conversations"."discoveryState" IS 'Structured state of discovery process (questions, answers, extracted data)';
