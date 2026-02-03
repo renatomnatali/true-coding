@@ -7,8 +7,8 @@
  * Padrão: Dado/Quando/Então (Given/When/Then)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChatPanel } from '@/components/project/ChatPanel'
 import {
@@ -28,6 +28,11 @@ vi.mock('@/components/project/ProjectLayout', async () => {
       setChatOpen: vi.fn(),
     }),
   }
+})
+
+// Cleanup mocks after each test to prevent flaky results
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 /**
@@ -502,8 +507,13 @@ describe('Discovery: Quick Reply Envio Direto', () => {
     // Quando clico no quick reply
     await userEvent.click(quickReplyButton)
 
-    // Então a mensagem é enviada diretamente (aparece no chat)
-    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
+    // Então a mensagem é enviada diretamente (aparece como mensagem do usuário)
+    // Nota: após enviar, os quick replies mudam para Q1, então o botão original some
+    await waitFor(() => {
+      const messageElement = screen.getByText('📱 App de gestão')
+      // Verifica que está dentro de um user message bubble (bg-blue-50)
+      expect(messageElement.closest('.bg-blue-50')).not.toBeNull()
+    })
     // E fetch foi chamado
     expect(global.fetch).toHaveBeenCalledWith('/api/chat', expect.any(Object))
   })
@@ -548,8 +558,12 @@ describe('Discovery: Comportamentos do Chat', () => {
     // Quando pressiono Enter
     await userEvent.keyboard('{Enter}')
 
-    // Então a mensagem é enviada
-    expect(screen.getByText('Minha mensagem de teste')).toBeInTheDocument()
+    // Então a mensagem é enviada (aparece como user bubble)
+    await waitFor(() => {
+      const messageElement = screen.getByText('Minha mensagem de teste')
+      // Verifica que está dentro de um user message bubble (bg-blue-50)
+      expect(messageElement.closest('.bg-blue-50')).not.toBeNull()
+    })
     // E o input é limpo
     expect(textarea).toHaveValue('')
   })
