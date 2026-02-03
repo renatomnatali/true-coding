@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Mobile | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4);
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .menu-button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+    }
+
+    .menu-button span {
+      width: 24px;
+      height: 2px;
+      background: var(--color-text-primary);
+      border-radius: 2px;
+    }
+
+    .logo-mobile {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .logo-icon-mobile {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: var(--border-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-bold);
+      font-size: 14px;
+    }
+
+    .logo-text {
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-base);
+    }
+
+    .user-avatar-mobile {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* Content Area */
+    .mobile-content {
+      padding: var(--space-4);
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Project Card */
+    .project-card-mobile {
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .project-header-mobile {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-3);
+    }
+
+    .project-name-mobile {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .project-date-mobile {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .status-badge-mobile {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .project-description-mobile {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: 1.5;
+    }
+
+    .project-progress-mobile {
+      margin-bottom: var(--space-3);
+    }
+
+    .progress-label-mobile {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar-mobile {
+      height: 6px;
+      background: var(--color-gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill-mobile {
+      height: 100%;
+      background: var(--color-warning);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .project-actions-mobile {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .btn-mobile {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary-mobile {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-secondary-mobile {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+
+    /* FAB Button */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    /* Empty State */
+    .empty-state-mobile {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="header-left">
+      <button class="menu-button">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="logo-mobile">
+        <div class="logo-icon-mobile">TC</div>
+        <span class="logo-text">True Coding</span>
+      </div>
+    </div>
+    <div class="user-avatar-mobile">RN</div>
+  </header>
+
+  <!-- Content -->
+  <main class="mobile-content">
+    <h1 class="page-title">Meus Projetos</h1>
+    <p class="page-subtitle">3 projetos em desenvolvimento</p>
+
+    <!-- Project Card 1 -->
+    <div class="project-card-mobile">
+      <div class="project-header-mobile">
+        <div>
+          <div class="project-name-mobile">Meu App Delivery</div>
+          <div class="project-date-mobile">Criado há 2 dias</div>
+        </div>
+        <span class="status-badge-mobile">
+          <span class="status-dot"></span>
+          Em progresso
+        </span>
+      </div>
+      <p class="project-description-mobile">
+        Sistema de gestão de entregas com rastreamento em tempo real
+      </p>
+      <div class="project-progress-mobile">
+        <div class="progress-label-mobile">
+          <span>Fase 4 de 6 - Geração</span>
+          <span>67%</span>
+        </div>
+        <div class="progress-bar-mobile">
+          <div class="progress-fill-mobile" style="width: 67%;"></div>
+        </div>
+      </div>
+      <div class="project-actions-mobile">
+        <button class="btn-mobile btn-secondary-mobile">Ver detalhes</button>
+        <button class="btn-mobile btn-primary-mobile">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- Project Card 2 -->
+    <div class="project-card-mobile">
+      <div class="project-header-mobile">
+        <div>
+          <div class="project-name-mobile">E-commerce de Roupas</div>
+          <div class="project-date-mobile">Criado há 5 dias</div>
+        </div>
+        <span class="status-badge-mobile" style="background: var(--color-primary-light); color: var(--color-primary);">
+          <span class="status-dot"></span>
+          Planejamento
+        </span>
+      </div>
+      <p class="project-description-mobile">
+        Loja online com carrinho, pagamentos e gestão de estoque
+      </p>
+      <div class="project-progress-mobile">
+        <div class="progress-label-mobile">
+          <span>Fase 2 de 6 - Planejamento</span>
+          <span>33%</span>
+        </div>
+        <div class="progress-bar-mobile">
+          <div class="progress-fill-mobile" style="width: 33%; background: var(--color-primary);"></div>
+        </div>
+      </div>
+      <div class="project-actions-mobile">
+        <button class="btn-mobile btn-secondary-mobile">Ver detalhes</button>
+        <button class="btn-mobile btn-primary-mobile">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- Project Card 3 -->
+    <div class="project-card-mobile">
+      <div class="project-header-mobile">
+        <div>
+          <div class="project-name-mobile">Portfolio Pessoal</div>
+          <div class="project-date-mobile">Criado há 1 semana</div>
+        </div>
+        <span class="status-badge-mobile" style="background: var(--color-success-light); color: var(--color-success);">
+          <span class="status-dot"></span>
+          Online
+        </span>
+      </div>
+      <p class="project-description-mobile">
+        Site pessoal com blog, projetos e formulário de contato
+      </p>
+      <div class="project-progress-mobile">
+        <div class="progress-label-mobile">
+          <span>Fase 6 de 6 - Concluído</span>
+          <span>100%</span>
+        </div>
+        <div class="progress-bar-mobile">
+          <div class="progress-fill-mobile" style="width: 100%; background: var(--color-success);"></div>
+        </div>
+      </div>
+      <div class="project-actions-mobile">
+        <button class="btn-mobile btn-secondary-mobile">Ver código</button>
+        <button class="btn-mobile btn-primary-mobile">Abrir site →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- FAB Button -->
+  <button class="fab">+</button>
+
+  <div style="position: fixed; bottom: var(--space-2); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

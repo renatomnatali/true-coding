@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop - Chat Colapsado | True Coding v2</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="css/v2-layout.css">
+  <style>
+    /* Estilos especificos desta pagina */
+    .summary-panel { max-width: 800px; }
+    .summary-section { margin-bottom: 0; }
+    .action-buttons { max-width: 500px; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="back-button">
+          ← Voltar ao Dashboard
+        </a>
+
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-name">Meu App Delivery</div>
+        </div>
+
+        <div class="journey-progress">
+          <span class="journey-label">JORNADA</span>
+          <span class="journey-count">2/6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Fase 1: Ideação (Completed) -->
+        <div class="nav-item completed">
+          <span class="phase-icon"></span>
+          <span>Ideação</span>
+        </div>
+
+        <!-- Fase 2: Planejamento (In Progress, with sub-items) -->
+        <div class="nav-item in-progress">
+          <span class="phase-icon"></span>
+          <span>Planejamento</span>
+        </div>
+        <div class="nav-item sub-item completed">
+          <span class="phase-icon"></span>
+          <span>Negócio</span>
+        </div>
+        <div class="nav-item sub-item in-progress">
+          <span class="phase-icon"></span>
+          <span>Técnico</span>
+        </div>
+        <div class="nav-item sub-item blocked">
+          <span class="phase-icon"></span>
+          <span>UX</span>
+        </div>
+
+        <!-- Fase 3: Conexão (Blocked) -->
+        <div class="nav-item blocked" title="Complete Planejamento primeiro">
+          <span class="phase-icon"></span>
+          <span>Conexão</span>
+        </div>
+
+        <!-- Fase 4: Geração (Blocked) -->
+        <div class="nav-item blocked" title="Complete Conexão primeiro">
+          <span class="phase-icon"></span>
+          <span>Geração</span>
+        </div>
+
+        <!-- Fase 5: Deploy (Blocked) -->
+        <div class="nav-item blocked" title="Complete Geração primeiro">
+          <span class="phase-icon"></span>
+          <span>Deploy</span>
+        </div>
+
+        <!-- Fase 6: Online (Blocked) -->
+        <div class="nav-item blocked" title="Complete Deploy primeiro">
+          <span class="phase-icon"></span>
+          <span>Online</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div>
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- WORKSPACE (mais espaco) -->
+      <section class="workspace">
+        <div class="workspace-header">
+          <p class="workspace-subtitle" style="margin-bottom: var(--space-2); color: var(--color-text-tertiary); font-size: var(--font-size-sm);">Planejamento › Plano Técnico</p>
+          <h2 class="workspace-title">Plano Técnico</h2>
+          <p class="workspace-subtitle">Defina a arquitetura e stack tecnológica do projeto</p>
+        </div>
+
+        <div class="summary-panel">
+          <div class="summary-title">
+            <span>📋</span> Resumo do Discovery
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-section">
+              <div class="summary-label">1. Problema e Publico</div>
+              <div class="summary-content">Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples.</div>
+            </div>
+
+            <div class="summary-section">
+              <div class="summary-label">2. Features Core</div>
+              <ul class="summary-list">
+                <li>Criar e gerenciar tarefas</li>
+                <li>Atribuir responsaveis</li>
+                <li>Definir prazos e prioridades</li>
+                <li>Dashboard com visao geral</li>
+              </ul>
+            </div>
+
+            <div class="summary-section">
+              <div class="summary-label">3. Diferenciais</div>
+              <div class="summary-content">Interface mais simples que Trello, sem complexidade desnecessaria.</div>
+            </div>
+
+            <div class="summary-section">
+              <div class="summary-label">4. Nice-to-Have</div>
+              <ul class="summary-list">
+                <li>Integracoes com Slack</li>
+                <li>Relatorios de produtividade</li>
+                <li>App mobile</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="summary-section" style="margin-top: var(--space-5); grid-column: span 2;">
+            <div class="summary-label">5. Monetizacao</div>
+            <div class="summary-content">Aguardando resposta...</div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn secondary">✏️ Ajustar Respostas</button>
+          <button class="action-btn primary">✅ Confirmar e Gerar Plano</button>
+        </div>
+      </section>
+
+      <!-- CHAT COLAPSADO -->
+      <aside class="chat-collapsed">
+        <button class="expand-btn" onclick="window.location.href='desktop-expanded.html'" title="Abrir chat">
+          💬
+          <span class="badge">1</span>
+        </button>
+        <span class="chat-label">CHAT</span>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Navegacao do mockup -->
+  <div class="mockup-nav">
+    <a href="desktop-expanded.html" class="nav-btn secondary">← Chat Expandido</a>
+    <a href="index.html" class="nav-btn secondary">Hub</a>
+    <a href="mobile.html" class="nav-btn">Mobile →</a>
+  </div>
+</body>
+</html>

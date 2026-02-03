@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erro - Variáveis de Ambiente | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 5/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </a>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Deploy › Erro</div>
+          <h2 class="workspace-title">Variáveis de Ambiente Faltando</h2>
+          <p class="workspace-subtitle">O app precisa de configurações adicionais para funcionar</p>
+        </div>
+
+        <!-- Error Card -->
+        <div class="card" style="border-color: var(--color-warning);">
+          <div class="card-header">
+            <div style="text-align: center; padding: var(--space-6) 0;">
+              <div style="font-size: 64px; margin-bottom: var(--space-4);">🔑</div>
+              <h3 class="card-title" style="color: var(--color-warning); margin-bottom: var(--space-2);">
+                Variáveis de Ambiente Obrigatórias Ausentes
+              </h3>
+              <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); max-width: 500px; margin: 0 auto;">
+                O deploy foi concluído, mas o app não vai funcionar corretamente sem as variáveis de ambiente necessárias.
+              </p>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Missing Variables List -->
+            <div style="background: var(--color-warning-light); border-left: 4px solid var(--color-warning); padding: var(--space-4); border-radius: var(--border-radius-md); margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3);">
+                ⚠️ Variáveis faltando:
+              </div>
+              <div style="display: grid; gap: var(--space-3);">
+                <div style="padding: var(--space-3); background: white; border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-error); margin-bottom: var(--space-1);">
+                    DATABASE_URL
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Conexão com PostgreSQL (obrigatório)
+                  </div>
+                </div>
+                <div style="padding: var(--space-3); background: white; border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-error); margin-bottom: var(--space-1);">
+                    CLERK_SECRET_KEY
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Autenticação de usuários (obrigatório)
+                  </div>
+                </div>
+                <div style="padding: var(--space-3); background: white; border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-warning); margin-bottom: var(--space-1);">
+                    NEXTAUTH_SECRET
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Token de segurança para sessões (obrigatório)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: var(--color-primary-light); border-left: 4px solid var(--color-primary); padding: var(--space-4); border-radius: var(--border-radius-md); margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                📚 Onde conseguir as variáveis:
+              </div>
+              <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                <li>
+                  <strong>DATABASE_URL:</strong> <a href="https://supabase.com" target="_blank" style="color: var(--color-primary);">Supabase</a> → Settings → Database → Connection string
+                </li>
+                <li>
+                  <strong>CLERK_SECRET_KEY:</strong> <a href="https://clerk.com" target="_blank" style="color: var(--color-primary);">Clerk</a> → API Keys → Secret keys
+                </li>
+                <li>
+                  <strong>NEXTAUTH_SECRET:</strong> Gere com <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 3px;">openssl rand -base64 32</code>
+                </li>
+              </ul>
+            </div>
+
+            <div style="background: var(--color-success-light); border-left: 4px solid var(--color-success); padding: var(--space-4); border-radius: var(--border-radius-md);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                ✅ Próximos passos:
+              </div>
+              <ol style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                <li>Clique em "Configurar Variáveis" abaixo</li>
+                <li>Cole os valores obtidos nos serviços externos</li>
+                <li>Salve as configurações</li>
+                <li>O deploy será refeito automaticamente</li>
+              </ol>
+            </div>
+          </div>
+          <div class="card-footer" style="justify-content: center; padding-top: var(--space-4);">
+            <button class="btn btn-secondary">
+              Ver Documentação
+            </button>
+            <button class="btn btn-primary">
+              🔑 Configurar Variáveis
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Setup Guide -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚡ Setup Rápido</h3>
+          </div>
+          <div class="card-body">
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">
+              Não tem tempo agora? Você pode:
+            </div>
+            <div style="display: grid; gap: var(--space-3);">
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;">
+                <span style="font-size: 20px; margin-right: var(--space-2);">🚀</span>
+                <div>
+                  <div style="font-weight: var(--font-weight-semibold);">Deploy sem Features Avançadas</div>
+                  <div style="font-size: var(--font-size-xs); opacity: 0.7;">App vai rodar mas sem auth e banco de dados</div>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;">
+                <span style="font-size: 20px; margin-right: var(--space-2);">⏰</span>
+                <div>
+                  <div style="font-weight: var(--font-weight-semibold);">Configurar Depois</div>
+                  <div style="font-size: var(--font-size-xs); opacity: 0.7;">Volte quando tiver as chaves em mãos</div>
+                </div>
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;">
+                <span style="font-size: 20px; margin-right: var(--space-2);">📧</span>
+                <div>
+                  <div style="font-weight: var(--font-weight-semibold);">Receber Guia por Email</div>
+                  <div style="font-size: var(--font-size-xs); opacity: 0.7;">Tutorial passo-a-passo no seu inbox</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Details -->
+        <details class="card" style="border-color: var(--color-border); cursor: pointer;">
+          <summary style="list-style: none; padding: var(--space-4); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+            <span style="margin-right: var(--space-2);">🔍</span>
+            Detalhes Técnicos
+          </summary>
+          <div class="card-body" style="background: var(--color-bg-secondary); border-radius: var(--border-radius-md); padding: var(--space-4); margin: var(--space-4); font-family: monospace; font-size: var(--font-size-xs);">
+            <div style="margin-bottom: var(--space-2);"><strong>Deployment ID:</strong> dpl_8xK2j9mN4vP1qL5h</div>
+            <div style="margin-bottom: var(--space-2);"><strong>Timestamp:</strong> 2026-01-29T13:25:44.567Z</div>
+            <div style="margin-bottom: var(--space-2);"><strong>Status:</strong> Running (with warnings)</div>
+            <div style="margin-bottom: var(--space-2);"><strong>Missing Vars:</strong> DATABASE_URL, CLERK_SECRET_KEY, NEXTAUTH_SECRET</div>
+            <div style="margin-bottom: var(--space-2);"><strong>Build Status:</strong> Success</div>
+            <div><strong>Runtime Error:</strong> Cannot connect to database (missing DATABASE_URL)</div>
+          </div>
+        </details>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                O deploy funcionou, mas faltam as variáveis de ambiente! 🔑
+                <br><br>
+                <strong>O que isso significa:</strong>
+                <br>
+                O código está online, mas o app não vai funcionar sem essas configurações. É como ter um carro sem gasolina 🚗
+                <br><br>
+                <strong>Você precisa de:</strong>
+                <br>
+                • DATABASE_URL (conexão com banco)
+                <br>
+                • CLERK_SECRET_KEY (autenticação)
+                <br>
+                • NEXTAUTH_SECRET (segurança)
+                <br><br>
+                Posso te guiar passo-a-passo para conseguir essas chaves. Quer começar?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn">
+              Sim, me guia
+            </button>
+            <button class="quick-reply-btn">
+              Já tenho as chaves
+            </button>
+            <button class="quick-reply-btn">
+              Fazer depois
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Como posso ajudar?" rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop - Chat Expandido | True Coding v2</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="css/v2-layout.css">
+  <style>
+    /* Estilos especificos desta pagina */
+    .progress-fill { width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" class="back-button">
+          ← Voltar ao Dashboard
+        </a>
+
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+
+        <div class="project-info">
+          <div class="project-name">Meu App Delivery</div>
+        </div>
+
+        <div class="journey-progress">
+          <span class="journey-label">JORNADA</span>
+          <span class="journey-count">2/6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Fase 1: Ideação (Completed) -->
+        <div class="nav-item completed">
+          <span class="phase-icon"></span>
+          <span>Ideação</span>
+        </div>
+
+        <!-- Fase 2: Planejamento (In Progress, with sub-items) -->
+        <div class="nav-item in-progress">
+          <span class="phase-icon"></span>
+          <span>Planejamento</span>
+        </div>
+        <div class="nav-item sub-item completed">
+          <span class="phase-icon"></span>
+          <span>Negócio</span>
+        </div>
+        <div class="nav-item sub-item in-progress">
+          <span class="phase-icon"></span>
+          <span>Técnico</span>
+        </div>
+        <div class="nav-item sub-item blocked">
+          <span class="phase-icon"></span>
+          <span>UX</span>
+        </div>
+
+        <!-- Fase 3: Conexão (Blocked) -->
+        <div class="nav-item blocked" title="Complete Planejamento primeiro">
+          <span class="phase-icon"></span>
+          <span>Conexão</span>
+        </div>
+
+        <!-- Fase 4: Geração (Blocked) -->
+        <div class="nav-item blocked" title="Complete Conexão primeiro">
+          <span class="phase-icon"></span>
+          <span>Geração</span>
+        </div>
+
+        <!-- Fase 5: Deploy (Blocked) -->
+        <div class="nav-item blocked" title="Complete Geração primeiro">
+          <span class="phase-icon"></span>
+          <span>Deploy</span>
+        </div>
+
+        <!-- Fase 6: Online (Blocked) -->
+        <div class="nav-item blocked" title="Complete Deploy primeiro">
+          <span class="phase-icon"></span>
+          <span>Online</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div>
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- WORKSPACE -->
+      <section class="workspace">
+        <div class="workspace-header">
+          <p class="workspace-subtitle" style="margin-bottom: var(--space-2); color: var(--color-text-tertiary); font-size: var(--font-size-sm);">Planejamento › Plano Técnico</p>
+          <h2 class="workspace-title">Plano Técnico</h2>
+          <p class="workspace-subtitle">Defina a arquitetura e stack tecnológica do projeto</p>
+        </div>
+
+        <div class="summary-panel">
+          <div class="summary-title">
+            <span>📋</span> Resumo do Discovery
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">1. Problema e Publico</div>
+            <div class="summary-content">Ajudar freelancers e pequenos times a organizarem projetos e tarefas de forma simples.</div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">2. Features Core</div>
+            <ul class="summary-list">
+              <li>Criar e gerenciar tarefas</li>
+              <li>Atribuir responsaveis</li>
+              <li>Definir prazos e prioridades</li>
+              <li>Dashboard com visao geral</li>
+            </ul>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">3. Diferenciais</div>
+            <div class="summary-content">Interface mais simples que Trello, sem complexidade desnecessaria. Foco em pequenos times (ate 15 pessoas).</div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">4. Nice-to-Have</div>
+            <ul class="summary-list">
+              <li>Integracoes com Slack e email</li>
+              <li>Relatorios de produtividade</li>
+              <li>App mobile (iOS/Android)</li>
+            </ul>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">5. Monetizacao</div>
+            <div class="summary-content">Aguardando resposta...</div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn secondary">✏️ Ajustar Respostas</button>
+          <button class="action-btn primary">✅ Confirmar e Gerar Plano</button>
+        </div>
+      </section>
+
+      <!-- CHAT PANEL -->
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Planejamento</div>
+            <button class="collapse-btn" onclick="window.location.href='desktop-collapsed.html'" title="Colapsar chat">
+              ▶
+            </button>
+          </div>
+          <div class="progress-indicator">
+            <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+            <span class="progress-text">Fase 2 de 6</span>
+          </div>
+        </div>
+
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Perfeito! Agora vamos definir a <strong>stack tecnológica</strong>. 🛠️
+                <br><br>
+                Qual framework você prefere para o frontend?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-replies">
+          <div class="quick-replies-label">Sugestoes rapidas</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="selectReply(this)">⚛️ React + Next.js</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">🔺 Vue + Nuxt</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">🅰️ Angular</button>
+            <button class="quick-reply-btn" onclick="selectReply(this)">💎 Svelte</button>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Digite sua resposta..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Navegacao do mockup -->
+  <div class="mockup-nav">
+    <a href="index.html" class="nav-btn secondary">Hub</a>
+    <a href="desktop-collapsed.html" class="nav-btn">Chat Colapsado →</a>
+  </div>
+
+  <script>
+    function selectReply(btn) {
+      document.querySelector('.chat-input').value = btn.textContent.trim();
+    }
+
+    document.querySelector('.chat-input').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+/**
+ * Assessment CSS - True Coding
+ * Componentes para análise de complexidade e planejamento de iterações
+ */
+
+/* ============================================================================
+   COMPLEXITY ANALYSIS
+   ============================================================================ */
+
+/* Gauge Container */
+.complexity-gauge {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto var(--space-6);
+}
+
+.complexity-gauge-svg {
+  transform: rotate(-90deg);
+}
+
+.complexity-gauge-bg {
+  fill: none;
+  stroke: var(--color-gray-200);
+  stroke-width: 12;
+}
+
+.complexity-gauge-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.complexity-gauge-fill.simple {
+  stroke: var(--color-success);
+}
+
+.complexity-gauge-fill.medium {
+  stroke: var(--color-warning);
+}
+
+.complexity-gauge-fill.complex {
+  stroke: var(--color-error);
+}
+
+.complexity-gauge-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.complexity-score {
+  font-size: 48px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.complexity-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-1);
+}
+
+/* Complexity Breakdown */
+.complexity-breakdown {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.complexity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-md);
+}
+
+.complexity-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.complexity-item-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.complexity-item-info {
+  flex: 1;
+}
+
+.complexity-item-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.complexity-item-detail {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.complexity-item-score {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* Classification Badge */
+.classification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.classification-badge.simple {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.classification-badge.medium {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.classification-badge.complex {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+/* ============================================================================
+   ITERATION PLAN
+   ============================================================================ */
+
+.iteration-plan {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.iteration-card {
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.iteration-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.iteration-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+}
+
+.iteration-card-header:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.iteration-card-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.iteration-number {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-md);
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.iteration-info {
+  flex: 1;
+}
+
+.iteration-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.iteration-time {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.iteration-expand {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.iteration-card.expanded .iteration-expand {
+  transform: rotate(180deg);
+}
+
+.iteration-card-body {
+  display: none;
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.iteration-card.expanded .iteration-card-body {
+  display: block;
+}
+
+.iteration-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-4) 0;
+}
+
+.iteration-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.iteration-features li::before {
+  content: "✓";
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.iteration-deliverables {
+  padding: var(--space-3);
+  background: var(--color-primary-light);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.iteration-deliverables strong {
+  color: var(--color-primary);
+}

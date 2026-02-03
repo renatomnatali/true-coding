@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de UX | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 2/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <div class="nav-item sub-item completed">
+            <span>Plano de Negócio</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Plano Técnico</span>
+          </div>
+          <div class="nav-item sub-item in-progress">
+            <span>Plano de UX</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">NAVEGAÇÃO</div>
+          <a href="#personas" class="nav-item sub-item in-progress">
+            <span>Personas</span>
+          </a>
+          <a href="#jornadas" class="nav-item sub-item available">
+            <span>Jornadas</span>
+          </a>
+          <a href="#wireframes" class="nav-item sub-item available">
+            <span>Wireframes</span>
+          </a>
+          <a href="#design-tokens" class="nav-item sub-item available">
+            <span>Design Tokens</span>
+          </a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Planejamento › Plano de UX</div>
+          <h2 class="workspace-title">Design de Experiência</h2>
+          <p class="workspace-subtitle">Personas, jornadas e especificações UX</p>
+        </div>
+
+        <!-- Personas -->
+        <div id="personas" class="card">
+          <div class="card-header">
+            <h3 class="card-title">👤 Personas</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-5);">
+              <!-- Persona 1 -->
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-primary);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">
+                    MC
+                  </div>
+                  <div>
+                    <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                      Maria Clara - Dona de Restaurante
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                      42 anos • São Paulo, SP
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-3);">
+                  Dona de uma pizzaria de bairro com 8 funcionários. Faz entregas há 5 anos usando iFood, mas quer reduzir custos e ter mais controle.
+                </div>
+                <div style="margin-bottom: var(--space-2);">
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Dores
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Comissão de 25% do iFood consome a margem de lucro</li>
+                    <li>Sem acesso direto aos dados dos clientes</li>
+                    <li>Dificuldade para rastrear entregadores</li>
+                  </ul>
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Objetivos
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Reduzir custos operacionais em 50%</li>
+                    <li>Ter controle total sobre entregas e cardápio</li>
+                    <li>Construir relacionamento direto com clientes</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Persona 2 -->
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-success);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">
+                    PS
+                  </div>
+                  <div>
+                    <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                      Pedro Silva - Entregador
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                      28 anos • Rio de Janeiro, RJ
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-3);">
+                  Entregador freelancer que trabalha para vários restaurantes. Usa moto e smartphone Android básico.
+                </div>
+                <div style="margin-bottom: var(--space-2);">
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Jobs-to-be-done
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Aceitar entregas rapidamente sem complicação</li>
+                    <li>Encontrar rotas otimizadas para economizar gasolina</li>
+                    <li>Ganhar dinheiro de forma previsível</li>
+                  </ul>
+                </div>
+                <div style="margin-bottom: var(--space-2);">
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Dores
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Apps complexos e confusos com muitos cliques</li>
+                    <li>Dificuldade para calcular rotas otimizadas</li>
+                    <li>Falta de histórico de entregas e ganhos</li>
+                    <li>Bateria do celular acaba rápido com GPS ligado</li>
+                  </ul>
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Objetivos
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Fazer mais entregas por hora</li>
+                    <li>Gastar menos combustível</li>
+                    <li>Ter previsibilidade de ganhos</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Persona 3 -->
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-warning);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
+                  <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-warning); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">
+                    JC
+                  </div>
+                  <div>
+                    <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                      João Costa - Cliente Final
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                      34 anos • Belo Horizonte, MG
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-3);">
+                  Desenvolvedor que trabalha home office. Pede comida 4-5x por semana. Valoriza agilidade e transparência no rastreamento.
+                </div>
+                <div style="margin-bottom: var(--space-2);">
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Jobs-to-be-done
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Pedir comida rápido durante intervalo do trabalho</li>
+                    <li>Saber exatamente quando a comida vai chegar</li>
+                    <li>Não ter surpresas desagradáveis (pedido errado, frio)</li>
+                  </ul>
+                </div>
+                <div style="margin-bottom: var(--space-2);">
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Frustrações
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>ETAs imprecisos ("10-40 minutos" é muito vago)</li>
+                    <li>Não saber onde está o entregador</li>
+                    <li>Apps que travam ou têm bugs</li>
+                  </ul>
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                    Triggers de Uso
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-primary);">
+                    Horário de almoço/jantar, cansaço para cozinhar, finais de semana, eventos esportivos na TV
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Information Architecture -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗂️ Arquitetura de Informação</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                Sitemap - Dashboard do Restaurante
+              </div>
+              <div style="background: var(--color-bg-secondary); padding: var(--space-4); border-radius: var(--border-radius-md); font-family: monospace; font-size: var(--font-size-sm); line-height: 2;">
+                <div style="color: var(--color-primary); font-weight: var(--font-weight-bold);">📁 Dashboard</div>
+                <div style="padding-left: var(--space-4);">
+                  <div>├─ 📊 Visão Geral</div>
+                  <div>│  ├─ Métricas do dia</div>
+                  <div>│  ├─ Pedidos ativos</div>
+                  <div>│  └─ Gráfico de vendas</div>
+                  <div>│</div>
+                  <div>├─ 📦 Pedidos</div>
+                  <div>│  ├─ Lista (filtros: status, data)</div>
+                  <div>│  ├─ Detalhes do pedido</div>
+                  <div>│  └─ Histórico completo</div>
+                  <div>│</div>
+                  <div>├─ 📋 Cardápio</div>
+                  <div>│  ├─ Categorias</div>
+                  <div>│  ├─ Itens</div>
+                  <div>│  └─ Editor de item</div>
+                  <div>│</div>
+                  <div>├─ 🚚 Entregas</div>
+                  <div>│  ├─ Mapa em tempo real</div>
+                  <div>│  ├─ Lista de entregadores</div>
+                  <div>│  └─ Histórico de rotas</div>
+                  <div>│</div>
+                  <div>├─ 📈 Relatórios</div>
+                  <div>│  ├─ Vendas por período</div>
+                  <div>│  ├─ Itens mais vendidos</div>
+                  <div>│  └─ Performance de entregadores</div>
+                  <div>│</div>
+                  <div>└─ ⚙️ Configurações</div>
+                  <div>   ├─ Dados do restaurante</div>
+                  <div>   ├─ Pagamentos (Stripe/PIX)</div>
+                  <div>   ├─ Equipe e permissões</div>
+                  <div>   └─ Integrações</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                Navegação Principal
+              </div>
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <strong style="font-size: var(--font-size-sm);">Sidebar Fixa (Desktop)</strong>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">
+                    Sempre visível, colapsável, com ícones + labels. Highlight na página ativa.
+                  </div>
+                </div>
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <strong style="font-size: var(--font-size-sm);">Bottom Tab Bar (Mobile)</strong>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">
+                    5 tabs principais: Dashboard, Pedidos, Cardápio, Entregas, Perfil. Ícones grandes, fácil toque com polegar.
+                  </div>
+                </div>
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <strong style="font-size: var(--font-size-sm);">Breadcrumbs</strong>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">
+                    Contexto hierárquico em páginas profundas. Ex: "Pedidos › #1234 › Detalhes"
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jornadas -->
+        <div id="jornadas" class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗺️ Jornadas do Usuário</h3>
+          </div>
+          <div class="card-body">
+            <!-- Journey 1 -->
+            <div style="margin-bottom: var(--space-6);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-md); margin-bottom: var(--space-3);">
+                Jornada 1: Cadastro e Primeiro Pedido (Maria Clara)
+              </div>
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    1
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Descoberta
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-1);">
+                      Maria vê anúncio no Instagram prometendo "70% de economia vs iFood". Clica e vai para landing page.
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-success);">😊 Empolgada com possibilidade de economia</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    2
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Cadastro
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-1);">
+                      Cria conta com Google OAuth. Preenche dados do restaurante (nome, endereço, CNPJ). Processo leva 3 minutos.
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-success);">🙂 Rápido e simples, sem complicações</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    3
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Configuração
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-1);">
+                      Faz upload do cardápio (CSV ou manual). Adiciona fotos dos pratos. Define taxa de entrega e raio de atendimento.
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-warning);">😐 Dúvida sobre raio ideal de entrega (mostra tooltip com sugestão)</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    ✓
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Primeiro Pedido
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-1);">
+                      Recebe primeiro pedido de teste. Confirma, atribui entregador, acompanha no mapa. Cliente recebe e paga. Maria comemora!
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-success);">🎉 Muito feliz! Já planeja migrar todos pedidos para cá</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Journey 2 -->
+            <div style="margin-bottom: var(--space-6);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); padding: var(--space-3); background: var(--color-success-light); border-radius: var(--border-radius-md); margin-bottom: var(--space-3);">
+                Jornada 2: Aceitar e Entregar Pedido (Pedro - Entregador)
+              </div>
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    1
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Notificação de Novo Pedido
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Pedro recebe push notification no celular. Abre app, vê detalhes: "Pizzaria Bella · 3.2km · R$ 8 entrega"
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    2
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Aceita e Vê Rota
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Toca em "Aceitar". App abre Google Maps com rota otimizada restaurante → cliente. Botão grande: "Cheguei no restaurante"
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    3
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Coleta Pedido
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Chega no restaurante, toca "Cheguei". Pega pedido, confere itens, toca "Saindo para entrega". Navegação inicia automaticamente.
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    ✓
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Entrega Completa
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Chega no endereço, entrega ao cliente, toca "Pedido entregue". Tela de sucesso mostra ganho: R$ 8. Fica disponível para próxima entrega.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Journey 3 -->
+            <div>
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); padding: var(--space-3); background: var(--color-warning-light); border-radius: var(--border-radius-md); margin-bottom: var(--space-3);">
+                Jornada 3: Fazer Pedido e Rastrear (João - Cliente)
+              </div>
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-warning); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    1
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Acessa Cardápio
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      João recebe link do cardápio da Pizzaria Bella por WhatsApp. Abre no navegador do celular, vê fotos dos pratos.
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-warning); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    2
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Monta Pedido
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Adiciona Pizza Margherita + Refrigerante ao carrinho. Vê total: R$ 45 (comida) + R$ 5 (entrega) = R$ 50. Botão: "Finalizar Pedido"
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-warning); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    3
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Checkout
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Preenche endereço, telefone. Escolhe pagamento: PIX. App gera QR Code. João paga via app do banco. Confirma pagamento instantaneamente.
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-warning); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    4
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Rastreamento
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Página de sucesso mostra: "Pedido aceito! Tempo estimado: 35 min". Link de rastreamento. João abre, vê mapa em tempo real com entregador se aproximando.
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                    ✓
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                      Recebe Pedido
+                    </div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                      Entregador chega, João recebe pedido quentinho. App mostra: "Pedido entregue! Avalie sua experiência". João dá 5 estrelas.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wireframes e Fluxos -->
+        <div id="wireframes" class="card">
+          <div class="card-header">
+            <h3 class="card-title">📐 Wireframes e Fluxos de Tela</h3>
+          </div>
+          <div class="card-body">
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+              Mapa visual dos fluxos principais e especificacao de navegacao entre telas
+            </div>
+
+            <!-- ===== MAPA DE FLUXOS VISUAL ===== -->
+            <div style="margin-bottom: var(--space-6);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                Mapa de Fluxos por Persona
+              </div>
+
+              <!-- Legenda -->
+              <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div style="width: 16px; height: 16px; background: var(--color-primary); border-radius: var(--border-radius-sm);"></div>
+                  <span style="font-size: var(--font-size-xs);">Restaurante (Maria)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div style="width: 16px; height: 16px; background: var(--color-success); border-radius: var(--border-radius-sm);"></div>
+                  <span style="font-size: var(--font-size-xs);">Entregador (Pedro)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div style="width: 16px; height: 16px; background: var(--color-warning); border-radius: var(--border-radius-sm);"></div>
+                  <span style="font-size: var(--font-size-xs);">Cliente (Joao)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div style="width: 12px; height: 2px; background: var(--color-gray-400);"></div>
+                  <span style="font-size: var(--font-size-xs);">Navegacao</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2);">
+                  <div style="width: 12px; height: 2px; background: var(--color-gray-400); border-style: dashed;"></div>
+                  <span style="font-size: var(--font-size-xs);">Alternativo</span>
+                </div>
+              </div>
+
+              <!-- Fluxo 1: Restaurante -->
+              <div style="margin-bottom: var(--space-5);">
+                <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-primary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                  Fluxo Restaurante - Gerenciar Pedidos
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2); overflow-x: auto; padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-primary);">
+                  <!-- Login -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-primary); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Login</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">OAuth</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Dashboard -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-primary-light); border: 2px solid var(--color-primary); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Dashboard</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Metricas</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Lista Pedidos -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-primary); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Pedidos</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Lista/Filtros</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Detalhes -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-primary); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Detalhes</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Itens/Cliente</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Atribuir -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-primary); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Atribuir</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Entregador</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Mapa -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-success-light); border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Rastrear</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Mapa</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fluxo 2: Entregador -->
+              <div style="margin-bottom: var(--space-5);">
+                <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-success); text-transform: uppercase; margin-bottom: var(--space-2);">
+                  Fluxo Entregador - Realizar Entrega
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2); overflow-x: auto; padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-success);">
+                  <!-- Push -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Push</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Notificacao</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Nova Entrega -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-success-light); border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Oferta</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Aceitar?</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Rota -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Rota</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Navegacao</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Coleta -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Coleta</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Cheguei</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Em Rota -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Entrega</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Em rota</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Sucesso -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-success-light); border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Concluido</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">+R$ 8</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fluxo 3: Cliente -->
+              <div>
+                <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-warning); text-transform: uppercase; margin-bottom: var(--space-2);">
+                  Fluxo Cliente - Fazer Pedido
+                </div>
+                <div style="display: flex; align-items: center; gap: var(--space-2); overflow-x: auto; padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-warning);">
+                  <!-- Link WhatsApp -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Link</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">WhatsApp</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Cardapio -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-warning-light); border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Cardapio</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Fotos/Precos</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Carrinho -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Carrinho</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Revisar</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Checkout -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Checkout</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Endereco</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Pagamento -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">PIX</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">QR Code</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Rastreamento -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: white; border: 2px solid var(--color-warning); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Rastrear</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">Mapa</div>
+                  </div>
+                  <div style="color: var(--color-gray-400);">→</div>
+                  <!-- Avaliacao -->
+                  <div style="min-width: 100px; padding: var(--space-2); background: var(--color-success-light); border: 2px solid var(--color-success); border-radius: var(--border-radius-md); text-align: center;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Avaliar</div>
+                    <div style="font-size: 10px; color: var(--color-text-tertiary);">5 estrelas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== TABELA DE NAVEGACAO ===== -->
+            <div style="margin-bottom: var(--space-6);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                Especificacao de Telas e Navegacao
+              </div>
+
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: var(--font-size-xs);">
+                  <thead>
+                    <tr style="background: var(--color-bg-tertiary);">
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Tela</th>
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Persona</th>
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Descricao</th>
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Vem de</th>
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Vai para</th>
+                      <th style="padding: var(--space-2) var(--space-3); text-align: left; border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">Acoes Principais</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Restaurante -->
+                    <tr>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-primary);">Dashboard</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Visao geral com metricas do dia, pedidos ativos e grafico de vendas</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Login, Sidebar</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Pedidos, Cardapio, Entregas</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Ver detalhes pedido, Atualizar status</td>
+                    </tr>
+                    <tr style="background: var(--color-bg-secondary);">
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-primary);">Lista Pedidos</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Lista paginada com filtros por status, data e busca</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Dashboard, Sidebar</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Detalhes Pedido</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Filtrar, Buscar, Selecionar pedido</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-primary);">Detalhes Pedido</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Itens, cliente, endereco, timeline de status, acoes</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Lista Pedidos, Dashboard</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Atribuir Entregador, Mapa</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Aceitar, Recusar, Atribuir, Contatar</td>
+                    </tr>
+                    <tr style="background: var(--color-bg-secondary);">
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-primary);">Cardapio</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Categorias e itens com foto, preco, disponibilidade</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Dashboard, Sidebar</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Editor Item, Nova Categoria</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Adicionar, Editar, Remover, Reordenar</td>
+                    </tr>
+                    <!-- Entregador -->
+                    <tr>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-success);">Oferta Entrega</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-success-light); color: #065f46; border-radius: 12px; font-size: 10px;">Entregador</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Card com restaurante, distancia, valor, tempo limite</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Push Notification</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Rota (aceitar) ou Home (recusar)</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Aceitar, Recusar, Ver detalhes</td>
+                    </tr>
+                    <tr style="background: var(--color-bg-secondary);">
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-success);">Rota/Navegacao</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-success-light); color: #065f46; border-radius: 12px; font-size: 10px;">Entregador</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Mapa com rota, botao grande "Cheguei", detalhes pedido</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Oferta Aceita</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Confirmacao Coleta</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Navegar (Maps), Cheguei, Ligar cliente</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-success);">Entrega Concluida</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-success-light); color: #065f46; border-radius: 12px; font-size: 10px;">Entregador</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Resumo com ganho, tempo, avaliacao do restaurante</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Confirmacao Entrega</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Home (disponivel), Historico</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Ficar disponivel, Ver historico</td>
+                    </tr>
+                    <!-- Cliente -->
+                    <tr style="background: var(--color-bg-secondary);">
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-warning);">Cardapio Publico</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-warning-light); color: #92400e; border-radius: 12px; font-size: 10px;">Cliente</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Categorias, itens com foto/preco, carrinho flutuante</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Link WhatsApp, QR Code</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Item, Carrinho</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Adicionar ao carrinho, Ver item</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-warning);">Checkout</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-warning-light); color: #92400e; border-radius: 12px; font-size: 10px;">Cliente</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Endereco, telefone, opcoes pagamento, resumo</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Carrinho</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Pagamento PIX, Cartao</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Editar endereco, Escolher pagamento, Finalizar</td>
+                    </tr>
+                    <tr style="background: var(--color-bg-secondary);">
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); font-weight: var(--font-weight-semibold);">
+                        <span style="color: var(--color-warning);">Rastreamento</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">
+                        <span style="display: inline-block; padding: 2px 8px; background: var(--color-warning-light); color: #92400e; border-radius: 12px; font-size: 10px;">Cliente</span>
+                      </td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Mapa tempo real, ETA, status do pedido, contato</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Pagamento confirmado</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Avaliacao</td>
+                      <td style="padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);">Ligar entregador, Cancelar pedido</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ===== WIREFRAMES DETALHADOS ===== -->
+            <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+              Wireframes Detalhados
+            </div>
+
+            <!-- Wireframe 1: Dashboard -->
+            <div style="margin-bottom: var(--space-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">1. Dashboard - Visao Geral</span>
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px solid var(--color-border);">
+                <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+                  <!-- Sidebar -->
+                  <div style="background: white; padding: var(--space-3); border-radius: var(--border-radius-sm); border: 1px solid var(--color-border);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); margin-bottom: var(--space-2);">SIDEBAR</div>
+                    <div style="font-size: var(--font-size-xs); line-height: 2; color: var(--color-text-secondary);">
+                      Logo<br>
+                      [Restaurant Name]<br><br>
+                      <span style="background: var(--color-primary-light); padding: 2px 6px; border-radius: 4px;">Dashboard</span><br>
+                      Pedidos<br>
+                      Cardapio<br>
+                      Entregas<br>
+                      Relatorios<br>
+                      Configuracoes
+                    </div>
+                  </div>
+                  <!-- Main Content -->
+                  <div style="background: white; padding: var(--space-3); border-radius: var(--border-radius-sm); border: 1px solid var(--color-border);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); margin-bottom: var(--space-3);">DASHBOARD</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-3);">
+                      <div style="padding: var(--space-2); background: var(--color-primary-light); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs);">
+                        Pedidos Hoje<br><strong style="font-size: var(--font-size-lg);">47</strong>
+                      </div>
+                      <div style="padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs);">
+                        Faturamento<br><strong style="font-size: var(--font-size-lg);">R$ 1.8k</strong>
+                      </div>
+                      <div style="padding: var(--space-2); background: var(--color-warning-light); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs);">
+                        Tempo Medio<br><strong style="font-size: var(--font-size-lg);">32min</strong>
+                      </div>
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-2);">PEDIDOS ATIVOS (3)</div>
+                    <div style="display: grid; gap: var(--space-2);">
+                      <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='var(--color-primary)'" onmouseout="this.style.borderColor='transparent'">
+                        #1234 - Joao Silva - R$ 45 - <span style="color: var(--color-warning);">[PREPARANDO]</span>
+                      </div>
+                      <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='var(--color-primary)'" onmouseout="this.style.borderColor='transparent'">
+                        #1235 - Maria Santos - R$ 67 - <span style="color: var(--color-success);">[EM ENTREGA]</span>
+                      </div>
+                      <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='var(--color-primary)'" onmouseout="this.style.borderColor='transparent'">
+                        #1236 - Pedro Costa - R$ 52 - <span style="color: var(--color-error);">[PENDENTE]</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                <strong>Interacoes:</strong> Clique em pedido abre detalhes - Sidebar navega entre secoes - Metricas clicaveis abrem relatorios
+              </div>
+            </div>
+
+            <!-- Wireframe 2: Order Detail -->
+            <div style="margin-bottom: var(--space-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">2. Detalhes do Pedido</span>
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px solid var(--color-border);">
+                <div style="background: white; padding: var(--space-3); border-radius: var(--border-radius-sm); border: 1px solid var(--color-border);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">PEDIDO #1234</div>
+                    <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 16px; font-size: 10px; font-weight: 500;">Preparando</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-4);">
+                    <div>
+                      <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-2);">ITENS</div>
+                      <div style="font-size: var(--font-size-xs); line-height: 1.8; margin-bottom: var(--space-3);">
+                        1x Pizza Margherita - R$ 40<br>
+                        1x Refrigerante 2L - R$ 5<br>
+                        Taxa de entrega - R$ 5<br>
+                        <strong>Total: R$ 50</strong>
+                      </div>
+                      <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-2);">CLIENTE</div>
+                      <div style="font-size: var(--font-size-xs); margin-bottom: var(--space-3);">
+                        Joao Silva<br>
+                        (11) 98765-4321<br>
+                        Rua das Flores, 123<br>
+                        Sao Paulo - SP
+                      </div>
+                    </div>
+                    <div>
+                      <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-2);">ACOES</div>
+                      <div style="display: grid; gap: var(--space-2);">
+                        <button style="padding: var(--space-2); background: var(--color-success); color: white; border: none; border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer;">
+                          Aceitar Pedido
+                        </button>
+                        <button style="padding: var(--space-2); background: var(--color-error); color: white; border: none; border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer;">
+                          Recusar
+                        </button>
+                        <button style="padding: var(--space-2); background: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer;">
+                          Contatar Cliente
+                        </button>
+                        <button style="padding: var(--space-2); background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); cursor: pointer;">
+                          Atribuir Entregador
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                <strong>Interacoes:</strong> Aceitar avanca status - Recusar abre modal confirmacao - Atribuir abre lista entregadores - Contatar abre WhatsApp
+              </div>
+            </div>
+
+            <!-- Wireframe 3: Menu Editor -->
+            <div style="margin-bottom: var(--space-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span style="display: inline-block; padding: 2px 8px; background: var(--color-primary-light); color: var(--color-primary); border-radius: 12px; font-size: 10px;">Restaurante</span>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">3. Editor de Cardapio</span>
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px solid var(--color-border);">
+                <div style="background: white; padding: var(--space-3); border-radius: var(--border-radius-sm); border: 1px solid var(--color-border);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">CARDAPIO</div>
+                    <button style="padding: 4px 12px; background: var(--color-primary); color: white; border: none; border-radius: var(--border-radius-sm); font-size: var(--font-size-xs);">
+                      + Novo Item
+                    </button>
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-2);">CATEGORIA: PIZZAS</div>
+                  <div style="display: grid; gap: var(--space-2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                      <div>
+                        <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Pizza Margherita</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">R$ 40 - Disponivel</div>
+                      </div>
+                      <div style="display: flex; gap: var(--space-2);">
+                        <button style="padding: 4px 8px; font-size: var(--font-size-xs); border: 1px solid var(--color-border); background: white; border-radius: var(--border-radius-sm);">Editar</button>
+                        <button style="padding: 4px 8px; font-size: var(--font-size-xs); border: 1px solid var(--color-error); color: var(--color-error); background: white; border-radius: var(--border-radius-sm);">Remover</button>
+                      </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); opacity: 0.5;">
+                      <div>
+                        <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Pizza Calabresa</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">R$ 45 - Indisponivel</div>
+                      </div>
+                      <div style="display: flex; gap: var(--space-2);">
+                        <button style="padding: 4px 8px; font-size: var(--font-size-xs); border: 1px solid var(--color-border); background: white; border-radius: var(--border-radius-sm);">Editar</button>
+                        <button style="padding: 4px 8px; font-size: var(--font-size-xs); border: 1px solid var(--color-error); color: var(--color-error); background: white; border-radius: var(--border-radius-sm);">Remover</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                <strong>Interacoes:</strong> Novo Item abre modal - Editar abre editor inline - Remover mostra confirmacao - Drag-drop para reordenar
+              </div>
+            </div>
+
+            <!-- Wireframe 4: Cliente - Cardapio Publico -->
+            <div style="margin-bottom: var(--space-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span style="display: inline-block; padding: 2px 8px; background: var(--color-warning-light); color: #92400e; border-radius: 12px; font-size: 10px;">Cliente</span>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">4. Cardapio Publico (Mobile)</span>
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px solid var(--color-border);">
+                <div style="max-width: 320px; margin: 0 auto; background: white; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border); overflow: hidden;">
+                  <!-- Header -->
+                  <div style="padding: var(--space-3); background: var(--color-primary); color: white; text-align: center;">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);">Pizzaria Bella</div>
+                    <div style="font-size: var(--font-size-xs); opacity: 0.8;">Aberto - Entrega em 30-45 min</div>
+                  </div>
+                  <!-- Categorias -->
+                  <div style="display: flex; gap: var(--space-2); padding: var(--space-2); overflow-x: auto; border-bottom: 1px solid var(--color-border);">
+                    <span style="padding: 4px 12px; background: var(--color-primary); color: white; border-radius: 16px; font-size: 10px; white-space: nowrap;">Pizzas</span>
+                    <span style="padding: 4px 12px; background: var(--color-bg-secondary); border-radius: 16px; font-size: 10px; white-space: nowrap;">Bebidas</span>
+                    <span style="padding: 4px 12px; background: var(--color-bg-secondary); border-radius: 16px; font-size: 10px; white-space: nowrap;">Sobremesas</span>
+                  </div>
+                  <!-- Items -->
+                  <div style="padding: var(--space-3);">
+                    <div style="display: flex; gap: var(--space-3); padding: var(--space-2); border-bottom: 1px solid var(--color-border);">
+                      <div style="width: 64px; height: 64px; background: var(--color-bg-tertiary); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        🍕
+                      </div>
+                      <div style="flex: 1;">
+                        <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);">Pizza Margherita</div>
+                        <div style="font-size: 10px; color: var(--color-text-secondary);">Molho, mussarela, manjericao</div>
+                        <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-success); margin-top: 4px;">R$ 40,00</div>
+                      </div>
+                      <button style="width: 28px; height: 28px; background: var(--color-primary); color: white; border: none; border-radius: 50%; font-size: 16px; cursor: pointer; align-self: center;">+</button>
+                    </div>
+                  </div>
+                  <!-- Carrinho Flutuante -->
+                  <div style="padding: var(--space-3); background: var(--color-primary); color: white; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: var(--font-size-xs);">2 itens</div>
+                      <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);">R$ 50,00</div>
+                    </div>
+                    <button style="padding: 8px 16px; background: white; color: var(--color-primary); border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); cursor: pointer;">
+                      Ver Carrinho
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                <strong>Interacoes:</strong> Tabs filtram categorias - "+" adiciona ao carrinho - Clique item abre detalhes - Carrinho abre checkout
+              </div>
+            </div>
+
+            <!-- Wireframe 5: Entregador - Oferta -->
+            <div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span style="display: inline-block; padding: 2px 8px; background: var(--color-success-light); color: #065f46; border-radius: 12px; font-size: 10px;">Entregador</span>
+                <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">5. Oferta de Entrega (Mobile)</span>
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px solid var(--color-border);">
+                <div style="max-width: 320px; margin: 0 auto; background: white; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border); overflow: hidden;">
+                  <!-- Header -->
+                  <div style="padding: var(--space-3); background: var(--color-success); color: white; text-align: center;">
+                    <div style="font-size: var(--font-size-xs);">NOVA ENTREGA</div>
+                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">R$ 8,00</div>
+                    <div style="font-size: var(--font-size-xs); opacity: 0.8;">Aceite em 30s</div>
+                  </div>
+                  <!-- Detalhes -->
+                  <div style="padding: var(--space-4);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-3);">
+                      <div>
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Restaurante</div>
+                        <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);">Pizzaria Bella</div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">Distancia</div>
+                        <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);">3.2 km</div>
+                      </div>
+                    </div>
+                    <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); margin-bottom: var(--space-3);">
+                      <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-1);">Entregar em</div>
+                      <div style="font-size: var(--font-size-xs);">Rua das Flores, 123 - Centro</div>
+                    </div>
+                    <!-- Acoes -->
+                    <div style="display: grid; gap: var(--space-2);">
+                      <button style="padding: var(--space-3); background: var(--color-success); color: white; border: none; border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); cursor: pointer;">
+                        ACEITAR
+                      </button>
+                      <button style="padding: var(--space-2); background: transparent; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: var(--font-size-xs); cursor: pointer;">
+                        Recusar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                <strong>Interacoes:</strong> Aceitar abre navegacao GPS - Recusar volta para home - Timeout de 30s recusa automaticamente
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component Library -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🧩 Biblioteca de Componentes</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-5);">
+              <!-- Buttons -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Botões
+                </div>
+                <div style="display: grid; gap: var(--space-3); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div style="display: flex; align-items: center; gap: var(--space-4);">
+                    <button style="padding: 10px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                      Primary
+                    </button>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                      Ações principais (aceitar pedido, salvar, continuar)
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-4);">
+                    <button style="padding: 10px 16px; background: white; color: #2563eb; border: 2px solid #2563eb; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                      Secondary
+                    </button>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                      Ações secundárias (cancelar, voltar)
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-4);">
+                    <button style="padding: 10px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                      Destructive
+                    </button>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                      Ações destrutivas (excluir, recusar)
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Badges -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Status Badges
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 16px; font-size: 12px; font-weight: 500;">Pendente</span>
+                  <span style="padding: 4px 12px; background: #dbeafe; color: #1e40af; border-radius: 16px; font-size: 12px; font-weight: 500;">Preparando</span>
+                  <span style="padding: 4px 12px; background: #fef3c7; color: #92400e; border-radius: 16px; font-size: 12px; font-weight: 500;">Pronto</span>
+                  <span style="padding: 4px 12px; background: #ddd6fe; color: #5b21b6; border-radius: 16px; font-size: 12px; font-weight: 500;">Em Entrega</span>
+                  <span style="padding: 4px 12px; background: #d1fae5; color: #065f46; border-radius: 16px; font-size: 12px; font-weight: 500;">Entregue</span>
+                  <span style="padding: 4px 12px; background: #fee2e2; color: #991b1b; border-radius: 16px; font-size: 12px; font-weight: 500;">Cancelado</span>
+                </div>
+              </div>
+
+              <!-- Cards -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Cards
+                </div>
+                <div style="display: grid; gap: var(--space-2);">
+                  <div style="padding: var(--space-4); background: white; border: 2px solid #e5e7eb; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Default Card</div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                      Borda 2px cinza, border-radius 12px, shadow leve
+                    </div>
+                  </div>
+                  <div style="padding: var(--space-4); background: white; border: 2px solid #2563eb; border-radius: 12px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);">
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1);">Highlighted Card</div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                      Borda 2px azul, shadow azul, para itens selecionados
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inputs -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Form Inputs
+                </div>
+                <div style="display: grid; gap: var(--space-3); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Nome do Restaurante</label>
+                    <input type="text" placeholder="Digite o nome..." style="width: 100%; padding: 10px 12px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 14px;" />
+                    <div style="font-size: 11px; color: var(--color-text-tertiary); margin-top: 4px;">Helper text abaixo do campo</div>
+                  </div>
+                  <div>
+                    <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px; color: #ef4444;">Campo com Erro</label>
+                    <input type="text" value="Valor inválido" style="width: 100%; padding: 10px 12px; border: 2px solid #ef4444; border-radius: 6px; font-size: 14px; background: #fef2f2;" />
+                    <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">⚠️ Este campo é obrigatório</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accessibility -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">♿ Acessibilidade (WCAG 2.1 AA)</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-4);">
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  Contraste de Cores
+                </div>
+                <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                  <li>Texto normal: contraste mínimo 4.5:1</li>
+                  <li>Texto grande (18px+): contraste mínimo 3:1</li>
+                  <li>Botões e elementos interativos: contraste mínimo 3:1</li>
+                  <li>Testado com WAVE e axe DevTools</li>
+                </ul>
+              </div>
+
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  Navegação por Teclado
+                </div>
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); font-family: monospace; font-size: var(--font-size-xs); line-height: 2;">
+                  <strong>Tab:</strong> Avançar entre elementos focáveis<br>
+                  <strong>Shift+Tab:</strong> Voltar entre elementos<br>
+                  <strong>Enter/Space:</strong> Ativar botões e links<br>
+                  <strong>Esc:</strong> Fechar modals e dropdowns<br>
+                  <strong>Arrow keys:</strong> Navegar em listas e menus<br>
+                  <strong>/:</strong> Focus no campo de busca (atalho global)
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  Semântica HTML
+                </div>
+                <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                  <li>Tags semânticas: <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;article&gt;</code></li>
+                  <li>Headings hierárquicos: H1 (página) → H2 (seções) → H3 (sub-seções)</li>
+                  <li>Labels associados a inputs via <code>for/id</code></li>
+                  <li>Botões reais (<code>&lt;button&gt;</code>), não <code>&lt;div&gt;</code> com <code>onclick</code></li>
+                </ul>
+              </div>
+
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  ARIA Labels e Live Regions
+                </div>
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); font-size: var(--font-size-xs); line-height: 2;">
+                  <strong>aria-label:</strong> Botões de ícone ("Fechar modal", "Editar item")<br>
+                  <strong>aria-live="polite":</strong> Notificações não-críticas (pedido aceito)<br>
+                  <strong>aria-live="assertive":</strong> Alertas críticos (erro de pagamento)<br>
+                  <strong>aria-busy="true":</strong> Durante carregamento de conteúdo<br>
+                  <strong>role="status":</strong> Status de formulários e ações
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  Leitores de Tela
+                </div>
+                <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                  <li>Testado com NVDA (Windows), VoiceOver (Mac/iOS), TalkBack (Android)</li>
+                  <li>Texto alternativo em todas as imagens (<code>alt</code>)</li>
+                  <li>Anúncio de mudanças de contexto ("Pedido #1234 foi atualizado para Em Entrega")</li>
+                  <li>Skip links para pular navegação ("Pular para conteúdo principal")</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- UI States -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🎭 Estados de UI</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-5);">
+              <!-- Loading States -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Loading States
+                </div>
+                <div style="display: grid; gap: var(--space-3);">
+                  <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                      Skeleton Screen (Listas)
+                    </div>
+                    <div style="display: grid; gap: var(--space-2);">
+                      <div style="height: 60px; background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); border-radius: 8px; animation: shimmer 2s infinite;"></div>
+                      <div style="height: 60px; background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%); border-radius: 8px; animation: shimmer 2s infinite;"></div>
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-2);">
+                      Usado enquanto carrega lista de pedidos, cardápio, etc.
+                    </div>
+                  </div>
+
+                  <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                      Spinner (Ações)
+                    </div>
+                    <button style="padding: 10px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: wait;">
+                      <div style="width: 16px; height: 16px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                      Salvando...
+                    </button>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-2);">
+                      Usado em botões durante ações assíncronas (salvar, aceitar pedido)
+                    </div>
+                  </div>
+
+                  <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                      Progress Bar (Uploads)
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                      <div style="width: 65%; height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); transition: width 0.3s;"></div>
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-2);">
+                      Usado em upload de imagens, importação de cardápio CSV
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Error States -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Error States
+                </div>
+                <div style="display: grid; gap: var(--space-3);">
+                  <div style="padding: var(--space-4); background: #fef2f2; border: 2px solid #ef4444; border-radius: 8px;">
+                    <div style="display: flex; align-items: start; gap: var(--space-2);">
+                      <div style="font-size: 20px;">⚠️</div>
+                      <div style="flex: 1;">
+                        <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: #991b1b; margin-bottom: var(--space-1);">
+                          Erro ao Salvar Configurações
+                        </div>
+                        <div style="font-size: var(--font-size-xs); color: #7f1d1d; margin-bottom: var(--space-2);">
+                          Falha na conexão com o servidor. Verifique sua internet e tente novamente.
+                        </div>
+                        <button style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                          Tentar Novamente
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="padding: var(--space-3); background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 8px;">
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: #92400e; margin-bottom: var(--space-1);">
+                      Aviso: Pagamento Pendente
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: #78350f);">
+                      Sua assinatura vence em 3 dias. <a href="#" style="color: #f59e0b; text-decoration: underline;">Renovar agora</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty States -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Empty States
+                </div>
+                <div style="padding: var(--space-6); text-align: center; background: var(--color-bg-secondary); border-radius: var(--border-radius-md); border: 2px dashed var(--color-border);">
+                  <div style="font-size: 48px; margin-bottom: var(--space-3);">📦</div>
+                  <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+                    Nenhum Pedido Hoje
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+                    Quando você receber pedidos, eles aparecerão aqui.
+                  </div>
+                  <button style="padding: 10px 16px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    Compartilhar Cardápio
+                  </button>
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-2);">
+                  Usado quando listas estão vazias (sem pedidos, sem itens no cardápio). Sempre com CTA claro.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Design Tokens -->
+        <div id="design-tokens" class="card">
+          <div class="card-header">
+            <h3 class="card-title">🎨 Design Tokens</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-5);">
+              <!-- Colors -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Cores
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3);">
+                  <div>
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                      Primary
+                    </div>
+                    <div style="display: grid; gap: var(--space-1);">
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #2563eb;"></div>
+                        <div style="font-size: var(--font-size-xs);">#2563eb</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #1d4ed8;"></div>
+                        <div style="font-size: var(--font-size-xs);">#1d4ed8</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #eff6ff;"></div>
+                        <div style="font-size: var(--font-size-xs);">#eff6ff</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                      Success
+                    </div>
+                    <div style="display: grid; gap: var(--space-1);">
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #10b981;"></div>
+                        <div style="font-size: var(--font-size-xs);">#10b981</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #d1fae5;"></div>
+                        <div style="font-size: var(--font-size-xs);">#d1fae5</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                      Warning
+                    </div>
+                    <div style="display: grid; gap: var(--space-1);">
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #f59e0b;"></div>
+                        <div style="font-size: var(--font-size-xs);">#f59e0b</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #fef3c7;"></div>
+                        <div style="font-size: var(--font-size-xs);">#fef3c7</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                      Error
+                    </div>
+                    <div style="display: grid; gap: var(--space-1);">
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #ef4444;"></div>
+                        <div style="font-size: var(--font-size-xs);">#ef4444</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #fee2e2;"></div>
+                        <div style="font-size: var(--font-size-xs);">#fee2e2</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                      Neutral
+                    </div>
+                    <div style="display: grid; gap: var(--space-1);">
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #111827;"></div>
+                        <div style="font-size: var(--font-size-xs);">#111827</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #6b7280;"></div>
+                        <div style="font-size: var(--font-size-xs);">#6b7280</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div style="width: 40px; height: 40px; border-radius: 6px; background: #f9fafb;"></div>
+                        <div style="font-size: var(--font-size-xs);">#f9fafb</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Typography -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Tipografia
+                </div>
+                <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div style="font-family: Inter; font-size: 32px; font-weight: 700; margin-bottom: var(--space-2);">
+                    Display - Inter 700
+                  </div>
+                  <div style="font-family: Inter; font-size: 18px; font-weight: 600; margin-bottom: var(--space-2);">
+                    Heading - Inter 600
+                  </div>
+                  <div style="font-family: Inter; font-size: 14px; font-weight: 400; margin-bottom: var(--space-2);">
+                    Body - Inter 400 (base 14px)
+                  </div>
+                  <div style="font-family: monospace; font-size: 13px; font-weight: 400;">
+                    Code - Monospace 400 (base 13px)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Spacing -->
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                  Espaçamento (base 4px)
+                </div>
+                <div style="display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); font-size: var(--font-size-xs); font-family: monospace;">
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-1</div>
+                    <div style="width: 4px; height: 20px; background: var(--color-primary);"></div>
+                    <div>4px</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-2</div>
+                    <div style="width: 8px; height: 20px; background: var(--color-primary);"></div>
+                    <div>8px</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-3</div>
+                    <div style="width: 12px; height: 20px; background: var(--color-primary);"></div>
+                    <div>12px</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-4</div>
+                    <div style="width: 16px; height: 20px; background: var(--color-primary);"></div>
+                    <div>16px</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-6</div>
+                    <div style="width: 24px; height: 20px; background: var(--color-primary);"></div>
+                    <div>24px</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3);">
+                    <div style="width: 100px;">space-8</div>
+                    <div style="width: 32px; height: 20px; background: var(--color-primary);"></div>
+                    <div>32px</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="location.href='08-ux-plan-edit.html'">
+            ✏️ Editar Plano
+          </button>
+          <button class="btn btn-primary" onclick="location.href='09-ux-plan-confirm.html'">
+            Aprovar e Finalizar →
+          </button>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Aqui está seu <strong>Plano de UX</strong> completo! 🎨
+                <br><br>
+                Criei 2 personas detalhadas, mapeei a jornada do usuário principal e defini design tokens consistentes.
+                <br><br>
+                Use a navegação na sidebar para explorar cada seção ou me pergunte qualquer coisa!
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">PERGUNTAS SUGERIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn">Adicionar persona</button>
+            <button class="quick-reply-btn">Ver wireframes</button>
+            <button class="quick-reply-btn">Mudar cores</button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte sobre UX..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+
+  <script>
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

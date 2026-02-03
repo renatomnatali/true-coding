@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Carregando | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--color-bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .dashboard-header {
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-5) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dashboard-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .logo-text {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .dashboard-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2);
+      border-radius: var(--border-radius-md);
+    }
+
+    .user-avatar-large {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--border-radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .user-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Main Content */
+    .dashboard-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+
+    .loading-container {
+      text-align: center;
+    }
+
+    /* Skeleton Loading */
+    .skeleton-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-8);
+    }
+
+    .skeleton-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .skeleton-title {
+      width: 200px;
+      height: 40px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-md);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-button {
+      width: 160px;
+      height: 44px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-md);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .skeleton-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+    }
+
+    .skeleton-card-name {
+      width: 70%;
+      height: 24px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--space-3);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-card-description {
+      width: 100%;
+      height: 16px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--space-2);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-card-description:last-of-type {
+      width: 80%;
+      margin-bottom: var(--space-4);
+    }
+
+    .skeleton-card-dots {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .skeleton-dot {
+      width: 20px;
+      height: 4px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-full);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-card-phase {
+      width: 120px;
+      height: 14px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--space-2);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-card-meta {
+      width: 150px;
+      height: 12px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-sm);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="dashboard-logo">
+      <div class="logo-icon">TC</div>
+      <div class="logo-text">True Coding</div>
+    </div>
+
+    <div class="dashboard-user">
+      <div class="user-info">
+        <div class="user-name">Renato Natali</div>
+        <div class="user-email">renato@email.com</div>
+      </div>
+      <div class="user-avatar-large">RN</div>
+    </div>
+  </header>
+
+  <!-- Skeleton Loading -->
+  <div class="skeleton-grid">
+    <div class="skeleton-title-row">
+      <div class="skeleton-title"></div>
+      <div class="skeleton-button"></div>
+    </div>
+
+    <div class="skeleton-cards">
+      <!-- Skeleton Card 1 -->
+      <div class="skeleton-card">
+        <div class="skeleton-card-name"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-dots">
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+        </div>
+        <div class="skeleton-card-phase"></div>
+        <div class="skeleton-card-meta"></div>
+      </div>
+
+      <!-- Skeleton Card 2 -->
+      <div class="skeleton-card">
+        <div class="skeleton-card-name"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-dots">
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+        </div>
+        <div class="skeleton-card-phase"></div>
+        <div class="skeleton-card-meta"></div>
+      </div>
+
+      <!-- Skeleton Card 3 -->
+      <div class="skeleton-card">
+        <div class="skeleton-card-name"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-dots">
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+        </div>
+        <div class="skeleton-card-phase"></div>
+        <div class="skeleton-card-meta"></div>
+      </div>
+
+      <!-- Skeleton Card 4 -->
+      <div class="skeleton-card">
+        <div class="skeleton-card-name"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-description"></div>
+        <div class="skeleton-card-dots">
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+          <div class="skeleton-dot"></div>
+        </div>
+        <div class="skeleton-card-phase"></div>
+        <div class="skeleton-card-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link para voltar ao Hub -->
+  <div style="position: fixed; bottom: var(--space-4); left: var(--space-4);">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">
+      ← Voltar ao Hub
+    </a>
+  </div>
+
+  <!-- Auto-redirect para lista após 3 segundos (simulação) -->
+  <script>
+    setTimeout(() => {
+      if (confirm('Projetos carregados! Ver dashboard?')) {
+        window.location.href = 'list.html';
+      }
+    }, 3000);
+  </script>
+</body>
+</html>

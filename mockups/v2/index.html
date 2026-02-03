@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockups v2 | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+    .hub {
+      max-width: 600px;
+      width: 100%;
+    }
+    .hub-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+    .hub-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-8);
+    }
+    .section {
+      margin-bottom: var(--space-8);
+    }
+    .section-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-3);
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--space-4);
+    }
+    .card {
+      background: var(--color-bg-primary);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: var(--space-3);
+    }
+    .card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+    .card-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-2);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      border-radius: var(--border-radius-full);
+      margin-top: var(--space-2);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+    }
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="hub">
+    <a href="../index.html" class="back-link">
+      <span>&larr;</span> Voltar para Mockups v1
+    </a>
+
+    <h1 class="hub-title">Mockups v2</h1>
+    <p class="hub-subtitle">Novo layout sem header global, chat colapsavel, sidebar clara</p>
+
+    <div class="section">
+      <h2 class="section-title">Layout Desktop</h2>
+      <div class="card-grid">
+        <a href="desktop-expanded.html" class="card">
+          <div class="card-icon">💬</div>
+          <div class="card-title">Chat Expandido</div>
+          <div class="card-desc">Layout padrao com chat visivel</div>
+          <span class="badge">Principal</span>
+        </a>
+        <a href="desktop-collapsed.html" class="card">
+          <div class="card-icon">📐</div>
+          <div class="card-title">Chat Colapsado</div>
+          <div class="card-desc">Workspace com mais espaco</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Layout Mobile</h2>
+      <div class="card-grid">
+        <a href="mobile.html" class="card">
+          <div class="card-icon">📱</div>
+          <div class="card-title">Mobile</div>
+          <div class="card-desc">FAB + Drawers para sidebar e chat</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Componentes</h2>
+      <div class="card-grid">
+        <a href="components.html" class="card">
+          <div class="card-icon">🧩</div>
+          <div class="card-title">Catalogo</div>
+          <div class="card-desc">Botoes, cards, chips, etc.</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

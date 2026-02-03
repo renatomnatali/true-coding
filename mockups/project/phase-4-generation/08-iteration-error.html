@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erro na Iteração | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/iterations.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">App Delivery Pro</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 5/7</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <a href="../phase-1-ideation/01-start.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </a>
+          <a href="../phase-2-planning/01-business-plan.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <a href="../phase-3-connection/01-github-oauth.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </a>
+          <a href="../phase-4-assessment/01-complexity-analysis.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Assessment</span>
+          </a>
+          <div class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Geração (Erro)</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">ITERAÇÕES</div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 1: Fundação</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 2: Pedidos</span>
+          </div>
+          <div class="nav-item sub-item" style="color: var(--color-error);">
+            <span>Iteração 3: Pagamentos (Erro)</span>
+          </div>
+          <div class="nav-item sub-item blocked">
+            <span>Iteração 4: Tracking</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Geração › Erro na Iteração 3</div>
+          <h2 class="workspace-title">Erro Encontrado</h2>
+          <p class="workspace-subtitle">Mas não se preocupe - seu progresso está salvo!</p>
+        </div>
+
+        <!-- Safe State Badge -->
+        <div style="text-align: center; margin-bottom: var(--space-6);">
+          <div class="safe-state-badge">
+            ✓ Iteração 2 ainda está funcionando normalmente
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-state">
+          <div class="error-icon">✕</div>
+          <div class="error-title">Erro na Iteração 3: Pagamentos</div>
+          <div class="error-message">
+            Encontrei um problema ao tentar integrar o webhook do Stripe.
+            <br>
+            <strong>Erro:</strong> <code style="font-family: var(--font-mono); font-size: var(--font-size-sm); background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">Invalid endpoint signature verification</code>
+          </div>
+        </div>
+
+        <!-- Current Safe State -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Seu App Está Seguro</h3>
+          </div>
+          <div class="card-body">
+            <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--space-4);">
+              <strong>Importante:</strong> As iterações 1 e 2 continuam funcionando perfeitamente.
+              O erro afetou apenas a Iteração 3, que não foi completada.
+            </p>
+
+            <div style="padding: var(--space-4); background: var(--color-success-light); border-radius: var(--border-radius-md);">
+              <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                App atual disponível em:
+              </div>
+              <a href="#" class="app-preview-url">
+                deliverypro-iter2.vercel.app
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+              <div style="margin-top: var(--space-2); font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                Funcionalidades: Auth + Restaurantes + Menu + Pedidos
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recovery Options -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Opções de Recuperação</h3>
+          </div>
+          <div class="card-body">
+            <div class="recovery-options">
+              <div class="recovery-option" onclick="location.href='05-iteration-progress.html'">
+                <div class="recovery-option-title">Tentar Novamente</div>
+                <div class="recovery-option-description">
+                  Vou analisar o erro e tentar gerar a Iteração 3 novamente com as correções necessárias.
+                  <br>
+                  <strong>Recomendado</strong> - geralmente resolve o problema.
+                </div>
+              </div>
+
+              <div class="recovery-option" onclick="location.href='../phase-4-assessment/02-iteration-plan.html'">
+                <div class="recovery-option-title">Simplificar Escopo</div>
+                <div class="recovery-option-description">
+                  Vou dividir a Iteração 3 em partes menores. Primeiro adiciono só o Stripe, depois o PIX.
+                  <br>
+                  Útil quando a iteração está muito complexa.
+                </div>
+              </div>
+
+              <div class="recovery-option" onclick="location.href='05-iteration-progress.html'">
+                <div class="recovery-option-title">Pular para Iteração 4</div>
+                <div class="recovery-option-description">
+                  Vou para a próxima iteração (Tracking) e você pode voltar nos pagamentos depois.
+                  <br>
+                  Use apenas se quiser testar outras funcionalidades primeiro.
+                </div>
+              </div>
+
+              <div class="recovery-option" onclick="location.href='07-project-paused.html'">
+                <div class="recovery-option-title">Pausar e Revisar</div>
+                <div class="recovery-option-description">
+                  Pausar o projeto para você revisar o erro com calma. Posso fornecer logs detalhados.
+                  <br>
+                  Seu app atual continua funcionando normalmente.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Details -->
+        <details style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg);">
+          <summary style="cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+            Ver Detalhes Técnicos
+          </summary>
+          <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--color-gray-900); color: #e5e7eb; border-radius: var(--border-radius-md); font-family: var(--font-mono); font-size: var(--font-size-xs); overflow-x: auto;">
+            <pre style="margin: 0; white-space: pre-wrap;">
+Error in file: src/app/api/webhooks/stripe/route.ts
+
+Error: Invalid endpoint signature verification
+
+Stack trace:
+  at verifySignature (stripe.ts:45)
+  at POST handler (route.ts:12)
+  at generateIteration (iteration-generator.ts:234)
+
+Attempted fix:
+  • Updated STRIPE_WEBHOOK_SECRET env var
+  • Verified endpoint configuration
+
+Suggestion:
+  • Check Stripe dashboard webhook settings
+  • Ensure secret key matches environment variable
+            </pre>
+          </div>
+        </details>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Encontrei um erro na Iteração 3
+                <br><br>
+                <strong>Não se preocupe!</strong> Suas iterações anteriores estão funcionando normalmente:
+                <br>
+                ✓ Iteração 1: Fundação
+                <br>
+                ✓ Iteração 2: Pedidos
+                <br><br>
+                <strong>Opções:</strong>
+                <br><br>
+                1. <strong>Tentar novamente</strong> (recomendado)
+                <br>
+                Vou analisar o erro e corrigir
+                <br><br>
+                2. <strong>Simplificar</strong>
+                <br>
+                Dividir em partes menores
+                <br><br>
+                3. <strong>Pular</strong>
+                <br>
+                Ir para Iteração 4 e voltar depois
+                <br><br>
+                O que você prefere?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="location.href='05-iteration-progress.html'">
+              Tentar novamente
+            </button>
+            <button class="quick-reply-btn" onclick="location.href='07-project-paused.html'">
+              Pausar e revisar
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Hub Link -->
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Sem Projetos | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--color-bg-secondary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .dashboard-header {
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-5) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dashboard-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .logo-text {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .dashboard-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .dashboard-user:hover {
+      background: var(--color-bg-secondary);
+    }
+
+    .user-avatar-large {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--border-radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .user-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Main Content */
+    .dashboard-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+
+    .empty-state {
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .empty-state-icon {
+      font-size: 80px;
+      margin-bottom: var(--space-6);
+      opacity: 0.6;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .empty-state-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .empty-state-description {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-8);
+    }
+
+    .modal-overlay {
+      display: none;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="dashboard-logo">
+      <div class="logo-icon">TC</div>
+      <div class="logo-text">True Coding</div>
+    </div>
+
+    <div class="dashboard-user">
+      <div class="user-info">
+        <div class="user-name">Renato Natali</div>
+        <div class="user-email">renato@email.com</div>
+      </div>
+      <div class="user-avatar-large">RN</div>
+    </div>
+  </header>
+
+  <!-- Main Content (Empty State) -->
+  <main class="dashboard-main">
+    <div class="empty-state">
+      <div class="empty-state-icon">🚀</div>
+      <h1 class="empty-state-title">Você ainda não tem projetos</h1>
+      <p class="empty-state-description">
+        Crie seu primeiro projeto e transforme sua ideia em código profissional em minutos.
+      </p>
+      <button class="btn btn-primary btn-lg" onclick="openCreateModal()">
+        + Criar meu primeiro projeto
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal: Criar Projeto -->
+  <div id="createModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Criar novo projeto</h2>
+        <button class="modal-close" onclick="closeCreateModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="createForm" onsubmit="handleCreate(event)">
+          <div class="form-group">
+            <label class="form-label form-label-required">Nome do projeto</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="Meu App Incrível"
+              required
+              autofocus
+            >
+            <div class="form-helper">
+              Este nome pode ser alterado depois
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrição (opcional)</label>
+            <textarea
+              class="form-textarea"
+              placeholder="Uma breve descrição do que você quer criar..."
+              rows="3"
+            ></textarea>
+            <div class="form-helper">
+              Você pode pular esta etapa. Vamos explorar sua ideia na conversa.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('createForm').requestSubmit()">
+          Criar projeto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link para voltar ao Hub -->
+  <div style="position: fixed; bottom: var(--space-4); left: var(--space-4);">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">
+      ← Voltar ao Hub
+    </a>
+  </div>
+
+  <script>
+    // Modal: Create
+    function openCreateModal() {
+      document.getElementById('createModal').classList.add('active');
+      setTimeout(() => {
+        document.querySelector('#createModal .form-input').focus();
+      }, 100);
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      document.getElementById('createForm').reset();
+    }
+
+    function handleCreate(event) {
+      event.preventDefault();
+      window.location.href = '../project/phase-1-ideation/01-start.html';
+    }
+
+    // Close modal with ESC or overlay click
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCreateModal();
+      }
+    });
+
+    document.getElementById('createModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCreateModal();
+      }
+    });
+  </script>
+</body>
+</html>
