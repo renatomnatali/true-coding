@@ -242,6 +242,7 @@ Funcionalidade: Fase de Planejamento
     E a sidebar mostra "Plano de Negócio" como "completed"
     E a sidebar mostra "Plano Técnico" como "in-progress"
 
+  # TODO: Requer migration para adicionar campo uxPlan ao schema.prisma (Sprint 3)
   @restauracao @ux-plan
   Cenário: Restaurar estado no UX Plan
     Dado que o projeto tem businessPlan aprovado
