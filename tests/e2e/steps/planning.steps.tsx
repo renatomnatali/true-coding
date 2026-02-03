@@ -135,7 +135,9 @@ describe('Planning: Business Plan - Visualização', () => {
       />
     )
 
-    expect(screen.getByText(/Aguardando geração do plano/)).toBeInTheDocument()
+    // Pode haver múltiplas mensagens (business plan + technical plan)
+    const messages = screen.getAllByText(/Aguardando geração do plano/)
+    expect(messages.length).toBeGreaterThanOrEqual(1)
   })
 })
 

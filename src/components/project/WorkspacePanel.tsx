@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useProjectLayout } from './ProjectLayout'
 
 // Parse business plan from JSON string
@@ -39,10 +40,12 @@ interface WorkspacePanelProps {
   status: string
   businessPlan?: string | null
   technicalPlan?: string | null
+  businessPlanApproved?: boolean
   repoUrl?: string | null
   deployUrl?: string | null
   discoveryProgress?: { current: number; total: number } | null
   onApprove?: () => void
+  onSavePlan?: (plan: ParsedPlan) => void
 }
 
 export function WorkspacePanel({
@@ -51,10 +54,12 @@ export function WorkspacePanel({
   status,
   businessPlan,
   technicalPlan,
+  businessPlanApproved,
   repoUrl,
   deployUrl,
   discoveryProgress,
   onApprove,
+  onSavePlan,
 }: WorkspacePanelProps) {
   const { setChatOpen } = useProjectLayout()
 
@@ -63,7 +68,7 @@ export function WorkspacePanel({
     case 'IDEATION':
       return <IdeationWorkspace projectName={projectName} discoveryProgress={discoveryProgress} onStartChat={() => setChatOpen(true)} />
     case 'PLANNING':
-      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} onApprove={onApprove} />
+      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} businessPlanApproved={businessPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} />
     case 'CONNECTING':
       return <ConnectingWorkspace />
     case 'GENERATING':
@@ -142,14 +147,55 @@ function IdeationWorkspace({
 function PlanningWorkspace({
   businessPlan,
   technicalPlan,
+  businessPlanApproved = false,
   onApprove,
+  onSavePlan,
 }: {
   businessPlan?: string | null
   technicalPlan?: string | null
+  businessPlanApproved?: boolean
   onApprove?: () => void
+  onSavePlan?: (plan: ParsedPlan) => void
 }) {
   // Parse business plan JSON
   const plan = businessPlan ? parsePlan(businessPlan) : null
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedPlan, setEditedPlan] = useState<ParsedPlan | null>(null)
+
+  // Enter edit mode
+  const handleEdit = () => {
+    if (plan) {
+      setEditedPlan({ ...plan })
+      setIsEditing(true)
+    }
+  }
+
+  // Cancel edit
+  const handleCancel = () => {
+    setEditedPlan(null)
+    setIsEditing(false)
+  }
+
+  // Save changes
+  const handleSave = () => {
+    if (editedPlan && onSavePlan) {
+      onSavePlan(editedPlan)
+    }
+    setIsEditing(false)
+    setEditedPlan(null)
+  }
+
+  // Update field in edit mode
+  const updateField = (field: keyof ParsedPlan, value: string) => {
+    if (editedPlan) {
+      setEditedPlan({ ...editedPlan, [field]: value })
+    }
+  }
+
+  // Use edited plan in edit mode, otherwise original
+  const displayPlan = isEditing ? editedPlan : plan
 
   return (
     <div className="h-full overflow-y-auto p-6">
@@ -161,38 +207,55 @@ function PlanningWorkspace({
           </p>
         </div>
 
-        {plan ? (
+        {displayPlan ? (
           <>
             {/* Header */}
             <div className="rounded-xl border bg-card p-6">
-              <h3 className="text-2xl font-bold">{plan.name}</h3>
-              {plan.tagline && (
-                <p className="mt-1 text-lg text-muted-foreground">{plan.tagline}</p>
+              <div className="flex items-start justify-between">
+                <h3 className="text-2xl font-bold">{displayPlan.name}</h3>
+                {businessPlanApproved && (
+                  <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                    Aprovado
+                  </span>
+                )}
+              </div>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedPlan?.tagline || ''}
+                  onChange={(e) => updateField('tagline', e.target.value)}
+                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-lg text-muted-foreground focus:border-blue-500 focus:outline-none"
+                  placeholder="Tagline do projeto"
+                />
+              ) : (
+                displayPlan.tagline && (
+                  <p className="mt-1 text-lg text-muted-foreground">{displayPlan.tagline}</p>
+                )
               )}
-              {plan.description && (
-                <p className="mt-3 text-sm">{plan.description}</p>
+              {displayPlan.description && (
+                <p className="mt-3 text-sm">{displayPlan.description}</p>
               )}
             </div>
 
             {/* Problem & Audience */}
             <div className="grid gap-4 md:grid-cols-2">
-              {plan.problemStatement && (
+              {displayPlan.problemStatement && (
                 <div className="rounded-xl border bg-card p-5">
                   <h4 className="mb-2 flex items-center gap-2 font-semibold">
                     <span className="text-lg">🎯</span> Problema
                   </h4>
-                  <p className="text-sm text-muted-foreground">{plan.problemStatement}</p>
+                  <p className="text-sm text-muted-foreground">{displayPlan.problemStatement}</p>
                 </div>
               )}
-              {plan.targetAudience && (
+              {displayPlan.targetAudience && (
                 <div className="rounded-xl border bg-card p-5">
                   <h4 className="mb-2 flex items-center gap-2 font-semibold">
                     <span className="text-lg">👥</span> Público-Alvo
                   </h4>
-                  <p className="text-sm font-medium">{plan.targetAudience.primary}</p>
-                  {plan.targetAudience.painPoints && (
+                  <p className="text-sm font-medium">{displayPlan.targetAudience.primary}</p>
+                  {displayPlan.targetAudience.painPoints && (
                     <ul className="mt-2 space-y-1">
-                      {plan.targetAudience.painPoints.map((pain: string, i: number) => (
+                      {displayPlan.targetAudience.painPoints.map((pain: string, i: number) => (
                         <li key={i} className="text-xs text-muted-foreground">• {pain}</li>
                       ))}
                     </ul>
@@ -202,13 +265,13 @@ function PlanningWorkspace({
             </div>
 
             {/* Features */}
-            {plan.coreFeatures && plan.coreFeatures.length > 0 && (
+            {displayPlan.coreFeatures && displayPlan.coreFeatures.length > 0 && (
               <div className="rounded-xl border bg-card p-5">
                 <h4 className="mb-4 flex items-center gap-2 font-semibold">
                   <span className="text-lg">⚡</span> Funcionalidades Principais
                 </h4>
                 <div className="space-y-3">
-                  {plan.coreFeatures.map((feature: { id: string; name: string; description: string; priority: string }, i: number) => (
+                  {displayPlan.coreFeatures.map((feature: { id: string; name: string; description: string; priority: string }, i: number) => (
                     <div key={feature.id || i} className="flex items-start gap-3 rounded-lg bg-muted/50 p-3">
                       <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                         {i + 1}
@@ -224,32 +287,56 @@ function PlanningWorkspace({
             )}
 
             {/* Monetization */}
-            {plan.monetization && (
+            {displayPlan.monetization && (
               <div className="rounded-xl border bg-card p-5">
                 <h4 className="mb-2 flex items-center gap-2 font-semibold">
                   <span className="text-lg">💰</span> Monetização
                 </h4>
                 <p className="text-sm">
                   <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                    {plan.monetization.model}
+                    {displayPlan.monetization.model}
                   </span>
-                  <span className="ml-2 text-muted-foreground">{plan.monetization.description}</span>
+                  <span className="ml-2 text-muted-foreground">{displayPlan.monetization.description}</span>
                 </p>
               </div>
             )}
 
-            {/* CTA */}
-            <div className="flex justify-end gap-3">
-              <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">
-                Pedir Ajustes
-              </button>
-              <button
-                onClick={onApprove}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                Aprovar e Continuar
-              </button>
-            </div>
+            {/* CTA - Different buttons based on state */}
+            {!businessPlanApproved && (
+              <div className="flex justify-end gap-3">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleCancel}
+                      className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                    >
+                      Salvar Alterações
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
+                    >
+                      Editar Plano
+                    </button>
+                    <button
+                      onClick={onApprove}
+                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                    >
+                      Aprovar e Continuar
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div className="rounded-xl border bg-card p-6">
