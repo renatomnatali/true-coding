@@ -202,6 +202,11 @@ function parseUxPlan(planStr: string): ParsedUxPlan | null {
   }
 }
 
+// Validate hex color to prevent CSS injection
+function isValidHexColor(value: string): boolean {
+  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(value)
+}
+
 // Phase: PLANNING
 function PlanningWorkspace({
   businessPlan,
@@ -536,7 +541,7 @@ function PlanningWorkspace({
                       <div className="flex items-center gap-2">
                         <div
                           className="h-4 w-4 rounded"
-                          style={{ backgroundColor: uxPlanParsed.designTokens.colors.primary }}
+                          style={{ backgroundColor: isValidHexColor(uxPlanParsed.designTokens.colors.primary) ? uxPlanParsed.designTokens.colors.primary : undefined }}
                         />
                         <p className="text-xs text-muted-foreground">
                           Primary: {uxPlanParsed.designTokens.colors.primary}
