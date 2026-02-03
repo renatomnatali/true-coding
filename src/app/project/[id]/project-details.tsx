@@ -1,19 +1,28 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { GenerationProgress } from '@/components/project/GenerationProgress'
-import {
-  Github,
-  ExternalLink,
-  FileCode,
-  Rocket,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-} from 'lucide-react'
-
+import { useRouter } from 'next/navigation'
+import { ProjectLayout } from '@/components/project/ProjectLayout'
+import { ProjectSidebar } from '@/components/project/ProjectSidebar'
+import { ChatPanel } from '@/components/project/ChatPanel'
+import { WorkspacePanel } from '@/components/project/WorkspacePanel'
 import type { JsonValue } from '@prisma/client/runtime/library'
+
+interface Message {
+  id: string
+  role: 'USER' | 'ASSISTANT' | 'SYSTEM'
+  content: string
+  createdAt: Date
+}
+
+interface Conversation {
+  id: string
+  phase: string
+  status: string
+  currentQuestion: number | null
+  completedQuestions: number[]
+  messages: Message[]
+}
 
 interface Project {
   id: string
@@ -27,169 +36,129 @@ interface Project {
   user: {
     githubUsername: string | null
   }
+  conversations: Conversation[]
 }
 
 interface ProjectDetailsProps {
   project: Project
 }
 
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; icon: React.ReactNode; color: string }
-> = {
-  IDEATION: {
-    label: 'Em ideacao',
-    icon: <Clock className="h-4 w-4" />,
-    color: 'text-yellow-500',
-  },
-  PLANNING: {
-    label: 'Planejando',
-    icon: <FileCode className="h-4 w-4" />,
-    color: 'text-blue-500',
-  },
-  CONNECTING: {
-    label: 'Conectando',
-    icon: <Github className="h-4 w-4" />,
-    color: 'text-purple-500',
-  },
-  GENERATING: {
-    label: 'Gerando',
-    icon: <Rocket className="h-4 w-4" />,
-    color: 'text-orange-500',
-  },
-  DEPLOYING: {
-    label: 'Publicando',
-    icon: <Rocket className="h-4 w-4" />,
-    color: 'text-blue-500',
-  },
-  LIVE: {
-    label: 'Online',
-    icon: <CheckCircle className="h-4 w-4" />,
-    color: 'text-green-500',
-  },
-  FAILED: {
-    label: 'Falhou',
-    icon: <AlertCircle className="h-4 w-4" />,
-    color: 'text-red-500',
-  },
-}
-
 export function ProjectDetails({ project }: ProjectDetailsProps) {
-  const [showGeneration, setShowGeneration] = useState(false)
-  const [repoUrl, setRepoUrl] = useState(project.githubRepoUrl)
+  const router = useRouter()
+  const [status, setStatus] = useState(project.status)
+  const [businessPlan, setBusinessPlan] = useState(project.businessPlan)
+  const [discoveryProgress, setDiscoveryProgress] = useState<{ current: number; total: number } | null>(null)
+  const [isApproving, setIsApproving] = useState(false)
 
-  const statusConfig = STATUS_CONFIG[project.status] || STATUS_CONFIG.IDEATION
   const hasGitHub = !!project.user.githubUsername
-  const hasTechnicalPlan = !!project.technicalPlan
-  const canGenerate =
-    hasGitHub && hasTechnicalPlan && !repoUrl && project.status !== 'GENERATING'
+  const hasVercel = !!project.productionUrl
 
-  const handleGenerationComplete = (url: string) => {
-    setRepoUrl(url)
-    setShowGeneration(false)
+  // STATE RESTORATION: Derive initial state from database (per docs/ux/STATES.md)
+  const discoveryConversation = project.conversations?.[0] || null
+
+  // REGRA CP-05/CP-06: Initial messages from database, not empty
+  const initialMessages = discoveryConversation?.messages.map(m => ({
+    id: m.id,
+    role: m.role.toLowerCase() as 'user' | 'assistant',
+    content: m.content,
+  })) || []
+
+  // REGRA: If businessPlan exists, plan is ready
+  const initialPlanReady = project.businessPlan !== null
+
+  // REGRA: Progress from database, not default
+  const initialQuestionProgress = discoveryConversation
+    ? {
+        current: discoveryConversation.currentQuestion || 1,
+        total: 5,
+        completedQuestions: discoveryConversation.completedQuestions,
+      }
+    : null
+
+  // Convert JSON plans to string for display
+  const businessPlanStr = businessPlan
+    ? (typeof businessPlan === 'string'
+        ? businessPlan
+        : JSON.stringify(businessPlan, null, 2))
+    : null
+
+  const technicalPlanStr = project.technicalPlan
+    ? (typeof project.technicalPlan === 'string'
+        ? project.technicalPlan
+        : JSON.stringify(project.technicalPlan, null, 2))
+    : null
+
+  const handlePlanReady = (plan: Record<string, unknown>) => {
+    setBusinessPlan(plan as JsonValue)
+    setStatus('PLANNING')
+  }
+
+  const handleProgressUpdate = (progress: { current: number; total: number }) => {
+    setDiscoveryProgress(progress)
+  }
+
+  const handleApprove = async () => {
+    if (isApproving) return
+    setIsApproving(true)
+
+    try {
+      // Update project status to next phase
+      const response = await fetch(`/api/projects/${project.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'CONNECTING' }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Falha ao aprovar plano')
+      }
+
+      setStatus('CONNECTING')
+      router.refresh()
+    } catch (error) {
+      console.error('Erro ao aprovar plano:', error)
+      alert('Erro ao aprovar plano. Tente novamente.')
+    } finally {
+      setIsApproving(false)
+    }
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold">{project.name}</h1>
-          <div className={`flex items-center gap-2 ${statusConfig.color}`}>
-            {statusConfig.icon}
-            <span className="text-sm font-medium">{statusConfig.label}</span>
-          </div>
-        </div>
-        {project.description && (
-          <p className="text-muted-foreground">{project.description}</p>
-        )}
-      </div>
-
-      {/* Quick Links */}
-      <div className="flex gap-4 mb-8">
-        {repoUrl && (
-          <a
-            href={repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center h-10 px-4 py-2 rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-          >
-            <Github className="h-4 w-4 mr-2" />
-            Repositorio
-            <ExternalLink className="h-4 w-4 ml-2" />
-          </a>
-        )}
-        {project.productionUrl && (
-          <a
-            href={project.productionUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center h-10 px-4 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Rocket className="h-4 w-4 mr-2" />
-            Ver online
-            <ExternalLink className="h-4 w-4 ml-2" />
-          </a>
-        )}
-      </div>
-
-      {/* Generation Section */}
-      {canGenerate && !showGeneration && (
-        <div className="p-6 border rounded-lg mb-8">
-          <h2 className="text-xl font-semibold mb-2">Gerar codigo</h2>
-          <p className="text-muted-foreground mb-4">
-            Seu plano tecnico esta pronto. Clique abaixo para gerar o codigo e
-            criar o repositorio no GitHub.
-          </p>
-          <Button onClick={() => setShowGeneration(true)}>
-            <Rocket className="h-4 w-4 mr-2" />
-            Gerar projeto
-          </Button>
-        </div>
-      )}
-
-      {showGeneration && (
-        <div className="mb-8">
-          <GenerationProgress
-            projectId={project.id}
-            onComplete={handleGenerationComplete}
-            onError={(error) => console.error('Generation error:', error)}
-          />
-        </div>
-      )}
-
-      {/* Business Plan */}
-      {project.businessPlan && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Plano de Negocio</h2>
-          <div className="p-4 border rounded-lg bg-muted/50">
-            <pre className="text-sm overflow-x-auto">
-              {JSON.stringify(project.businessPlan, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-
-      {/* Technical Plan */}
-      {project.technicalPlan && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Plano Tecnico</h2>
-          <div className="p-4 border rounded-lg bg-muted/50">
-            <pre className="text-sm overflow-x-auto">
-              {JSON.stringify(project.technicalPlan, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-
-      {/* Warnings */}
-      {!hasGitHub && hasTechnicalPlan && (
-        <div className="p-4 border border-yellow-500 rounded-lg bg-yellow-50 dark:bg-yellow-950">
-          <p className="text-sm text-yellow-700 dark:text-yellow-300">
-            Conecte sua conta do GitHub para gerar o codigo do projeto.
-          </p>
-        </div>
-      )}
-    </div>
+    <ProjectLayout
+      sidebar={
+        <ProjectSidebar
+          projectId={project.id}
+          projectName={project.name}
+          status={status}
+          hasGitHub={hasGitHub}
+          hasVercel={hasVercel}
+          repoUrl={project.githubRepoUrl}
+          deployUrl={project.productionUrl}
+        />
+      }
+      chat={
+        <ChatPanel
+          projectId={project.id}
+          projectName={project.name}
+          initialMessages={initialMessages}
+          initialPlanReady={initialPlanReady}
+          initialQuestionProgress={initialQuestionProgress}
+          onPlanReady={handlePlanReady}
+          onProgressUpdate={handleProgressUpdate}
+        />
+      }
+    >
+      <WorkspacePanel
+        projectId={project.id}
+        projectName={project.name}
+        status={status}
+        businessPlan={businessPlanStr}
+        technicalPlan={technicalPlanStr}
+        repoUrl={project.githubRepoUrl}
+        deployUrl={project.productionUrl}
+        discoveryProgress={discoveryProgress}
+        onApprove={handleApprove}
+      />
+    </ProjectLayout>
   )
 }

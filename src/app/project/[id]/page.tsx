@@ -24,6 +24,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           githubUsername: true,
         },
       },
+      // Fetch DISCOVERY conversation with messages for state restoration
+      conversations: {
+        where: { phase: 'DISCOVERY' },
+        include: {
+          messages: {
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+        take: 1,
+      },
     },
   })
 
