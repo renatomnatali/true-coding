@@ -279,3 +279,143 @@ describe('Planning: Business Plan - Aprovação', () => {
     expect(screen.queryByRole('button', { name: /Aprovar e Continuar/i })).not.toBeInTheDocument()
   })
 })
+
+// Sample Technical Plan for tests
+const sampleTechnicalPlan = JSON.stringify({
+  stack: {
+    frontend: { name: 'Next.js', version: '15', description: 'React framework com SSR' },
+    backend: { name: 'Next.js API Routes', description: 'API serverless' },
+    database: { name: 'PostgreSQL', provider: 'Neon', description: 'Banco relacional serverless' },
+    deploy: { name: 'Vercel', description: 'Plataforma de deploy' },
+  },
+  architecture: {
+    pattern: 'Monolito modular',
+    description: 'Aplicação Next.js com App Router',
+  },
+  folderStructure: [
+    'src/app/',
+    'src/components/',
+    'src/lib/',
+    'prisma/',
+  ],
+  dataModel: {
+    entities: ['User', 'Order', 'Restaurant', 'MenuItem'],
+    description: 'Modelo relacional com Prisma ORM',
+  },
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: TECHNICAL PLAN - VISUALIZAÇÃO
+ * =============================================================================
+ */
+describe('Planning: Technical Plan - Visualização', () => {
+  /**
+   * @technical-plan @visualizacao
+   * Cenário: Visualizar Technical Plan gerado
+   */
+  it('Exibe as seções do Technical Plan', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+      />
+    )
+
+    // Então vejo a seção "Stack de Tecnologia" ou "Plano Técnico"
+    expect(screen.getByText(/Plano Técnico/i)).toBeInTheDocument()
+
+    // E vejo informações da stack
+    expect(screen.getByText(/Next\.js/i)).toBeInTheDocument()
+    expect(screen.getByText(/PostgreSQL/i)).toBeInTheDocument()
+  })
+
+  /**
+   * @technical-plan @acoes
+   * Cenário: Botões de ação no Technical Plan (não aprovado)
+   */
+  it('Exibe botões "Editar Stack" e "Aprovar e Continuar" quando não aprovado', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+      />
+    )
+
+    // Então vejo o botão "Editar Stack"
+    expect(screen.getByRole('button', { name: /Editar Stack/i })).toBeInTheDocument()
+
+    // E vejo o botão "Aprovar e Continuar" (para Technical Plan)
+    expect(screen.getByRole('button', { name: /Aprovar/i })).toBeInTheDocument()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: TECHNICAL PLAN - APROVAÇÃO
+ * =============================================================================
+ */
+describe('Planning: Technical Plan - Aprovação', () => {
+  /**
+   * @technical-plan @aprovado @readonly
+   * Cenário: Technical Plan aprovado fica somente leitura
+   */
+  it('Exibe badge "Aprovado" e esconde botões quando Technical Plan aprovado', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+      />
+    )
+
+    // Então vejo o badge "Aprovado" para Technical Plan
+    const badges = screen.getAllByText(/Aprovado/i)
+    expect(badges.length).toBeGreaterThanOrEqual(1)
+
+    // E NÃO vejo o botão "Editar Stack"
+    expect(screen.queryByRole('button', { name: /Editar Stack/i })).not.toBeInTheDocument()
+  })
+
+  /**
+   * @technical-plan @aprovacao
+   * Cenário: Callback de aprovação do Technical Plan
+   */
+  it('Chama onApproveTechnicalPlan ao aprovar', async () => {
+    const onApproveTechnicalPlan = vi.fn()
+
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+        onApproveTechnicalPlan={onApproveTechnicalPlan}
+      />
+    )
+
+    // Quando clico em "Aprovar" para Technical Plan
+    const approveButtons = screen.getAllByRole('button', { name: /Aprovar/i })
+    // O botão de aprovar Technical Plan (pode haver múltiplos)
+    await userEvent.click(approveButtons[approveButtons.length - 1])
+
+    // Então o callback é chamado
+    expect(onApproveTechnicalPlan).toHaveBeenCalledTimes(1)
+  })
+})

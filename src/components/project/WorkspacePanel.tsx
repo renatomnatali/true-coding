@@ -41,11 +41,13 @@ interface WorkspacePanelProps {
   businessPlan?: string | null
   technicalPlan?: string | null
   businessPlanApproved?: boolean
+  technicalPlanApproved?: boolean
   repoUrl?: string | null
   deployUrl?: string | null
   discoveryProgress?: { current: number; total: number } | null
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
+  onApproveTechnicalPlan?: () => void
 }
 
 export function WorkspacePanel({
@@ -55,11 +57,13 @@ export function WorkspacePanel({
   businessPlan,
   technicalPlan,
   businessPlanApproved,
+  technicalPlanApproved,
   repoUrl,
   deployUrl,
   discoveryProgress,
   onApprove,
   onSavePlan,
+  onApproveTechnicalPlan,
 }: WorkspacePanelProps) {
   const { setChatOpen } = useProjectLayout()
 
@@ -68,7 +72,7 @@ export function WorkspacePanel({
     case 'IDEATION':
       return <IdeationWorkspace projectName={projectName} discoveryProgress={discoveryProgress} onStartChat={() => setChatOpen(true)} />
     case 'PLANNING':
-      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} businessPlanApproved={businessPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} />
+      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} />
     case 'CONNECTING':
       return <ConnectingWorkspace />
     case 'GENERATING':
@@ -143,22 +147,50 @@ function IdeationWorkspace({
   )
 }
 
+// Parse technical plan from JSON string
+interface ParsedTechnicalPlan {
+  stack?: {
+    frontend?: { name: string; version?: string; description?: string }
+    backend?: { name: string; description?: string }
+    database?: { name: string; provider?: string; description?: string }
+    deploy?: { name: string; description?: string }
+  }
+  architecture?: { pattern?: string; description?: string }
+  folderStructure?: string[]
+  dataModel?: { entities?: string[]; description?: string }
+}
+
+function parseTechnicalPlan(planStr: string): ParsedTechnicalPlan | null {
+  try {
+    return JSON.parse(planStr)
+  } catch {
+    return null
+  }
+}
+
 // Phase: PLANNING
 function PlanningWorkspace({
   businessPlan,
   technicalPlan,
   businessPlanApproved = false,
+  technicalPlanApproved = false,
   onApprove,
   onSavePlan,
+  onApproveTechnicalPlan,
 }: {
   businessPlan?: string | null
   technicalPlan?: string | null
   businessPlanApproved?: boolean
+  technicalPlanApproved?: boolean
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
+  onApproveTechnicalPlan?: () => void
 }) {
   // Parse business plan JSON
   const plan = businessPlan ? parsePlan(businessPlan) : null
+
+  // Parse technical plan JSON
+  const techPlan = technicalPlan ? parseTechnicalPlan(technicalPlan) : null
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false)
@@ -348,23 +380,57 @@ function PlanningWorkspace({
 
         {/* Technical Plan */}
         <div className="rounded-xl border bg-card p-6">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold">Plano Técnico</h3>
+                <p className="text-xs text-muted-foreground">Arquitetura e tecnologias</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold">Plano Técnico</h3>
-              <p className="text-xs text-muted-foreground">Arquitetura e tecnologias</p>
-            </div>
+            {technicalPlanApproved && (
+              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                Aprovado
+              </span>
+            )}
           </div>
-          {technicalPlan ? (
-            <div className="prose prose-sm max-w-none">
-              <pre className="whitespace-pre-wrap rounded-lg bg-muted p-4 text-sm">
-                {technicalPlan}
-              </pre>
-            </div>
+          {techPlan ? (
+            <>
+              {/* Stack display */}
+              <div className="space-y-3">
+                {techPlan.stack?.frontend && (
+                  <div className="rounded-lg bg-muted/50 p-3">
+                    <p className="font-medium">{techPlan.stack.frontend.name}</p>
+                    <p className="text-xs text-muted-foreground">{techPlan.stack.frontend.description}</p>
+                  </div>
+                )}
+                {techPlan.stack?.database && (
+                  <div className="rounded-lg bg-muted/50 p-3">
+                    <p className="font-medium">{techPlan.stack.database.name}</p>
+                    <p className="text-xs text-muted-foreground">{techPlan.stack.database.description}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* CTA buttons for Technical Plan */}
+              {!technicalPlanApproved && (
+                <div className="mt-4 flex justify-end gap-3">
+                  <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">
+                    Editar Stack
+                  </button>
+                  <button
+                    onClick={onApproveTechnicalPlan}
+                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    Aprovar e Continuar
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
               Aguardando geração do plano...
