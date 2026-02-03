@@ -419,3 +419,145 @@ describe('Planning: Technical Plan - Aprovação', () => {
     expect(onApproveTechnicalPlan).toHaveBeenCalledTimes(1)
   })
 })
+
+// Sample UX Plan for tests
+const sampleUxPlan = JSON.stringify({
+  personas: [
+    {
+      name: 'João Restaurante',
+      age: 35,
+      role: 'Dono de restaurante',
+      goals: ['Aumentar vendas', 'Reduzir custos'],
+      painPoints: ['Taxas altas', 'Falta de controle'],
+    },
+  ],
+  journeys: [
+    {
+      name: 'Primeiro pedido',
+      steps: ['Acessa app', 'Escolhe restaurante', 'Faz pedido', 'Paga'],
+    },
+  ],
+  wireframes: ['Tela inicial', 'Cardápio', 'Checkout'],
+  designTokens: {
+    colors: { primary: '#7C3AED', secondary: '#22C55E' },
+    typography: { fontFamily: 'Inter', fontSize: { base: '16px' } },
+  },
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: UX PLAN - VISUALIZAÇÃO
+ * =============================================================================
+ */
+describe('Planning: UX Plan - Visualização', () => {
+  /**
+   * @ux-plan @visualizacao
+   * Cenário: Visualizar UX Plan gerado
+   */
+  it('Exibe as seções do UX Plan', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
+      />
+    )
+
+    // Então vejo a seção "Plano de UX" ou "UX Plan"
+    expect(screen.getByText(/Plano de UX|UX Plan/i)).toBeInTheDocument()
+
+    // E vejo informações do UX Plan (personas, design tokens)
+    const personaElements = screen.getAllByText(/Personas|João Restaurante/i)
+    expect(personaElements.length).toBeGreaterThanOrEqual(1)
+  })
+
+  /**
+   * @ux-plan @acoes
+   * Cenário: Botões de ação no UX Plan (não aprovado)
+   */
+  it('Exibe botão "Aprovar e Continuar" quando UX Plan não aprovado', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
+        uxPlanApproved={false}
+      />
+    )
+
+    // Então vejo botão "Aprovar" para UX Plan
+    const approveButtons = screen.getAllByRole('button', { name: /Aprovar/i })
+    expect(approveButtons.length).toBeGreaterThanOrEqual(1)
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: UX PLAN - APROVAÇÃO
+ * =============================================================================
+ */
+describe('Planning: UX Plan - Aprovação', () => {
+  /**
+   * @ux-plan @aprovado @readonly
+   * Cenário: UX Plan aprovado fica somente leitura
+   */
+  it('Exibe badge "Aprovado" quando UX Plan aprovado', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
+        uxPlanApproved={true}
+      />
+    )
+
+    // Então vejo badges "Aprovado" (múltiplos - business, technical, ux)
+    const badges = screen.getAllByText(/Aprovado/i)
+    expect(badges.length).toBeGreaterThanOrEqual(3)
+  })
+
+  /**
+   * @ux-plan @aprovacao
+   * Cenário: Callback de aprovação do UX Plan
+   */
+  it('Chama onApproveUxPlan ao aprovar', async () => {
+    const onApproveUxPlan = vi.fn()
+
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
+        uxPlanApproved={false}
+        onApproveUxPlan={onApproveUxPlan}
+      />
+    )
+
+    // Quando clico em "Aprovar" para UX Plan
+    const approveButtons = screen.getAllByRole('button', { name: /Aprovar/i })
+    await userEvent.click(approveButtons[approveButtons.length - 1])
+
+    // Então o callback é chamado
+    expect(onApproveUxPlan).toHaveBeenCalledTimes(1)
+  })
+})

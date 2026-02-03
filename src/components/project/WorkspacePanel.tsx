@@ -40,14 +40,17 @@ interface WorkspacePanelProps {
   status: string
   businessPlan?: string | null
   technicalPlan?: string | null
+  uxPlan?: string | null
   businessPlanApproved?: boolean
   technicalPlanApproved?: boolean
+  uxPlanApproved?: boolean
   repoUrl?: string | null
   deployUrl?: string | null
   discoveryProgress?: { current: number; total: number } | null
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
+  onApproveUxPlan?: () => void
 }
 
 export function WorkspacePanel({
@@ -56,14 +59,17 @@ export function WorkspacePanel({
   status,
   businessPlan,
   technicalPlan,
+  uxPlan,
   businessPlanApproved,
   technicalPlanApproved,
+  uxPlanApproved,
   repoUrl,
   deployUrl,
   discoveryProgress,
   onApprove,
   onSavePlan,
   onApproveTechnicalPlan,
+  onApproveUxPlan,
 }: WorkspacePanelProps) {
   const { setChatOpen } = useProjectLayout()
 
@@ -72,7 +78,7 @@ export function WorkspacePanel({
     case 'IDEATION':
       return <IdeationWorkspace projectName={projectName} discoveryProgress={discoveryProgress} onStartChat={() => setChatOpen(true)} />
     case 'PLANNING':
-      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} />
+      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} uxPlan={uxPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} uxPlanApproved={uxPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} onApproveUxPlan={onApproveUxPlan} />
     case 'CONNECTING':
       return <ConnectingWorkspace />
     case 'GENERATING':
@@ -168,29 +174,71 @@ function parseTechnicalPlan(planStr: string): ParsedTechnicalPlan | null {
   }
 }
 
+// Parse UX plan from JSON string
+interface ParsedUxPlan {
+  personas?: Array<{
+    name: string
+    age?: number
+    role?: string
+    goals?: string[]
+    painPoints?: string[]
+  }>
+  journeys?: Array<{
+    name: string
+    steps?: string[]
+  }>
+  wireframes?: string[]
+  designTokens?: {
+    colors?: { primary?: string; secondary?: string }
+    typography?: { fontFamily?: string; fontSize?: { base?: string } }
+  }
+}
+
+function parseUxPlan(planStr: string): ParsedUxPlan | null {
+  try {
+    return JSON.parse(planStr)
+  } catch {
+    return null
+  }
+}
+
+// Validate hex color to prevent CSS injection
+function isValidHexColor(value: string): boolean {
+  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(value)
+}
+
 // Phase: PLANNING
 function PlanningWorkspace({
   businessPlan,
   technicalPlan,
+  uxPlan,
   businessPlanApproved = false,
   technicalPlanApproved = false,
+  uxPlanApproved = false,
   onApprove,
   onSavePlan,
   onApproveTechnicalPlan,
+  onApproveUxPlan,
 }: {
   businessPlan?: string | null
   technicalPlan?: string | null
+  uxPlan?: string | null
   businessPlanApproved?: boolean
   technicalPlanApproved?: boolean
+  uxPlanApproved?: boolean
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
+  onApproveUxPlan?: () => void
 }) {
   // Parse business plan JSON
   const plan = businessPlan ? parsePlan(businessPlan) : null
 
   // Parse technical plan JSON
   const techPlan = technicalPlan ? parseTechnicalPlan(technicalPlan) : null
+
+  // Parse UX plan JSON
+  const uxPlanParsed = uxPlan ? parseUxPlan(uxPlan) : null
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false)
@@ -424,6 +472,96 @@ function PlanningWorkspace({
                   </button>
                   <button
                     onClick={onApproveTechnicalPlan}
+                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    Aprovar e Continuar
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
+              Aguardando geração do plano...
+            </div>
+          )}
+        </div>
+
+        {/* UX Plan */}
+        <div className="rounded-xl border bg-card p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100 text-pink-600">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold">Plano de UX</h3>
+                <p className="text-xs text-muted-foreground">Personas e design tokens</p>
+              </div>
+            </div>
+            {uxPlanApproved && (
+              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
+                Aprovado
+              </span>
+            )}
+          </div>
+          {uxPlanParsed ? (
+            <>
+              {/* Personas section */}
+              {uxPlanParsed.personas && uxPlanParsed.personas.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="mb-3 font-medium">Personas</h4>
+                  <div className="space-y-3">
+                    {uxPlanParsed.personas.map((persona, i) => (
+                      <div key={i} className="rounded-lg bg-muted/50 p-3">
+                        <p className="font-medium">{persona.name}</p>
+                        {persona.role && (
+                          <p className="text-xs text-muted-foreground">{persona.role}</p>
+                        )}
+                        {persona.goals && persona.goals.length > 0 && (
+                          <ul className="mt-2 space-y-1">
+                            {persona.goals.map((goal, j) => (
+                              <li key={j} className="text-xs text-muted-foreground">• {goal}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Design Tokens section */}
+              {uxPlanParsed.designTokens && (
+                <div className="mb-4">
+                  <h4 className="mb-3 font-medium">Design Tokens</h4>
+                  <div className="rounded-lg bg-muted/50 p-3">
+                    {uxPlanParsed.designTokens.colors?.primary && (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-4 w-4 rounded"
+                          style={{ backgroundColor: isValidHexColor(uxPlanParsed.designTokens.colors.primary) ? uxPlanParsed.designTokens.colors.primary : undefined }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Primary: {uxPlanParsed.designTokens.colors.primary}
+                        </p>
+                      </div>
+                    )}
+                    {uxPlanParsed.designTokens.typography?.fontFamily && (
+                      <p className="text-xs text-muted-foreground">
+                        Font: {uxPlanParsed.designTokens.typography.fontFamily}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA buttons for UX Plan */}
+              {!uxPlanApproved && (
+                <div className="mt-4 flex justify-end gap-3">
+                  <button
+                    onClick={onApproveUxPlan}
                     className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                   >
                     Aprovar e Continuar
