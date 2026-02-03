@@ -1,0 +1,27 @@
+#!/bin/sh
+# Pre-push: verificação antes de enviar ao remote
+# Lint e tests devem passar. Build roda no CI.
+
+echo "🚀 Running pre-push checks..."
+echo ""
+
+# 1. Lint
+echo "📝 [1/2] Running lint..."
+npm run lint || {
+  echo "❌ Lint failed! Fix errors before pushing."
+  exit 1
+}
+echo "✅ Lint passed!"
+echo ""
+
+# 2. Tests
+echo "🧪 [2/2] Running tests..."
+npm test || {
+  echo "❌ Tests failed! Fix tests before pushing."
+  exit 1
+}
+echo "✅ Tests passed!"
+echo ""
+
+echo "🎉 All checks passed! Pushing..."
+# Note: npm run build runs in CI (GitHub Actions), not locally

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Pre-commit: verificação rápida (lint apenas)
+echo "🔍 Running lint..."
+npm run lint || exit 1
+echo "✅ Lint passed!"
