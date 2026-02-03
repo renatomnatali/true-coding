@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geração Completa | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/iterations.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">App Delivery Pro</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 6/7</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <a href="../phase-1-ideation/01-start.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </a>
+          <a href="../phase-2-planning/01-business-plan.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <a href="../phase-3-connection/01-github-oauth.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </a>
+          <a href="../phase-4-assessment/01-complexity-analysis.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Assessment</span>
+          </a>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Geração ✓</span>
+          </div>
+          <div class="nav-item available">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">ITERAÇÕES</div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 1: Fundação ✓</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 2: Pedidos ✓</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 3: Pagamentos ✓</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 4: Tracking ✓</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <!-- Timer fixo no topo - sempre visível -->
+        <div class="auto-continue-timer" style="margin-bottom: var(--space-6); padding: var(--space-4); background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg-primary)); border: 2px solid var(--color-primary); border-radius: var(--border-radius-xl);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4);">
+            <div style="display: flex; align-items: center; gap: var(--space-4);">
+              <div style="text-align: center;">
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); text-transform: uppercase;">Deploy em</div>
+                <div class="timer-countdown" id="countdown" style="font-size: 36px; font-weight: var(--font-weight-bold); color: var(--color-primary); line-height: 1;">10</div>
+              </div>
+              <div class="timer-progress" style="width: 120px; height: 8px; background: var(--color-gray-200); border-radius: var(--border-radius-full); overflow: hidden;">
+                <div class="timer-progress-fill" id="timerBar" style="width: 100%; height: 100%; background: var(--color-primary); transition: width 1s linear;"></div>
+              </div>
+            </div>
+            <div class="timer-actions" style="display: flex; gap: var(--space-2);">
+              <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
+              <button class="btn btn-primary" onclick="continueNow()">Continuar Agora →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="completion-celebration">
+          <div class="completion-icon">🚀</div>
+          <h2 class="completion-title">Geração Completa!</h2>
+          <p class="completion-subtitle">Todas as 4 iterações concluídas com sucesso</p>
+
+          <!-- Summary -->
+          <div class="completion-summary">
+            <div class="summary-item">
+              <div class="summary-label">ARQUIVOS CRIADOS</div>
+              <div class="summary-value">32 arquivos</div>
+              <div class="summary-detail">+2.847 linhas de código</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">FEATURES</div>
+              <div class="summary-value">12 features</div>
+              <div class="summary-detail">Auth, Pedidos, Pagamentos, Tracking</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">TEMPO TOTAL</div>
+              <div class="summary-value">47 min</div>
+              <div class="summary-detail">4 iterações concluídas</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">TESTES</div>
+              <div class="summary-value">100% ✓</div>
+              <div class="summary-detail">58 testes passando</div>
+            </div>
+          </div>
+
+          <!-- What was done -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Resumo das 4 Iterações</h3>
+            </div>
+            <div class="card-body">
+              <div style="display: grid; gap: var(--space-3);">
+                <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-primary);">Iteração 1: Fundação</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Auth, Schema base, Models principais, Layout</div>
+                </div>
+                <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-primary);">Iteração 2: Pedidos</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Carrinho, Sistema de pedidos, Dashboard do restaurante</div>
+                </div>
+                <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-primary);">Iteração 3: Pagamentos</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Integração Stripe, PIX, Webhooks, Histórico</div>
+                </div>
+                <div style="padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-primary);">Iteração 4: Tracking</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Rastreamento tempo real, Notificações, Status updates</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- App Preview -->
+          <div class="completion-app-preview">
+            <div class="app-preview-label">Seu app completo está no ar (preview):</div>
+            <a href="#" class="app-preview-url">
+              deliverypro-preview.vercel.app
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Next Step Info -->
+          <div style="padding: var(--space-5); background: linear-gradient(135deg, var(--color-success-light), var(--color-bg-primary)); border: 2px solid var(--color-success); border-radius: var(--border-radius-xl); margin-top: var(--space-6);">
+            <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+              🎉 Todas as Iterações Concluídas!
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">
+              ✅ Iteração 1: Fundação (Auth, Schema base)
+              <br>
+              ✅ Iteração 2: Pedidos (Carrinho, Dashboard)
+              <br>
+              ✅ Iteração 3: Pagamentos (Stripe, PIX)
+              <br>
+              ✅ Iteração 4: Tracking (Tempo real)
+              <br><br>
+              <strong>Próximo passo:</strong> Deploy final para produção!
+            </div>
+          </div>
+
+          <!-- Demo Navigation -->
+          <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-tertiary); border-radius: var(--border-radius-lg);">
+            <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); margin-bottom: var(--space-3);">DEMO: Testar Fluxos</div>
+            <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+              <button class="btn btn-secondary" onclick="location.href='05-iteration-progress.html'">Iteração 3 (Progress)</button>
+              <button class="btn btn-secondary" onclick="location.href='08-iteration-error.html'">Simular Erro</button>
+              <button class="btn btn-success" onclick="location.href='../phase-5-deploy/01-deploying.html'">Última Iteração → Deploy</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                🎉 <strong>Geração completa!</strong>
+                <br><br>
+                <strong>Seu app agora tem:</strong>
+                <br>
+                ✅ Sistema de autenticação
+                <br>
+                ✅ Restaurantes e cardápio
+                <br>
+                ✅ Carrinho de compras
+                <br>
+                ✅ Sistema de pedidos
+                <br>
+                ✅ Pagamentos (Stripe + PIX)
+                <br>
+                ✅ Rastreamento em tempo real
+                <br><br>
+                <strong>Próximo passo:</strong> Deploy para produção!
+                <br><br>
+                Iniciando deploy automaticamente em 10 segundos, ou clique para:
+                <br>
+                • Pausar e testar o app
+                <br>
+                • Ir direto para deploy
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="continueNow()">
+              🚀 Fazer deploy agora!
+            </button>
+            <button class="quick-reply-btn" onclick="pauseTimer()">
+              ⏸️ Pausar para testar
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Hub Link -->
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+
+  <script>
+    let countdown = 10;
+    let timerInterval = null;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        countdown--;
+        document.getElementById('countdown').textContent = countdown;
+        document.getElementById('timerBar').style.width = (countdown / 10 * 100) + '%';
+
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          continueNow();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      location.href = '07-project-paused.html';
+    }
+
+    function continueNow() {
+      clearInterval(timerInterval);
+      // Simula que todas as iterações foram concluídas - vai para Deploy
+      location.href = '../phase-5-deploy/01-deploying.html';
+    }
+
+    startTimer();
+  </script>
+</body>
+</html>

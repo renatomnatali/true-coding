@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerando Iteração 2 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/iterations.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">App Delivery Pro</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 5/7</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <a href="../phase-1-ideation/01-start.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </a>
+          <a href="../phase-2-planning/01-business-plan.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <a href="../phase-3-connection/01-github-oauth.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </a>
+          <a href="../phase-4-assessment/01-complexity-analysis.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Assessment</span>
+          </a>
+          <div class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">ITERAÇÕES</div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 1: Fundação</span>
+          </div>
+          <div class="nav-item sub-item in-progress">
+            <span>Iteração 2: Pedidos</span>
+          </div>
+          <div class="nav-item sub-item blocked">
+            <span>Iteração 3: Pagamentos</span>
+          </div>
+          <div class="nav-item sub-item blocked">
+            <span>Iteração 4: Tracking</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Geração › Iteração 2 de 4</div>
+          <h2 class="workspace-title">Gerando: Pedidos</h2>
+          <p class="workspace-subtitle">Criando sistema de carrinho e pedidos</p>
+        </div>
+
+        <!-- Iteration Progress Header -->
+        <div class="iteration-progress-header">
+          <div>
+            <div class="iteration-count">ITERAÇÃO 2 DE 4</div>
+            <div class="iteration-title-main">Pedidos</div>
+            <div class="iteration-time-estimate">~12 minutos estimados</div>
+          </div>
+          <div class="iteration-progress-bar">
+            <div class="iteration-progress-bar-fill">
+              <div class="iteration-progress-bar-fill-inner" style="width: 60%;"></div>
+            </div>
+            <div class="iteration-progress-text">60% concluído</div>
+          </div>
+        </div>
+
+        <!-- Step Cards -->
+        <div class="steps-grid">
+          <div class="step-card completed">
+            <div class="step-icon">✓</div>
+            <div class="step-name">Schema</div>
+            <div class="step-status">Concluído</div>
+          </div>
+
+          <div class="step-card completed">
+            <div class="step-icon">✓</div>
+            <div class="step-name">API</div>
+            <div class="step-status">Concluído</div>
+          </div>
+
+          <div class="step-card in-progress">
+            <div class="step-icon">⚙</div>
+            <div class="step-name">Componentes</div>
+            <div class="step-status">Em progresso...</div>
+          </div>
+
+          <div class="step-card pending">
+            <div class="step-icon">○</div>
+            <div class="step-name">Testes</div>
+            <div class="step-status">Pendente</div>
+          </div>
+
+          <div class="step-card pending">
+            <div class="step-icon">○</div>
+            <div class="step-name">Deploy</div>
+            <div class="step-status">Pendente</div>
+          </div>
+        </div>
+
+        <!-- Generated Files Log -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Arquivos Gerados</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--font-size-sm);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-success);">✓</span>
+                <span style="color: var(--color-text-primary);">prisma/schema.prisma</span>
+                <span style="margin-left: auto; color: var(--color-text-tertiary); font-size: var(--font-size-xs);">+45 linhas</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-success);">✓</span>
+                <span style="color: var(--color-text-primary);">src/app/api/orders/route.ts</span>
+                <span style="margin-left: auto; color: var(--color-text-tertiary); font-size: var(--font-size-xs);">novo</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-success);">✓</span>
+                <span style="color: var(--color-text-primary);">src/app/api/cart/route.ts</span>
+                <span style="margin-left: auto; color: var(--color-text-tertiary); font-size: var(--font-size-xs);">novo</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-primary-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-primary);">⚙</span>
+                <span style="color: var(--color-text-primary);">src/components/OrderCard.tsx</span>
+                <span style="margin-left: auto; color: var(--color-text-tertiary); font-size: var(--font-size-xs);">gerando...</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); opacity: 0.6;">
+                <span style="color: var(--color-text-tertiary);">○</span>
+                <span style="color: var(--color-text-tertiary);">src/components/OrderDashboard.tsx</span>
+                <span style="margin-left: auto; color: var(--color-text-tertiary); font-size: var(--font-size-xs);">pendente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time Info -->
+        <div style="padding: var(--space-4); background: var(--color-bg-primary); border-radius: var(--border-radius-lg); display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: var(--space-3);">
+            <div>
+              <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">Tempo decorrido</div>
+              <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">7 minutos</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">Estimativa restante</div>
+            <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-primary);">~5 minutos</div>
+          </div>
+        </div>
+
+        <!-- Demo Navigation (para testar outros estados) -->
+        <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-tertiary); border-radius: var(--border-radius-lg);">
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); margin-bottom: var(--space-3);">DEMO: Simular Próximo Estado</div>
+          <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="location.href='06-iteration-complete.html'">Iteração Completa</button>
+            <button class="btn btn-secondary" onclick="location.href='08-iteration-error.html'">Simular Erro</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Iteração 2 em progresso!
+                <br><br>
+                <strong>Concluído:</strong>
+                <br>
+                ✓ Schema atualizado (Order, OrderItem, Cart)
+                <br>
+                ✓ API routes criadas (/api/orders, /api/cart)
+                <br><br>
+                <strong>Em andamento:</strong>
+                <br>
+                ⚙ Componentes React (OrderCard, OrderDashboard, Cart)
+                <br><br>
+                <strong>Próximo:</strong>
+                <br>
+                • Testes automatizados
+                <br>
+                • Deploy automático
+                <br><br>
+                Estimativa: ~5 minutos restantes
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Hub Link -->
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .step-card.in-progress .step-icon {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+
+  <script>
+    // Simula progresso automático - redireciona para iteração completa após 5 segundos
+    let progress = 60;
+    const progressBar = document.querySelector('.iteration-progress-bar-fill-inner');
+    const progressText = document.querySelector('.iteration-progress-text');
+
+    const progressInterval = setInterval(() => {
+      progress += 10;
+      if (progressBar) progressBar.style.width = progress + '%';
+      if (progressText) progressText.textContent = progress + '% concluído';
+
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          window.location.href = '06-iteration-complete.html';
+        }, 500);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

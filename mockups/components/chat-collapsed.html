@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Colapsado | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <style>
+    body {
+      margin: 0;
+      padding: var(--space-8);
+      background: var(--color-bg-secondary);
+      display: flex;
+      gap: var(--space-6);
+    }
+
+    .demo-container {
+      flex: 1;
+    }
+
+    .demo-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .demo-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .demo-layout {
+      display: flex;
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      height: 600px;
+    }
+
+    .demo-workspace {
+      flex: 1;
+      padding: var(--space-8);
+      overflow-y: auto;
+    }
+
+    .demo-workspace-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .demo-workspace-content {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .annotations {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      max-width: 400px;
+    }
+
+    .annotation-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .annotation-item {
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .annotation-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .annotation-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .annotation-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+      transition: all var(--transition-fast);
+    }
+
+    .back-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .measurement {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <a href="../index.html" class="back-link">← Voltar ao Hub</a>
+
+    <h1 class="demo-title">Chat Colapsado</h1>
+    <p class="demo-description">
+      Chat minimizado em <strong>48px</strong> na lateral. Workspace ganha mais espaço quando chat está colapsado.
+    </p>
+
+    <div class="demo-layout">
+      <!-- Workspace (ganha espaço quando chat colapsado) -->
+      <div class="demo-workspace">
+        <h2 class="demo-workspace-title">Workspace expandido</h2>
+        <p class="demo-workspace-content">
+          Quando o chat está colapsado, o workspace ganha todo o espaço disponível (flex: 1).
+          <br><br>
+          O chat colapsado ocupa apenas <span class="measurement">48px</span> na lateral direita,
+          mostrando um botão com ícone de chat e badge de notificação.
+          <br><br>
+          Isso permite que o usuário foque no conteúdo do workspace quando não está conversando
+          com a AI, mas mantém acesso rápido ao chat com um clique.
+        </p>
+      </div>
+
+      <!-- Chat Colapsado -->
+      <aside class="chat-collapsed">
+        <button class="expand-btn" title="Expandir chat">
+          💬
+          <span class="badge">1</span>
+        </button>
+        <span class="chat-label">CHAT</span>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Anotações -->
+  <div class="annotations">
+    <h2 class="annotation-title">📏 Especificações</h2>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Largura</div>
+      <div class="annotation-text">
+        <span class="measurement">48px</span> (mínimo para botão + label)
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Botão de Expandir</div>
+      <div class="annotation-text">
+        40x40px, azul primário, ícone de chat (💬)
+        <br><br>
+        Hover: escala ligeiramente (1.05) para feedback visual
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Badge de Notificação</div>
+      <div class="annotation-text">
+        Laranja (#f59e0b), mostra número de mensagens não lidas
+        <br><br>
+        Posição: canto superior direito do botão (-4px, -4px)
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Label Vertical</div>
+      <div class="annotation-text">
+        "CHAT" rotacionado verticalmente (writing-mode: vertical-rl)
+        <br><br>
+        Cor cinza, uppercase, tracking maior
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Workspace Expandido</div>
+      <div class="annotation-text">
+        Quando chat colapsado, workspace usa <strong>flex: 1</strong>
+        <br><br>
+        Chat expandido: <span class="measurement">380px</span>
+        <br>
+        Chat colapsado: <span class="measurement">48px</span>
+        <br><br>
+        <strong>Ganho:</strong> +332px de espaço horizontal
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">Quando Usar</div>
+      <div class="annotation-text">
+        <strong>Chat expandido:</strong> Durante discovery, planejamento (conversa ativa)
+        <br><br>
+        <strong>Chat colapsado:</strong> Durante geração, deploy, revisão de planos (foco no conteúdo)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simular expansão do chat
+    document.querySelector('.expand-btn').addEventListener('click', function() {
+      alert('Em um mockup completo, isso abriria o chat expandido (380px)');
+    });
+  </script>
+</body>
+</html>

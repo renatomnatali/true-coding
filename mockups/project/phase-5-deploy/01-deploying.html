@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fazendo Deploy | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .deploy-log {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-line {
+      margin-bottom: 4px;
+    }
+
+    .log-success {
+      color: #4ec9b0;
+    }
+
+    .log-info {
+      color: #9cdcfe;
+    }
+
+    .log-warning {
+      color: #ce9178;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 5/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </a>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Deploy › Em Progresso</div>
+          <h2 class="workspace-title">Fazendo Deploy...</h2>
+          <p class="workspace-subtitle">Vercel está compilando e publicando seu app</p>
+        </div>
+
+        <!-- Loading Animation -->
+        <div style="text-align: center; padding: var(--space-6) 0; margin-bottom: var(--space-6);">
+          <div style="width: 64px; height: 64px; border: 5px solid var(--color-gray-200); border-top-color: var(--color-primary); border-radius: 50%; margin: 0 auto var(--space-4); animation: spin 1s linear infinite;"></div>
+          <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+            Build em progresso...
+          </div>
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+            Compilando código TypeScript, otimizando assets...
+          </div>
+        </div>
+
+        <!-- Deploy Steps -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚡ Etapas do Deploy</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-3);">
+              <!-- Step 1 - Completed -->
+              <div style="padding: var(--space-3); background: var(--color-success-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  ✓
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Clonando Repositório
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Código baixado do GitHub
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2 - Completed -->
+              <div style="padding: var(--space-3); background: var(--color-success-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  ✓
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Instalando Dependencies
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    npm install concluído (32 packages)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 - In Progress -->
+              <div style="padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0; animation: pulse 1.5s ease-in-out infinite;">
+                  3
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Compilando Next.js
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Building production bundle...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 4 - Pending -->
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  4
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Publicando no CDN
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    Aguardando...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5 - Pending -->
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  5
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Atribuindo Domínio
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    Aguardando...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deploy Logs -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📜 Logs de Build</h3>
+          </div>
+          <div class="card-body">
+            <div class="deploy-log" id="logs">
+              <div class="log-line log-success">✓ Cloning repository github.com/renatomnatali/deliverypro</div>
+              <div class="log-line log-info">→ Running npm install...</div>
+              <div class="log-line log-success">✓ Dependencies installed (32 packages, 2.3s)</div>
+              <div class="log-line log-info">→ Running build command: npm run build</div>
+              <div class="log-line">&nbsp;&nbsp;Creating optimized production build...</div>
+              <div class="log-line log-success">&nbsp;&nbsp;✓ Compiled successfully</div>
+              <div class="log-line">&nbsp;&nbsp;Route (app) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Size &nbsp;&nbsp;&nbsp;&nbsp;First Load</div>
+              <div class="log-line">&nbsp;&nbsp;○ / &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.2 kB &nbsp;&nbsp;&nbsp;85.1 kB</div>
+              <div class="log-line">&nbsp;&nbsp;○ /dashboard &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.8 kB &nbsp;&nbsp;&nbsp;87.7 kB</div>
+              <div class="log-line">&nbsp;&nbsp;+ First Load JS shared by all &nbsp;81.9 kB</div>
+              <div class="log-line log-info">→ Optimizing images...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn" disabled style="opacity: 0.5; cursor: not-allowed;">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Deploy em progresso! 🚀
+                <br><br>
+                A Vercel está:
+                <br>
+                ✓ Clonando código do GitHub
+                <br>
+                ✓ Instalando dependências
+                <br>
+                🔄 Compilando Next.js (atual)
+                <br>
+                ⏳ Publicando no CDN global
+                <br>
+                ⏳ Atribuindo domínio
+                <br><br>
+                Acompanhe os logs de build ao lado. Em ~1 minuto seu app estará online! ⚡
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div style="padding: var(--space-4); text-align: center; color: var(--color-text-tertiary); font-size: var(--font-size-sm);">
+            Build em progresso... Aguarde.
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+
+  <script>
+    // Simulate build progress
+    setTimeout(() => {
+      const logs = document.getElementById('logs');
+      logs.innerHTML += '<div class="log-line log-success">&nbsp;&nbsp;✓ Images optimized (8 images, 234 KB → 89 KB)</div>';
+      logs.innerHTML += '<div class="log-line log-info">→ Uploading to CDN...</div>';
+
+      setTimeout(() => {
+        window.location.href = '02-deployed.html';
+      }, 3000);
+    }, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>True Coding - Mockups Hub</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <style>
+    body {
+      margin: 0;
+      padding: var(--space-8);
+      background: var(--color-bg-secondary);
+    }
+
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hub-header {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .hub-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .hub-logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .hub-logo-text {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .hub-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .hub-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+    }
+
+    .hub-section {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .hub-section-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .hub-section-title-icon {
+      font-size: var(--font-size-2xl);
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .hub-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+      transition: all var(--transition-fast);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .hub-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .hub-card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .hub-card-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .hub-card-badge {
+      display: inline-block;
+      padding: var(--space-1) var(--space-2);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      margin-top: var(--space-2);
+    }
+
+    .hub-card-badge.success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .hub-card-badge.warning {
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+    }
+
+    .hub-footer {
+      text-align: center;
+      padding: var(--space-8) 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: var(--border-radius-full);
+      background: var(--color-success);
+      margin-right: var(--space-1);
+    }
+
+    .status-indicator.pending {
+      background: var(--color-warning);
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    <!-- Header -->
+    <header class="hub-header">
+      <div class="hub-logo">
+        <div class="hub-logo-icon">TC</div>
+        <div class="hub-logo-text">True Coding</div>
+      </div>
+      <h1 class="hub-title">Mockups Navegáveis</h1>
+      <p class="hub-subtitle">Protótipos HTML/CSS da jornada completa do usuário</p>
+    </header>
+
+    <!-- Dashboard Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">📊</span>
+        Dashboard
+      </h2>
+      <div class="hub-grid">
+        <a href="dashboard/list.html" class="hub-card">
+          <div class="hub-card-title">Lista de Projetos</div>
+          <div class="hub-card-description">Dashboard principal com grid de projetos do usuário</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="dashboard/empty.html" class="hub-card">
+          <div class="hub-card-title">Empty State</div>
+          <div class="hub-card-description">Estado vazio quando usuário não tem projetos</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="dashboard/loading.html" class="hub-card">
+          <div class="hub-card-title">Loading State</div>
+          <div class="hub-card-description">Carregando projetos do usuário</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Components Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">🧩</span>
+        Componentes Isolados
+      </h2>
+      <div class="hub-grid">
+        <a href="components/sidebar.html" class="hub-card">
+          <div class="hub-card-title">Sidebar</div>
+          <div class="hub-card-description">Navegação com hierarquia visual clara</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/chat-panel.html" class="hub-card">
+          <div class="hub-card-title">Chat Panel</div>
+          <div class="hub-card-description">Chat expandido com progress (Pergunta X de Y)</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/chat-collapsed.html" class="hub-card">
+          <div class="hub-card-title">Chat Collapsed</div>
+          <div class="hub-card-description">Chat minimizado com badge</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/project-card.html" class="hub-card">
+          <div class="hub-card-title">Project Card</div>
+          <div class="hub-card-description">Card de projeto com progresso visual</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/progress-indicator.html" class="hub-card">
+          <div class="hub-card-title">Progress Indicator</div>
+          <div class="hub-card-description">Barra de progresso com steps</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/quick-replies.html" class="hub-card">
+          <div class="hub-card-title">Quick Replies</div>
+          <div class="hub-card-description">Botões de sugestão rápida</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/confirmation-panel.html" class="hub-card">
+          <div class="hub-card-title">Confirmation Panel</div>
+          <div class="hub-card-description">Painel de confirmação com resumo</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/live-preview.html" class="hub-card">
+          <div class="hub-card-title">Live Preview</div>
+          <div class="hub-card-description">Preview cards no workspace</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="components/version-history.html" class="hub-card">
+          <div class="hub-card-title">Version History</div>
+          <div class="hub-card-description">Histórico de versões do projeto</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 1 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">💡</span>
+        Fase 1 - Ideação
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-1-ideation/01-start.html" class="hub-card">
+          <div class="hub-card-title">01 - Início</div>
+          <div class="hub-card-description">Primeira pergunta do Discovery</div>
+          <span class="hub-card-badge success">✓ Pergunta 1/5</span>
+        </a>
+        <a href="project/phase-1-ideation/02-question-2.html" class="hub-card">
+          <div class="hub-card-title">02 - Pergunta 2</div>
+          <div class="hub-card-description">Features principais</div>
+          <span class="hub-card-badge success">✓ Pergunta 2/5</span>
+        </a>
+        <a href="project/phase-1-ideation/03-question-3.html" class="hub-card">
+          <div class="hub-card-title">03 - Pergunta 3</div>
+          <div class="hub-card-description">Público-alvo</div>
+          <span class="hub-card-badge success">✓ Pergunta 3/5</span>
+        </a>
+        <a href="project/phase-1-ideation/04-question-4.html" class="hub-card">
+          <div class="hub-card-title">04 - Pergunta 4</div>
+          <div class="hub-card-description">Diferenciais</div>
+          <span class="hub-card-badge success">✓ Pergunta 4/5</span>
+        </a>
+        <a href="project/phase-1-ideation/05-confirm.html" class="hub-card">
+          <div class="hub-card-title">05 - Confirmação</div>
+          <div class="hub-card-description">Revisar resumo antes de gerar plano</div>
+          <span class="hub-card-badge success">✓ Pergunta 5/5</span>
+        </a>
+        <a href="project/phase-1-ideation/06-generating.html" class="hub-card">
+          <div class="hub-card-title">06 - Gerando Plano</div>
+          <div class="hub-card-description">Loading de geração do plano</div>
+          <span class="hub-card-badge warning">Loading</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 2 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">📋</span>
+        Fase 2 - Planejamento
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-2-planning/01-business-plan.html" class="hub-card">
+          <div class="hub-card-title">01 - Business Plan</div>
+          <div class="hub-card-description">Plano de negócio gerado</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/02-business-plan-edit.html" class="hub-card">
+          <div class="hub-card-title">02 - Business Plan Edit</div>
+          <div class="hub-card-description">Editando plano de negócio</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/03-business-plan-confirm.html" class="hub-card">
+          <div class="hub-card-title">03 - Business Plan Confirm</div>
+          <div class="hub-card-description">Confirmação do plano</div>
+          <span class="hub-card-badge success">✓ Aprovado</span>
+        </a>
+        <a href="project/phase-2-planning/04-technical-plan.html" class="hub-card">
+          <div class="hub-card-title">04 - Technical Plan</div>
+          <div class="hub-card-description">Plano técnico com stack</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/05-technical-plan-edit.html" class="hub-card">
+          <div class="hub-card-title">05 - Technical Plan Edit</div>
+          <div class="hub-card-description">Selecionando tecnologias</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/06-technical-plan-confirm.html" class="hub-card">
+          <div class="hub-card-title">06 - Technical Plan Confirm</div>
+          <div class="hub-card-description">Confirmação do stack</div>
+          <span class="hub-card-badge success">✓ Aprovado</span>
+        </a>
+        <a href="project/phase-2-planning/07-ux-plan.html" class="hub-card">
+          <div class="hub-card-title">07 - UX Plan</div>
+          <div class="hub-card-description">Plano UX completo</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/08-ux-plan-edit.html" class="hub-card">
+          <div class="hub-card-title">08 - UX Plan Edit</div>
+          <div class="hub-card-description">Editando design tokens</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-2-planning/09-ux-plan-confirm.html" class="hub-card">
+          <div class="hub-card-title">09 - UX Plan Confirm</div>
+          <div class="hub-card-description">Todos os planos aprovados</div>
+          <span class="hub-card-badge success">✓ Aprovado</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 3 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">🔗</span>
+        Fase 3 - Conexão
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-3-connection/01-github-oauth.html" class="hub-card">
+          <div class="hub-card-title">01 - GitHub OAuth</div>
+          <div class="hub-card-description">Conectando com GitHub</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-3-connection/02-repository-created.html" class="hub-card">
+          <div class="hub-card-title">02 - Repository Created</div>
+          <div class="hub-card-description">Repositório criado no GitHub</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-3-connection/03-vercel-connect.html" class="hub-card">
+          <div class="hub-card-title">03 - Vercel Connect</div>
+          <div class="hub-card-description">Conectando Vercel e pipeline</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 4 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">💻</span>
+        Fase 4 - Geração
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-4-generation/01-generating-code.html" class="hub-card">
+          <div class="hub-card-title">01 - Generating Code</div>
+          <div class="hub-card-description">AI escrevendo código</div>
+          <span class="hub-card-badge warning">Loading</span>
+        </a>
+        <a href="project/phase-4-generation/02-code-generated.html" class="hub-card">
+          <div class="hub-card-title">02 - Code Generated</div>
+          <div class="hub-card-description">Código gerado com sucesso</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-4-generation/03-review-code.html" class="hub-card">
+          <div class="hub-card-title">03 - Review Code</div>
+          <div class="hub-card-description">Revisar código gerado</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-4-generation/04-commit-confirm.html" class="hub-card">
+          <div class="hub-card-title">04 - Commit Confirm</div>
+          <div class="hub-card-description">Código commitado no GitHub</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 5 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">🚀</span>
+        Fase 5 - Deploy
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-5-deploy/01-deploying.html" class="hub-card">
+          <div class="hub-card-title">01 - Deploying</div>
+          <div class="hub-card-description">Build em progresso</div>
+          <span class="hub-card-badge warning">Loading</span>
+        </a>
+        <a href="project/phase-5-deploy/02-deployed.html" class="hub-card">
+          <div class="hub-card-title">02 - Deployed</div>
+          <div class="hub-card-description">App online com sucesso</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="project/phase-5-deploy/03-environment-vars.html" class="hub-card">
+          <div class="hub-card-title">03 - Environment Vars</div>
+          <div class="hub-card-description">Configurar variáveis de ambiente</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Phase 6 Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">🎉</span>
+        Fase 6 - Online
+      </h2>
+      <div class="hub-grid">
+        <a href="project/phase-6-online/01-project-live.html" class="hub-card">
+          <div class="hub-card-title">01 - Project Live</div>
+          <div class="hub-card-description">Celebração - Projeto publicado!</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Error States Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">⚠️</span>
+        Estados de Erro
+      </h2>
+      <div class="hub-grid">
+        <a href="errors/01-business-plan-timeout.html" class="hub-card">
+          <div class="hub-card-title">01 - Timeout no Business Plan</div>
+          <div class="hub-card-description">Erro quando geração demora mais de 60s</div>
+          <span class="hub-card-badge" style="background: var(--color-error-light); color: var(--color-error);">Error</span>
+        </a>
+        <a href="errors/02-code-generation-failed.html" class="hub-card">
+          <div class="hub-card-title">02 - Erro na Geração</div>
+          <div class="hub-card-description">Falha ao gerar componente React</div>
+          <span class="hub-card-badge" style="background: var(--color-error-light); color: var(--color-error);">Error</span>
+        </a>
+        <a href="errors/03-github-connection-failed.html" class="hub-card">
+          <div class="hub-card-title">03 - Conexão GitHub</div>
+          <div class="hub-card-description">Falha no OAuth ou permissões</div>
+          <span class="hub-card-badge" style="background: var(--color-error-light); color: var(--color-error);">Error</span>
+        </a>
+        <a href="errors/04-deploy-build-failed.html" class="hub-card">
+          <div class="hub-card-title">04 - Build Failed</div>
+          <div class="hub-card-description">Erro TypeScript durante compilação</div>
+          <span class="hub-card-badge" style="background: var(--color-error-light); color: var(--color-error);">Error</span>
+        </a>
+        <a href="errors/05-missing-env-vars.html" class="hub-card">
+          <div class="hub-card-title">05 - Env Vars Faltando</div>
+          <div class="hub-card-description">Variáveis de ambiente obrigatórias ausentes</div>
+          <span class="hub-card-badge" style="background: var(--color-warning-light); color: var(--color-warning);">Warning</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Mobile Section -->
+    <section class="hub-section">
+      <h2 class="hub-section-title">
+        <span class="hub-section-title-icon">📱</span>
+        Versão Mobile
+      </h2>
+      <div class="hub-grid">
+        <a href="mobile/01-dashboard.html" class="hub-card">
+          <div class="hub-card-title">01 - Dashboard</div>
+          <div class="hub-card-description">Lista de projetos com cards e FAB button</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="mobile/02-discovery-chat.html" class="hub-card">
+          <div class="hub-card-title">02 - Discovery + Chat</div>
+          <div class="hub-card-description">Chat drawer com FAB e progress bar</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="mobile/03-plan-view.html" class="hub-card">
+          <div class="hub-card-title">03 - Visualização de Plano</div>
+          <div class="hub-card-description">Business Plan com tabs e bottom action bar</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+        <a href="mobile/04-generating.html" class="hub-card">
+          <div class="hub-card-title">04 - Gerando Código</div>
+          <div class="hub-card-description">Loading com steps animados e estatísticas</div>
+          <span class="hub-card-badge success">✓ Concluído</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="hub-footer">
+      <p><span class="status-indicator"></span> Mockups navegáveis | True Coding © 2026</p>
+      <p style="margin-top: var(--space-2);">
+        <strong>Status:</strong> ✅ Todos os mockups completos (47 arquivos: 33 telas + 9 componentes + 5 erros) | Desktop + Mobile + Error States
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

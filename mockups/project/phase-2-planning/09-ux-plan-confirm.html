@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de UX - Confirmação | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 2/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Plano de Negócio</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Plano Técnico</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Plano de UX</span>
+          </div>
+          <a href="#" class="nav-item available">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </a>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Planejamento › Concluído</div>
+          <h2 class="workspace-title">Fase de Planejamento Concluída! 🎉</h2>
+          <p class="workspace-subtitle">Todos os planos foram criados e aprovados</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div style="margin-bottom: var(--space-6); padding: var(--space-5); background: var(--color-success-light); border-radius: var(--border-radius-lg); border-left: 4px solid var(--color-success);">
+          <div style="display: flex; align-items: center; gap: var(--space-3);">
+            <div style="font-size: 48px;">✅</div>
+            <div>
+              <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                Planos Aprovados com Sucesso!
+              </div>
+              <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                Plano de Negócio, Plano Técnico e Plano de UX estão completos e documentados. Pronto para conectar GitHub!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+          <div style="padding: var(--space-4); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md);">
+            <div style="font-size: 32px; margin-bottom: var(--space-2);">📊</div>
+            <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+              Plano de Negócio
+            </div>
+            <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+              DeliveryPro
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+              4 features core • Público definido • Modelo de monetização aprovado
+            </div>
+          </div>
+
+          <div style="padding: var(--space-4); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md);">
+            <div style="font-size: 32px; margin-bottom: var(--space-2);">🛠️</div>
+            <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+              Plano Técnico
+            </div>
+            <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+              Next.js + PostgreSQL
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+              Stack moderna • Arquitetura definida • Integrações mapeadas
+            </div>
+          </div>
+
+          <div style="padding: var(--space-4); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md);">
+            <div style="font-size: 32px; margin-bottom: var(--space-2);">🎨</div>
+            <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+              Plano de UX
+            </div>
+            <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+              2 Personas • Jornadas
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+              Design tokens • Wireframes • Especificações UI
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📌 Próximos Passos</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-3);">
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                  1
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Conectar GitHub
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                    Autorize acesso ao GitHub para criar o repositório do projeto
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                  2
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Gerar Código (Bloqueado)
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                    AI gerará código profissional baseado nos planos
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex-shrink: 0;">
+                  3
+                </div>
+                <div>
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Deploy Automático (Bloqueado)
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                    Deploy na Vercel com um clique
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: space-between;">
+          <button class="btn btn-secondary" onclick="location.href='01-business-plan.html'">
+            ← Revisar Planos
+          </button>
+          <button class="btn btn-primary btn-lg" onclick="location.href='../phase-3-connection/01-github-oauth.html'">
+            Conectar GitHub e Continuar →
+          </button>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Parabéns! 🎉
+                <br><br>
+                Você completou a <strong>Fase de Planejamento</strong>!
+                <br><br>
+                Temos:
+                <br>
+                ✅ Plano de Negócio completo
+                <br>
+                ✅ Stack técnica definida
+                <br>
+                ✅ UX Design documentado
+                <br><br>
+                <strong>Próximo passo:</strong> Conectar seu GitHub para criar o repositório e começar a gerar código!
+                <br><br>
+                Você terá controle total do código e poderá fazer deploys ilimitados.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="location.href='../phase-3-connection/01-github-oauth.html'">
+              Conectar GitHub agora
+            </button>
+            <button class="quick-reply-btn" onclick="location.href='01-business-plan.html'">
+              Revisar planos
+            </button>
+            <button class="quick-reply-btn">
+              Exportar documentação
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

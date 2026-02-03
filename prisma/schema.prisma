@@ -103,6 +103,10 @@ model Conversation {
   phase     ConversationPhase
   status    ConversationStatus @default(ACTIVE)
 
+  // Discovery flow tracking (ADR-0001)
+  currentQuestion    Int   @default(1)
+  completedQuestions Int[] @default([])
+
   // Relations
   messages Message[]
 

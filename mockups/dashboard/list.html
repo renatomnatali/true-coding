@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      margin: 0;
+      background: var(--color-bg-secondary);
+    }
+
+    /* Header */
+    .dashboard-header {
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-5) var(--space-8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dashboard-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .logo-text {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+    }
+
+    .dashboard-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .dashboard-user:hover {
+      background: var(--color-bg-secondary);
+    }
+
+    .user-avatar-large {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--border-radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .user-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Main Content */
+    .dashboard-main {
+      padding: var(--space-8);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .dashboard-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .dashboard-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-4);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    /* Dropdown menu visibility */
+    .dropdown-menu {
+      display: none;
+    }
+
+    .dropdown-menu.active {
+      display: block;
+    }
+
+    /* Fix dropdown positioning inside project cards */
+    .project-card .dropdown-menu {
+      top: calc(var(--space-4) + 32px);
+      right: var(--space-4);
+    }
+
+    /* Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-value.success {
+      color: var(--color-success);
+    }
+
+    .stat-value.warning {
+      color: var(--color-warning);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* Filter Tabs */
+    .filters-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-1);
+      background: var(--color-bg-primary);
+      padding: var(--space-1);
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .filter-tab {
+      padding: var(--space-2) var(--space-4);
+      border: none;
+      background: transparent;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: var(--border-radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .filter-tab:hover {
+      color: var(--color-text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .filter-tab .count {
+      margin-left: var(--space-1);
+      opacity: 0.7;
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .filter-select {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      background: var(--color-bg-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      cursor: pointer;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      margin-top: var(--space-8);
+      padding: var(--space-5);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+    }
+
+    .quick-actions-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-4);
+    }
+
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .quick-action-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: left;
+    }
+
+    .quick-action-btn:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+
+    .quick-action-icon {
+      font-size: var(--font-size-lg);
+    }
+
+    .quick-action-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quick-action-label {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .quick-action-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="dashboard-logo">
+      <div class="logo-icon">TC</div>
+      <div class="logo-text">True Coding</div>
+    </div>
+
+    <div class="dashboard-user">
+      <div class="user-info">
+        <div class="user-name">Renato Natali</div>
+        <div class="user-email">renato@email.com</div>
+      </div>
+      <div class="user-avatar-large">RN</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <div class="dashboard-title-row">
+      <h1 class="dashboard-title">Meus Projetos</h1>
+      <button class="btn btn-primary btn-lg" onclick="openCreateModal()">
+        + Novo projeto
+      </button>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">Projetos totais</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value success">1</div>
+        <div class="stat-label">Online</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value warning">2</div>
+        <div class="stat-label">Em progresso</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">~12h</div>
+        <div class="stat-label">Tempo médio</div>
+      </div>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="filters-row">
+      <div class="filter-tabs">
+        <button class="filter-tab active">Todos<span class="count">(4)</span></button>
+        <button class="filter-tab">Em progresso<span class="count">(2)</span></button>
+        <button class="filter-tab">Concluídos<span class="count">(1)</span></button>
+        <button class="filter-tab">Arquivados<span class="count">(0)</span></button>
+      </div>
+      <div class="filter-controls">
+        <select class="filter-select">
+          <option>Mais recentes</option>
+          <option>Mais antigos</option>
+          <option>Alfabético</option>
+          <option>Por fase</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="projects-grid">
+      <!-- Projeto 1: Fase 1 -->
+      <div class="project-card" onclick="window.location.href='../project/phase-1-ideation/01-start.html'">
+        <button class="project-card-menu" onclick="toggleDropdown(event, 'menu1')" aria-label="Menu de opções do projeto">⋮</button>
+        <div id="menu1" class="dropdown-menu">
+          <button class="dropdown-item" onclick="event.stopPropagation(); window.location.href='../project/phase-1-ideation/01-start.html'">✏️ Editar</button>
+          <button class="dropdown-item" onclick="event.stopPropagation(); window.location.href='../project/phase-1-ideation/01-start.html'">👁️ Ver detalhes</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="openDeleteModal(event, 'Meu App Delivery')">🗑️ Excluir</button>
+        </div>
+        <div class="project-card-name">Meu App Delivery</div>
+        <div class="project-card-description">
+          Aplicativo para gerenciar entregas de restaurantes com rastreamento em tempo real
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 1: Ideação</div>
+        </div>
+        <div class="project-card-meta">Atualizado há 2 horas</div>
+      </div>
+
+      <!-- Projeto 2: Fase 2 -->
+      <div class="project-card" onclick="window.location.href='../project/phase-2-planning/business/02-review.html'">
+        <button class="project-card-menu" onclick="toggleDropdown(event, 'menu2')" aria-label="Menu de opções do projeto">⋮</button>
+        <div id="menu2" class="dropdown-menu">
+          <button class="dropdown-item" onclick="event.stopPropagation()">✏️ Editar</button>
+          <button class="dropdown-item" onclick="event.stopPropagation()">👁️ Ver detalhes</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="openDeleteModal(event, 'Portfolio Pessoal')">🗑️ Excluir</button>
+        </div>
+        <div class="project-card-name">Portfolio Pessoal</div>
+        <div class="project-card-description">
+          Site pessoal com portfólio de projetos, blog técnico e informações de contato
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 2: Planejamento</div>
+        </div>
+        <div class="project-card-meta">Atualizado ontem</div>
+      </div>
+
+      <!-- Projeto 3: Fase 4 -->
+      <div class="project-card" onclick="window.location.href='../project/phase-4-generation/01-generating.html'">
+        <button class="project-card-menu" onclick="toggleDropdown(event, 'menu3')" aria-label="Menu de opções do projeto">⋮</button>
+        <div id="menu3" class="dropdown-menu">
+          <button class="dropdown-item" onclick="event.stopPropagation()">✏️ Editar</button>
+          <button class="dropdown-item" onclick="event.stopPropagation()">👁️ Ver detalhes</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="openDeleteModal(event, 'SaaS Dashboard')">🗑️ Excluir</button>
+        </div>
+        <div class="project-card-name">SaaS Dashboard</div>
+        <div class="project-card-description">
+          Painel de métricas e analytics para empresas SaaS com relatórios customizáveis
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 4: Geração</div>
+        </div>
+        <div class="project-card-meta">Atualizado há 5 minutos</div>
+      </div>
+
+      <!-- Projeto 4: Fase 6 (Completo) -->
+      <div class="project-card" onclick="window.location.href='../project/phase-6-online/01-success.html'">
+        <button class="project-card-menu" onclick="toggleDropdown(event, 'menu4')" aria-label="Menu de opções do projeto">⋮</button>
+        <div id="menu4" class="dropdown-menu">
+          <button class="dropdown-item" onclick="event.stopPropagation()">✏️ Editar</button>
+          <button class="dropdown-item" onclick="event.stopPropagation()">👁️ Ver detalhes</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="openDeleteModal(event, 'API de Pagamentos')">🗑️ Excluir</button>
+        </div>
+        <div class="project-card-name">API de Pagamentos</div>
+        <div class="project-card-description">
+          Integração com gateways de pagamento (Stripe, PayPal) para e-commerce
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+          </div>
+          <div class="project-card-phase">Fase 6: Online ✨</div>
+        </div>
+        <div class="project-card-meta">Deploy completo há 3 dias</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="quick-actions-title">Ações rápidas</div>
+      <div class="quick-actions-grid">
+        <button class="quick-action-btn" onclick="window.location.href='../project/phase-4-generation/01-generating.html'">
+          <span class="quick-action-icon">▶️</span>
+          <span class="quick-action-text">
+            <span class="quick-action-label">Continuar "SaaS Dashboard"</span>
+            <span class="quick-action-hint">Fase 4: Geração em andamento</span>
+          </span>
+        </button>
+        <button class="quick-action-btn" onclick="openCreateModal()">
+          <span class="quick-action-icon">📋</span>
+          <span class="quick-action-text">
+            <span class="quick-action-label">Duplicar projeto</span>
+            <span class="quick-action-hint">Use como base para novo app</span>
+          </span>
+        </button>
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">📚</span>
+          <span class="quick-action-text">
+            <span class="quick-action-label">Ver tutoriais</span>
+            <span class="quick-action-hint">Aprenda a usar a plataforma</span>
+          </span>
+        </button>
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">🎨</span>
+          <span class="quick-action-text">
+            <span class="quick-action-label">Explorar templates</span>
+            <span class="quick-action-hint">Comece com projetos prontos</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Criar Projeto -->
+  <div id="createModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Criar novo projeto</h2>
+        <button class="modal-close" onclick="closeCreateModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="createForm" onsubmit="handleCreate(event)">
+          <div class="form-group">
+            <label class="form-label form-label-required">Nome do projeto</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="Meu App Incrível"
+              required
+              autofocus
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrição (opcional)</label>
+            <textarea
+              class="form-textarea"
+              placeholder="Uma breve descrição do que você quer criar..."
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCreateModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('createForm').requestSubmit()">
+          Criar projeto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Deletar Projeto -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Excluir projeto?</h2>
+        <button class="modal-close" onclick="closeDeleteModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--color-text-secondary); line-height: 1.5;">
+          Tem certeza que deseja excluir o projeto <strong id="deleteProjectName"></strong>?
+          <br><br>
+          Esta ação não pode ser desfeita. Todo o código gerado e configurações serão perdidos.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+        <button class="btn btn-danger" onclick="handleDelete()">Excluir projeto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link para voltar ao Hub -->
+  <div style="position: fixed; bottom: var(--space-4); left: var(--space-4);">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">
+      ← Voltar ao Hub
+    </a>
+  </div>
+
+  <script>
+    // Toggle dropdown
+    function toggleDropdown(event, menuId) {
+      event.stopPropagation();
+      const menu = document.getElementById(menuId);
+
+      // Close all other dropdowns
+      document.querySelectorAll('.dropdown-menu').forEach(m => {
+        if (m.id !== menuId) m.classList.remove('active');
+      });
+
+      menu.classList.toggle('active');
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.dropdown-menu').forEach(m => {
+        m.classList.remove('active');
+      });
+    });
+
+    // Modal: Create
+    function openCreateModal() {
+      document.getElementById('createModal').classList.add('active');
+      setTimeout(() => {
+        document.querySelector('#createModal .form-input').focus();
+      }, 100);
+    }
+
+    function closeCreateModal() {
+      document.getElementById('createModal').classList.remove('active');
+      document.getElementById('createForm').reset();
+    }
+
+    function handleCreate(event) {
+      event.preventDefault();
+      // Redirect directly to Discovery without blocking alert
+      window.location.href = '../project/phase-1-ideation/01-start.html';
+    }
+
+    // Modal: Delete
+    function openDeleteModal(event, projectName) {
+      event.stopPropagation();
+      document.getElementById('deleteProjectName').textContent = projectName;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function handleDelete() {
+      alert('Projeto excluído com sucesso!');
+      closeDeleteModal();
+      // Reload page (simulação)
+      window.location.reload();
+    }
+
+    // Close modals with ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCreateModal();
+        closeDeleteModal();
+      }
+    });
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        // Demo: just visual toggle, no actual filtering
+      });
+    });
+  </script>
+</body>
+</html>

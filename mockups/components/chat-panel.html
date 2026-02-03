@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Panel | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <style>
+    body {
+      margin: 0;
+      padding: var(--space-8);
+      background: var(--color-bg-secondary);
+      display: flex;
+      gap: var(--space-6);
+    }
+
+    .demo-container {
+      flex: 1;
+    }
+
+    .demo-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .demo-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .demo-chat {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .chat-panel {
+      height: 600px;
+    }
+
+    .annotations {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      max-width: 400px;
+    }
+
+    .annotation-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .annotation-item {
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .annotation-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .annotation-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .annotation-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+      transition: all var(--transition-fast);
+    }
+
+    .back-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .highlight {
+      background: var(--color-warning-light);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--border-radius-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <a href="../index.html" class="back-link">← Voltar ao Hub</a>
+
+    <h1 class="demo-title">Chat Panel Corrigido</h1>
+    <p class="demo-description">
+      Chat com <strong>progress LOCAL</strong> mostrando "Pergunta X de Y" dentro da fase atual,
+      não "Fase 2 de 6" (que é o progresso global da jornada).
+    </p>
+
+    <div class="demo-chat">
+      <!-- CHAT PANEL CORRIGIDO -->
+      <aside class="chat-panel">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Discovery</div>
+            <button class="collapse-btn" title="Colapsar chat">◀</button>
+          </div>
+
+          <!-- Progress LOCAL (dentro da fase) -->
+          <div class="progress-indicator">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 60%;"></div>
+            </div>
+            <span class="progress-text">Pergunta 3 de 5</span>
+          </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Ótimo! Agora me conta: <strong>quem vai usar esse app?</strong> 🎯
+                <br><br>
+                São pessoas físicas, empresas, ou uso interno?
+              </div>
+            </div>
+          </div>
+
+          <div class="message user">
+            <div class="message-avatar">RN</div>
+            <div class="message-content">
+              <div class="message-author">Você</div>
+              <div class="message-text">
+                São pequenos restaurantes que fazem delivery
+              </div>
+            </div>
+          </div>
+
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Perfeito! E quais são as <strong>funcionalidades essenciais</strong> que seu app precisa ter? 📋
+                <br><br>
+                Pense nas 3-5 features mais importantes para o MVP.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Replies -->
+        <div class="quick-replies">
+          <div class="quick-replies-label">SUGESTÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn">Gerenciar pedidos</button>
+            <button class="quick-reply-btn">Cardápio digital</button>
+            <button class="quick-reply-btn">Rastrear entregadores</button>
+            <button class="quick-reply-btn">Relatórios de vendas</button>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Digite sua resposta..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Anotações -->
+  <div class="annotations">
+    <h2 class="annotation-title">🔧 Correção Principal</h2>
+
+    <div class="annotation-item">
+      <div class="annotation-label">❌ ANTES (Errado)</div>
+      <div class="annotation-text">
+        Barra mostrava <span class="highlight" style="background: var(--color-error-light); color: var(--color-error);">Fase 2 de 6</span>
+        <br><br>
+        <strong>Problema:</strong> Usuário não sabia quantas perguntas faltavam DENTRO da fase Discovery.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">✅ AGORA (Correto)</div>
+      <div class="annotation-text">
+        Barra mostra <span class="highlight">Pergunta 3 de 5</span>
+        <br><br>
+        <strong>Solução:</strong> Progress LOCAL dentro da fase atual. Usuário sabe exatamente quantas perguntas faltam.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">📊 Diferenciação</div>
+      <div class="annotation-text">
+        <strong>Sidebar:</strong> Progresso GLOBAL da jornada ("JORNADA - Fase 2/6")
+        <br><br>
+        <strong>Chat:</strong> Progresso LOCAL da fase ("Pergunta 3/5")
+        <br><br>
+        Cada um tem seu propósito e não se duplicam.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">🎨 Estilo da Barra</div>
+      <div class="annotation-text">
+        Cor: <span class="highlight">Laranja (#f59e0b)</span> para diferenciar do azul das fases.
+        <br><br>
+        Indica progresso ativo/temporário dentro da fase.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">💬 Quick Replies</div>
+      <div class="annotation-text">
+        Sugestões contextuais para cada pergunta. Usuário pode clicar ou digitar livremente.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-resize textarea
+    document.querySelector('.chat-input').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Quick reply click
+    document.querySelectorAll('.quick-reply-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelector('.chat-input').value = this.textContent.trim();
+      });
+    });
+  </script>
+</body>
+</html>

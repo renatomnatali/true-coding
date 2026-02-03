@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogo de Componentes | True Coding v2</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    body {
+      padding: var(--space-8);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+    }
+
+    .section {
+      margin-bottom: var(--space-10);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .component-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+    }
+
+    .component-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-4);
+    }
+
+    .component-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .component-row {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .state-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      min-width: 60px;
+    }
+
+    /* === BOTOES === */
+    .btn {
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      font-family: var(--font-family);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .btn-primary:disabled {
+      background: var(--color-gray-300);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-gray-300);
+    }
+
+    /* === CARDS === */
+    .card-blue-border {
+      background: var(--color-bg-primary);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+    }
+
+    .card-blue-border .card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .card-blue-border .card-content {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .card-normal {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+    }
+
+    /* === QUICK REPLIES === */
+    .quick-reply {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: var(--font-family);
+    }
+
+    .quick-reply:hover {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .quick-reply.selected {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .quick-reply:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* === PROGRESS BAR === */
+    .progress-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--color-gray-200);
+      border-radius: var(--border-radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-warning);
+      border-radius: var(--border-radius-full);
+    }
+
+    .progress-text {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-warning);
+      white-space: nowrap;
+      min-width: 70px;
+    }
+
+    /* === PHASE INDICATORS === */
+    .phase-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .phase-item {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .phase-item.pending {
+      color: var(--color-text-secondary);
+    }
+
+    .phase-item.current {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .phase-item.completed {
+      color: var(--color-success);
+    }
+
+    .phase-item .status-icon {
+      margin-left: auto;
+    }
+
+    /* === AVATAR === */
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--border-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .avatar-primary {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .avatar-neutral {
+      background: var(--color-gray-200);
+      color: var(--color-gray-700);
+    }
+
+    .avatar-small {
+      width: 32px;
+      height: 32px;
+      font-size: var(--font-size-xs);
+    }
+
+    /* === FAB === */
+    .fab-demo {
+      position: relative;
+      height: 80px;
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fab {
+      width: 56px;
+      height: 56px;
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--border-radius-full);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .fab .badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      background: var(--color-warning);
+      border-radius: var(--border-radius-full);
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* === INPUT === */
+    .input-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .input {
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      font-size: var(--font-size-base);
+      font-family: var(--font-family);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+
+    .input.error {
+      border-color: var(--color-error);
+    }
+
+    .input.error:focus {
+      box-shadow: 0 0 0 3px var(--color-error-light);
+    }
+
+    /* === COLORS === */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .color-swatch {
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .color-preview {
+      height: 60px;
+    }
+
+    .color-info {
+      padding: var(--space-2);
+      background: var(--color-bg-primary);
+    }
+
+    .color-name {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .color-value {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-mono);
+    }
+
+    /* Nav */
+    .mockup-nav {
+      position: fixed;
+      top: var(--space-4);
+      right: var(--space-4);
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .nav-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      text-decoration: none;
+      font-family: var(--font-family);
+    }
+
+    .nav-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .nav-btn.secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1 class="page-title">Catalogo de Componentes v2</h1>
+    <p class="page-subtitle">Todos os componentes usados no novo layout</p>
+  </div>
+
+  <!-- CORES -->
+  <section class="section">
+    <h2 class="section-title">Cores</h2>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #2563eb;"></div>
+        <div class="color-info">
+          <div class="color-name">Primary</div>
+          <div class="color-value">#2563eb</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #1d4ed8;"></div>
+        <div class="color-info">
+          <div class="color-name">Primary Hover</div>
+          <div class="color-value">#1d4ed8</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #dbeafe;"></div>
+        <div class="color-info">
+          <div class="color-name">Primary Light</div>
+          <div class="color-value">#dbeafe</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #f59e0b;"></div>
+        <div class="color-info">
+          <div class="color-name">Warning/Progress</div>
+          <div class="color-value">#f59e0b</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #10b981;"></div>
+        <div class="color-info">
+          <div class="color-name">Success</div>
+          <div class="color-value">#10b981</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-preview" style="background: #f9fafb;"></div>
+        <div class="color-info">
+          <div class="color-name">Workspace BG</div>
+          <div class="color-value">#f9fafb</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTOES -->
+  <section class="section">
+    <h2 class="section-title">Botoes</h2>
+    <div class="component-grid">
+      <div class="component-card">
+        <div class="component-name">Botao Primario</div>
+        <div class="component-demo">
+          <div class="component-row">
+            <span class="state-label">Normal</span>
+            <button class="btn btn-primary">Confirmar</button>
+          </div>
+          <div class="component-row">
+            <span class="state-label">Hover</span>
+            <button class="btn btn-primary" style="background: var(--color-primary-hover);">Confirmar</button>
+          </div>
+          <div class="component-row">
+            <span class="state-label">Disabled</span>
+            <button class="btn btn-primary" disabled>Confirmar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Botao Secundario</div>
+        <div class="component-demo">
+          <div class="component-row">
+            <span class="state-label">Normal</span>
+            <button class="btn btn-secondary">Ajustar</button>
+          </div>
+          <div class="component-row">
+            <span class="state-label">Hover</span>
+            <button class="btn btn-secondary" style="background: var(--color-gray-300);">Ajustar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="section">
+    <h2 class="section-title">Cards</h2>
+    <div class="component-grid">
+      <div class="component-card">
+        <div class="component-name">Card com Borda Azul</div>
+        <div class="card-blue-border">
+          <div class="card-title">📋 Resumo do Discovery</div>
+          <div class="card-content">Card principal com borda azul 2px usado para destacar conteudo importante.</div>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Card Normal</div>
+        <div class="card-normal">
+          <div style="font-weight: var(--font-weight-medium); margin-bottom: var(--space-2);">Card Padrao</div>
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Card com borda cinza para conteudo secundario.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK REPLIES -->
+  <section class="section">
+    <h2 class="section-title">Quick Replies (Chips)</h2>
+    <div class="component-card" style="max-width: 500px;">
+      <div class="component-name">Estados</div>
+      <div class="component-demo">
+        <div class="component-row">
+          <span class="state-label">Normal</span>
+          <button class="quick-reply">💳 Freemium</button>
+          <button class="quick-reply">📅 Assinatura</button>
+        </div>
+        <div class="component-row">
+          <span class="state-label">Hover</span>
+          <button class="quick-reply" style="background: var(--color-primary-light); border-color: var(--color-primary); color: var(--color-primary);">💳 Freemium</button>
+        </div>
+        <div class="component-row">
+          <span class="state-label">Selected</span>
+          <button class="quick-reply selected">💳 Freemium</button>
+        </div>
+        <div class="component-row">
+          <span class="state-label">Disabled</span>
+          <button class="quick-reply" disabled>💳 Freemium</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRESS BAR -->
+  <section class="section">
+    <h2 class="section-title">Barra de Progresso</h2>
+    <div class="component-card" style="max-width: 400px;">
+      <div class="component-name">Progresso das Perguntas</div>
+      <div class="progress-demo">
+        <div class="progress-item">
+          <div class="progress-bar"><div class="progress-fill" style="width: 20%;"></div></div>
+          <span class="progress-text">1 de 5</span>
+        </div>
+        <div class="progress-item">
+          <div class="progress-bar"><div class="progress-fill" style="width: 40%;"></div></div>
+          <span class="progress-text">2 de 5</span>
+        </div>
+        <div class="progress-item">
+          <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+          <span class="progress-text">3 de 5</span>
+        </div>
+        <div class="progress-item">
+          <div class="progress-bar"><div class="progress-fill" style="width: 80%;"></div></div>
+          <span class="progress-text">4 de 5</span>
+        </div>
+        <div class="progress-item">
+          <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+          <span class="progress-text">5 de 5</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHASE INDICATORS -->
+  <section class="section">
+    <h2 class="section-title">Indicadores de Fase</h2>
+    <div class="component-card" style="max-width: 250px;">
+      <div class="component-name">Navegacao de Fases</div>
+      <div class="phase-list">
+        <div class="phase-item completed">
+          <span>💬</span> Discovery
+          <span class="status-icon">✓</span>
+        </div>
+        <div class="phase-item current">
+          <span>📋</span> Planning
+          <span class="status-icon">●</span>
+        </div>
+        <div class="phase-item pending">
+          <span>🔗</span> Connect
+        </div>
+        <div class="phase-item pending">
+          <span>⚡</span> Generate
+        </div>
+        <div class="phase-item pending">
+          <span>🚀</span> Deploy
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVATARS -->
+  <section class="section">
+    <h2 class="section-title">Avatars</h2>
+    <div class="component-card" style="max-width: 300px;">
+      <div class="component-name">Tamanhos e Estilos</div>
+      <div class="component-demo">
+        <div class="component-row">
+          <span class="state-label">Normal</span>
+          <div class="avatar avatar-primary">RN</div>
+          <div class="avatar avatar-neutral">AI</div>
+        </div>
+        <div class="component-row">
+          <span class="state-label">Small</span>
+          <div class="avatar avatar-primary avatar-small">RN</div>
+          <div class="avatar avatar-neutral avatar-small">AI</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAB -->
+  <section class="section">
+    <h2 class="section-title">FAB (Floating Action Button)</h2>
+    <div class="component-card" style="max-width: 300px;">
+      <div class="component-name">Mobile Chat Button</div>
+      <div class="fab-demo">
+        <button class="fab">
+          💬
+          <span class="badge">1</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUTS -->
+  <section class="section">
+    <h2 class="section-title">Inputs</h2>
+    <div class="component-grid">
+      <div class="component-card">
+        <div class="component-name">Text Input</div>
+        <div class="input-demo">
+          <div>
+            <span class="state-label">Normal</span>
+            <input class="input" placeholder="Digite sua resposta..." />
+          </div>
+          <div>
+            <span class="state-label">Focus</span>
+            <input class="input" placeholder="Digite..." style="border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light);" />
+          </div>
+          <div>
+            <span class="state-label">Error</span>
+            <input class="input error" placeholder="Campo obrigatorio" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nav -->
+  <div class="mockup-nav">
+    <a href="index.html" class="nav-btn secondary">Hub</a>
+    <a href="desktop-expanded.html" class="nav-btn">Ver Layout</a>
+  </div>
+</body>
+</html>

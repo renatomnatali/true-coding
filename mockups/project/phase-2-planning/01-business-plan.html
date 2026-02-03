@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejamento - Plano de Negócio | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 2/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <div class="nav-item sub-item in-progress">
+            <span>Plano de Negócio</span>
+          </div>
+          <div class="nav-item sub-item available">
+            <span>Plano Técnico</span>
+          </div>
+          <div class="nav-item sub-item available">
+            <span>Plano de UX</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Planejamento › Plano de Negócio</div>
+          <h2 class="workspace-title">DeliveryPro</h2>
+          <p class="workspace-subtitle">Sistema de gestão de entregas para restaurantes</p>
+        </div>
+
+        <!-- Business Plan Content -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📊 Visão Geral</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Nome do Projeto
+              </div>
+              <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                DeliveryPro
+              </div>
+            </div>
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Tagline
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.5;">
+                Gestão inteligente de entregas para pequenos restaurantes
+              </div>
+            </div>
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Descrição
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-secondary); line-height: 1.6;">
+                Plataforma web que permite pequenos restaurantes gerenciarem pedidos, rastrearem entregadores em tempo real e oferecerem cardápios digitais aos seus clientes, com taxas mais acessíveis que os marketplaces tradicionais.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🎯 Problema e Solução</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Problema
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.6;">
+                Pequenos restaurantes enfrentam altas comissões (15-30%) de plataformas como iFood e Rappi, reduzindo drasticamente suas margens de lucro. Além disso, têm pouco controle sobre a experiência do cliente e dados de vendas.
+              </div>
+            </div>
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Solução
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.6;">
+                Sistema próprio de gestão com comissão de apenas 5% por pedido + assinatura mensal de R$ 99, oferecendo controle total sobre pedidos, cardápio digital personalizado, rastreamento em tempo real e dados de vendas detalhados.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">👥 Público-Alvo</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-3);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Persona Principal
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.6;">
+                Pequenos restaurantes com 5-20 funcionários que já fazem entregas e buscam reduzir custos com plataformas tradicionais.
+              </div>
+            </div>
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Dores e Necessidades
+              </div>
+              <ul style="font-size: var(--font-size-base); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                <li>Reduzir comissões e aumentar margem de lucro</li>
+                <li>Ter controle sobre dados de clientes e vendas</li>
+                <li>Personalizar experiência de marca no delivery</li>
+                <li>Rastrear entregadores em tempo real</li>
+                <li>Suporte em português e atendimento local</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚡ Funcionalidades Core</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-4);">
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                  1. Gestão de Pedidos em Tempo Real
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                  Dashboard com todos os pedidos ativos, histórico completo, notificações instantâneas e atualização automática de status.
+                </div>
+                <div style="margin-top: var(--space-1);">
+                  <span style="display: inline-block; padding: 2px 8px; background: var(--color-error-light); color: var(--color-error); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);">MUST-HAVE</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                  2. Rastreamento de Entregadores
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                  Mapa interativo mostrando localização em tempo real de todos os entregadores, ETAs precisos e histórico de rotas.
+                </div>
+                <div style="margin-top: var(--space-1);">
+                  <span style="display: inline-block; padding: 2px 8px; background: var(--color-error-light); color: var(--color-error); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);">MUST-HAVE</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                  3. Cardápio Digital
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                  Editor visual de cardápio com upload de fotos, categorias customizáveis, opções de combos e controle de disponibilidade.
+                </div>
+                <div style="margin-top: var(--space-1);">
+                  <span style="display: inline-block; padding: 2px 8px; background: var(--color-warning-light); color: var(--color-warning); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);">SHOULD-HAVE</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                  4. Pagamentos Integrados
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5;">
+                  Gateway de pagamento com PIX, cartão de crédito/débito, split de pagamento automático e reconciliação financeira.
+                </div>
+                <div style="margin-top: var(--space-1);">
+                  <span style="display: inline-block; padding: 2px 8px; background: var(--color-error-light); color: var(--color-error); border-radius: var(--border-radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);">MUST-HAVE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">👥 Personas Detalhadas</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-5);">
+              <div style="border-left: 4px solid var(--color-primary); padding-left: var(--space-4); margin-bottom: var(--space-3);">
+                <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  👨‍🍳 Persona 1: Rafael - Dono de Restaurante Local
+                </div>
+                <div style="display: grid; gap: var(--space-3); font-size: var(--font-size-sm);">
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Background:</strong>
+                    <span style="color: var(--color-text-secondary);"> 35 anos, dono de pizzaria há 8 anos em São Paulo. Faturamento de R$ 40k/mês, sendo 60% delivery.</span>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Objetivos:</strong>
+                    <ul style="margin: var(--space-1) 0 0; padding-left: var(--space-5); color: var(--color-text-secondary);">
+                      <li>Reduzir custos operacionais de delivery em pelo menos 50%</li>
+                      <li>Ter acesso aos dados de clientes para fidelização</li>
+                      <li>Controlar a experiência completa de pedido</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Pain Points:</strong>
+                    <ul style="margin: var(--space-1) 0 0; padding-left: var(--space-5); color: var(--color-text-secondary);">
+                      <li>Paga R$ 6k/mês de comissões para iFood e Rappi</li>
+                      <li>Não consegue fidelizar clientes (dados ficam nas plataformas)</li>
+                      <li>Entregadores sem rastreamento adequado</li>
+                      <li>Atendimento ruim do suporte das plataformas</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Triggers:</strong>
+                    <span style="color: var(--color-text-secondary);"> Aumento recente de comissão do iFood, cliente perdido por problema de entrega</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="border-left: 4px solid var(--color-success); padding-left: var(--space-4);">
+                <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  👩‍💼 Persona 2: Mariana - Gerente de Operações
+                </div>
+                <div style="display: grid; gap: var(--space-3); font-size: var(--font-size-sm);">
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Background:</strong>
+                    <span style="color: var(--color-text-secondary);"> 28 anos, gerente operacional de rede com 3 lojas. Responsável por toda gestão de delivery.</span>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Objetivos:</strong>
+                    <ul style="margin: var(--space-1) 0 0; padding-left: var(--space-5); color: var(--color-text-secondary);">
+                      <li>Centralizar operação de todas as lojas em um único sistema</li>
+                      <li>Ter dashboards e relatórios consolidados</li>
+                      <li>Automatizar processos repetitivos</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Pain Points:</strong>
+                    <ul style="margin: var(--space-1) 0 0; padding-left: var(--space-5); color: var(--color-text-secondary);">
+                      <li>Precisa entrar em 3 sistemas diferentes para acompanhar pedidos</li>
+                      <li>Dificuldade em gerar relatórios consolidados</li>
+                      <li>Comunicação fragmentada com entregadores</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <strong style="color: var(--color-text-primary);">Triggers:</strong>
+                    <span style="color: var(--color-text-secondary);"> Abertura de nova loja, necessidade de controle operacional mais eficiente</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🏆 Diferencial Competitivo</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-4);">
+              <div style="background: var(--color-primary-light); border-radius: var(--border-radius-md); padding: var(--space-4);">
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-primary); margin-bottom: var(--space-2);">
+                  💰 Preço 70% Menor
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: 1.6;">
+                  Comissão de apenas 5% vs 15-30% dos concorrentes. Um restaurante que fatura R$ 20k/mês economiza até R$ 5k/mês em comissões.
+                </div>
+              </div>
+
+              <div style="background: var(--color-success-light); border-radius: var(--border-radius-md); padding: var(--space-4);">
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-success); margin-bottom: var(--space-2);">
+                  📊 Dados Próprios
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: 1.6;">
+                  Restaurante tem acesso completo aos dados de clientes, histórico de pedidos e métricas de performance. Permite estratégias de fidelização e remarketing.
+                </div>
+              </div>
+
+              <div style="background: var(--color-warning-light); border-radius: var(--border-radius-md); padding: var(--space-4);">
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-warning); margin-bottom: var(--space-2);">
+                  🎨 Marca Própria
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: 1.6;">
+                  Cardápio digital white-label com cores e logo do restaurante. Cliente associa pedido diretamente ao estabelecimento, não à plataforma.
+                </div>
+              </div>
+
+              <div style="background: var(--color-bg-secondary); border-radius: var(--border-radius-md); padding: var(--space-4);">
+                <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  🇧🇷 Suporte Local
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">
+                  Atendimento em português via WhatsApp, onboarding presencial em São Paulo e treinamento completo da equipe.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📈 Análise de Mercado</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Tamanho do Mercado (Brasil)
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);">
+                <div style="text-align: center; padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-1);">TAM</div>
+                  <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">R$ 35B</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">Mercado total de food delivery</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-1);">SAM</div>
+                  <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-success);">R$ 8.5B</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">Restaurantes pequenos/médios</div>
+                </div>
+                <div style="text-align: center; padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-1);">SOM</div>
+                  <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-warning);">R$ 425M</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: var(--space-1);">Target 5% do SAM (ano 3)</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Tendências de Mercado
+              </div>
+              <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                <li><strong>Crescimento de 23% a.a.</strong> no mercado de food delivery (2023-2026)</li>
+                <li><strong>52% dos restaurantes</strong> consideram as comissões atuais insustentáveis</li>
+                <li><strong>Aumento de soluções white-label</strong> pós-pandemia (CAGR 31%)</li>
+                <li><strong>Demanda por dados próprios</strong> para estratégias de CRM e fidelização</li>
+                <li><strong>Regulamentação em discussão</strong> para limitar comissões de marketplaces</li>
+              </ul>
+            </div>
+
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Drivers de Crescimento
+              </div>
+              <div style="display: grid; gap: var(--space-2); font-size: var(--font-size-sm);">
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success); font-weight: var(--font-weight-bold);">✓</span>
+                  <span style="color: var(--color-text-primary);">Insatisfação crescente com altas comissões de plataformas tradicionais</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success); font-weight: var(--font-weight-bold);">✓</span>
+                  <span style="color: var(--color-text-primary);">Digitalização acelerada pós-COVID em restaurantes pequenos</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success); font-weight: var(--font-weight-bold);">✓</span>
+                  <span style="color: var(--color-text-primary);">Maior consciência sobre valor de dados de clientes</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success); font-weight: var(--font-weight-bold);">✓</span>
+                  <span style="color: var(--color-text-primary);">Custo reduzido de infraestrutura cloud (viabiliza soluções próprias)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚔️ Análise Competitiva</h3>
+          </div>
+          <div class="card-body">
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: var(--font-size-sm);">
+                <thead>
+                  <tr style="background: var(--color-bg-secondary);">
+                    <th style="padding: var(--space-3); text-align: left; border-bottom: 2px solid var(--color-border);">Critério</th>
+                    <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border); background: var(--color-primary-light); font-weight: var(--font-weight-bold);">DeliveryPro</th>
+                    <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">iFood</th>
+                    <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">Rappi</th>
+                    <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">Aiqfome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Comissão</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success); font-weight: var(--font-weight-bold);">5%</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">15-30%</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">18-28%</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">12-27%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Mensalidade</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 99/mês</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 0</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 0</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 59/mês</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Dados do Cliente</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Completo</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">✗ Limitado</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">✗ Limitado</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">✗ Limitado</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">White Label</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Sim</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">✗ Não</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-error);">✗ Não</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-warning);">⚠ Parcial</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Rastreamento Tempo Real</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Sim</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Sim</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Sim</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-warning);">⚠ Básico</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Integração Pagamentos</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Completa</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Completa</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Completa</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">✓ Completa</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-weight: var(--font-weight-medium);">Suporte</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">WhatsApp 24/7</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">Chat/Email</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">Chat/Email</td>
+                    <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">Email</td>
+                  </tr>
+                  <tr style="background: var(--color-success-light);">
+                    <td style="padding: var(--space-3); font-weight: var(--font-weight-bold);">Custo Total (R$ 20k pedidos/mês)</td>
+                    <td style="padding: var(--space-3); text-align: center; color: var(--color-success); font-weight: var(--font-weight-bold);">R$ 1.099</td>
+                    <td style="padding: var(--space-3); text-align: center; color: var(--color-error); font-weight: var(--font-weight-bold);">R$ 4.400</td>
+                    <td style="padding: var(--space-3); text-align: center; color: var(--color-error); font-weight: var(--font-weight-bold);">R$ 4.800</td>
+                    <td style="padding: var(--space-3); text-align: center; color: var(--color-error); font-weight: var(--font-weight-bold);">R$ 2.999</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); color: var(--color-text-primary);">
+              <strong>Economia média:</strong> Restaurantes economizam entre R$ 3.300 e R$ 3.700 por mês (75-77% de redução em custos de plataforma)
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">💰 Modelo de Monetização</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Modelo Híbrido
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.6;">
+                <strong>R$ 99/mês</strong> por restaurante + <strong>5% de comissão</strong> sobre cada pedido processado
+              </div>
+            </div>
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Comparativo
+              </div>
+              <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">
+                Enquanto iFood cobra 15-30% de comissão, nossa solução resulta em economia média de 70% nos custos de plataforma para restaurantes com faturamento de R$ 10k+/mês em delivery.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">💵 Projeções Financeiras</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Projeção de Receita (3 anos)
+              </div>
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: var(--font-size-sm);">
+                  <thead>
+                    <tr style="background: var(--color-bg-secondary);">
+                      <th style="padding: var(--space-3); text-align: left; border-bottom: 2px solid var(--color-border);">Métrica</th>
+                      <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">Ano 1</th>
+                      <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">Ano 2</th>
+                      <th style="padding: var(--space-3); text-align: center; border-bottom: 2px solid var(--color-border);">Ano 3</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">Restaurantes Ativos</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">120</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">450</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">1.200</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">GMV Mensal Médio</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 15.000</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 18.000</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 22.000</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">Receita Assinaturas</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 142k</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 535k</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 1.43M</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">Receita Comissões</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 108k</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 486k</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center;">R$ 1.58M</td>
+                    </tr>
+                    <tr style="background: var(--color-success-light); font-weight: var(--font-weight-bold);">
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border);">Receita Total Anual</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">R$ 250k</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">R$ 1.02M</td>
+                      <td style="padding: var(--space-3); border-bottom: 1px solid var(--color-border); text-align: center; color: var(--color-success);">R$ 3.01M</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Estrutura de Custos (Ano 1)
+              </div>
+              <div style="display: grid; gap: var(--space-2);">
+                <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <span style="font-size: var(--font-size-sm); color: var(--color-text-primary);">Equipe (2 devs + 1 CS)</span>
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">R$ 180k/ano</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <span style="font-size: var(--font-size-sm); color: var(--color-text-primary);">Infraestrutura Cloud</span>
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">R$ 24k/ano</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <span style="font-size: var(--font-size-sm); color: var(--color-text-primary);">Marketing e Vendas</span>
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">R$ 50k/ano</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                  <span style="font-size: var(--font-size-sm); color: var(--color-text-primary);">Operacional e Legal</span>
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">R$ 18k/ano</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-sm); margin-top: var(--space-2);">
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-primary);">Custo Total Anual</span>
+                  <span style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-primary);">R$ 272k/ano</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Break-Even
+              </div>
+              <div style="padding: var(--space-4); background: var(--color-success-light); border-radius: var(--border-radius-md);">
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                  <strong>Mês 11 (Ano 1)</strong> - com 130 restaurantes ativos
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                  Considerando CAC de R$ 800/restaurante e churn mensal de 5%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🚀 Estratégia de Go-to-Market</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Canais de Aquisição
+              </div>
+              <div style="display: grid; gap: var(--space-4);">
+                <div style="border-left: 4px solid var(--color-primary); padding-left: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                    1. Vendas Diretas B2B (Prioridade 1)
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2);">
+                    Equipe comercial visitando restaurantes em clusters geográficos (bairros com alta concentração). Demos presenciais, onboarding personalizado.
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    <strong>Meta:</strong> 60% dos clientes (72 no Ano 1) | <strong>CAC:</strong> R$ 1.200
+                  </div>
+                </div>
+
+                <div style="border-left: 4px solid var(--color-success); padding-left: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                    2. Parcerias com Associações
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2);">
+                    ABRASEL, sindicatos de bares e restaurantes, associações de bairro. Oferecer desconto de 20% para associados.
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    <strong>Meta:</strong> 25% dos clientes (30 no Ano 1) | <strong>CAC:</strong> R$ 600
+                  </div>
+                </div>
+
+                <div style="border-left: 4px solid var(--color-warning); padding-left: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-1);">
+                    3. Marketing Digital
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2);">
+                    Google Ads (palavras-chave: "alternativa ifood", "sistema delivery próprio"), conteúdo no LinkedIn, cases de sucesso em blog.
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    <strong>Meta:</strong> 15% dos clientes (18 no Ano 1) | <strong>CAC:</strong> R$ 800
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: var(--space-5);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Estratégia de Preços
+              </div>
+              <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                <li><strong>Trial gratuito de 30 dias</strong> com onboarding completo</li>
+                <li><strong>Primeiro mês R$ 49</strong> (desconto de 50%) para reduzir barreira de entrada</li>
+                <li><strong>Plano anual com 2 meses grátis</strong> (R$ 990/ano vs R$ 1.188/ano)</li>
+                <li><strong>Desconto progressivo</strong> para redes: 10% a partir de 3 lojas, 15% a partir de 5 lojas</li>
+              </ul>
+            </div>
+
+            <div>
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-2);">
+                Retenção e Expansão
+              </div>
+              <div style="display: grid; gap: var(--space-2); font-size: var(--font-size-sm);">
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success);">✓</span>
+                  <span style="color: var(--color-text-primary);"><strong>Onboarding dedicado:</strong> Visita presencial, treinamento da equipe, setup completo</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success);">✓</span>
+                  <span style="color: var(--color-text-primary);"><strong>Customer Success proativo:</strong> Check-in semanal no 1º mês, mensal depois</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success);">✓</span>
+                  <span style="color: var(--color-text-primary);"><strong>Suporte WhatsApp 24/7:</strong> Resposta em <15min em horário comercial</span>
+                </div>
+                <div style="display: flex; align-items: start; gap: var(--space-2);">
+                  <span style="color: var(--color-success);">✓</span>
+                  <span style="color: var(--color-text-primary);"><strong>Reports mensais:</strong> Economia vs plataformas, métricas de performance, sugestões</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗓️ Roadmap de Produto</h3>
+          </div>
+          <div class="card-body">
+            <div style="position: relative; padding-left: var(--space-6);">
+              <!-- Q1 -->
+              <div style="position: relative; margin-bottom: var(--space-6);">
+                <div style="position: absolute; left: calc(-1 * var(--space-6)); top: 0; width: 32px; height: 32px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: white;">Q1</div>
+                <div style="border-left: 2px solid var(--color-border); padding-left: var(--space-4); padding-bottom: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                    MVP - Funcionalidades Core
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Dashboard de pedidos em tempo real</li>
+                    <li>Rastreamento de entregadores (GPS básico)</li>
+                    <li>Cardápio digital white-label</li>
+                    <li>Integração Stripe/MercadoPago</li>
+                    <li>Onboarding de 20 beta testers</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Q2 -->
+              <div style="position: relative; margin-bottom: var(--space-6);">
+                <div style="position: absolute; left: calc(-1 * var(--space-6)); top: 0; width: 32px; height: 32px; background: var(--color-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: white;">Q2</div>
+                <div style="border-left: 2px solid var(--color-border); padding-left: var(--space-4); padding-bottom: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                    Otimizações e Expansão
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>App mobile para entregadores (iOS/Android)</li>
+                    <li>Sistema de avaliações e feedback</li>
+                    <li>Relatórios e analytics avançados</li>
+                    <li>Notificações push e WhatsApp</li>
+                    <li>Expansão para 100 restaurantes</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Q3 -->
+              <div style="position: relative; margin-bottom: var(--space-6);">
+                <div style="position: absolute; left: calc(-1 * var(--space-6)); top: 0; width: 32px; height: 32px; background: var(--color-warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: white;">Q3</div>
+                <div style="border-left: 2px solid var(--color-border); padding-left: var(--space-4); padding-bottom: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                    Features Avançadas
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>CRM integrado e campanhas de marketing</li>
+                    <li>Programa de fidelidade para clientes finais</li>
+                    <li>Gestão de motoboys (freelancers)</li>
+                    <li>Integração com sistemas POS (iFood PDV, etc)</li>
+                    <li>API pública para integrações</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Q4 -->
+              <div style="position: relative;">
+                <div style="position: absolute; left: calc(-1 * var(--space-6)); top: 0; width: 32px; height: 32px; background: var(--color-text-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: white;">Q4</div>
+                <div style="padding-left: var(--space-4);">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+                    Escala e Diversificação
+                  </div>
+                  <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; padding-left: var(--space-5); line-height: 1.75;">
+                    <li>Marketplace white-label (multi-restaurantes)</li>
+                    <li>Sistema de agendamento de entregas</li>
+                    <li>Inteligência artificial para previsão de demanda</li>
+                    <li>Expansão para Rio de Janeiro e Belo Horizonte</li>
+                    <li>Meta: 500+ restaurantes ativos</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="location.href='02-business-plan-edit.html'">
+            ✏️ Editar Plano
+          </button>
+          <button class="btn btn-primary" onclick="location.href='04-technical-plan.html'">
+            Aprovar e Continuar →
+          </button>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Aqui está seu <strong>Plano de Negócio</strong> completo! 🎉
+                <br><br>
+                Revisei todas as informações que você me deu e estruturei um plano profissional.
+                <br><br>
+                Você pode:
+                <br>
+                • <strong>Editar</strong> qualquer seção que quiser ajustar
+                <br>
+                • <strong>Aprovar</strong> e seguir para o Plano Técnico
+                <br>
+                • <strong>Perguntar</strong> sobre qualquer parte do plano
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">PERGUNTAS SUGERIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn">Como validar o modelo?</button>
+            <button class="quick-reply-btn">Adicionar features</button>
+            <button class="quick-reply-btn">Mudar monetização</button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte sobre o plano ou peça ajustes..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile | True Coding v2</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="css/v2-layout.css">
+  <style>
+    /* Estilos especificos mobile */
+    .app-layout {
+      flex-direction: column;
+      max-width: 430px;
+      margin: 0 auto;
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+    }
+    .workspace { padding: var(--space-4); }
+    .workspace-header { margin-bottom: var(--space-4); }
+    .workspace-title { font-size: var(--font-size-lg); margin-bottom: var(--space-1); }
+    .workspace-subtitle { font-size: var(--font-size-sm); }
+    .summary-panel { padding: var(--space-4); margin-bottom: var(--space-4); }
+    .summary-title { font-size: var(--font-size-base); margin-bottom: var(--space-4); }
+    .summary-section { margin-bottom: var(--space-4); }
+    .summary-label { margin-bottom: var(--space-1); }
+    .summary-content { font-size: var(--font-size-sm); }
+    .summary-list li { padding: 2px 0; }
+    .action-buttons { flex-direction: column; margin-bottom: 80px; }
+    .action-btn { text-align: center; }
+    .action-btn.secondary { background: var(--color-bg-primary); }
+    .nav-item { padding: var(--space-3); font-size: var(--font-size-base); gap: var(--space-3); }
+    .user-avatar.large { width: 40px; height: 40px; }
+    .chat-header { padding: var(--space-4); }
+    .quick-replies { padding: 0 var(--space-4) var(--space-3); }
+    .quick-replies-label { margin-bottom: var(--space-2); }
+    .quick-reply-btn { padding: var(--space-2) var(--space-3); }
+    .chat-input-container { padding: var(--space-4); }
+    .chat-input { padding: var(--space-3); }
+    .send-button { padding: var(--space-3) var(--space-4); }
+    .progress-fill { width: 100%; }
+
+    /* Nav mobile especifico */
+    .mockup-nav {
+      position: fixed;
+      top: var(--space-4);
+      right: var(--space-4);
+      bottom: auto;
+      z-index: 400;
+    }
+    .mockup-nav .nav-btn {
+      background: white;
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+      font-size: var(--font-size-xs);
+    }
+    .mockup-nav .nav-btn:hover {
+      background: var(--color-bg-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- MOBILE HEADER -->
+    <header class="mobile-header">
+      <button class="hamburger-btn" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div style="text-align: center;">
+        <div class="header-title">Meu App Delivery</div>
+        <div class="header-phase">Planejamento · 2/6</div>
+      </div>
+      <div class="user-avatar-small">RN</div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <main class="workspace">
+      <div class="workspace-header">
+        <p class="workspace-subtitle" style="margin-bottom: var(--space-2); color: var(--color-text-tertiary); font-size: var(--font-size-xs);">Planejamento › Plano Técnico</p>
+        <h2 class="workspace-title">Plano Técnico</h2>
+        <p class="workspace-subtitle">Defina a stack tecnológica</p>
+      </div>
+
+      <div class="summary-panel">
+        <div class="summary-title">
+          <span>📋</span> Resumo
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-label">1. Problema</div>
+          <div class="summary-content">Ajudar freelancers e pequenos times a organizarem projetos.</div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-label">2. Features</div>
+          <ul class="summary-list">
+            <li>Criar tarefas</li>
+            <li>Atribuir responsaveis</li>
+            <li>Dashboard</li>
+          </ul>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-label">3. Diferenciais</div>
+          <div class="summary-content">Mais simples que Trello.</div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-label">4. Nice-to-Have</div>
+          <ul class="summary-list">
+            <li>Slack integration</li>
+            <li>Mobile app</li>
+          </ul>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-label">5. Monetizacao</div>
+          <div class="summary-content">Aguardando...</div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-btn primary">✅ Confirmar e Gerar</button>
+        <button class="action-btn secondary">✏️ Ajustar</button>
+      </div>
+    </main>
+
+    <!-- FAB -->
+    <button class="fab" onclick="toggleChat()">
+      💬
+      <span class="badge">1</span>
+    </button>
+  </div>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+  <!-- SIDEBAR DRAWER -->
+  <aside class="sidebar-drawer" id="sidebarDrawer">
+    <div class="drawer-header">
+      <div class="logo">
+        <div class="logo-icon">TC</div>
+        <span>True Coding</span>
+      </div>
+      <button class="close-btn" onclick="toggleSidebar()">×</button>
+    </div>
+    <div class="drawer-content">
+      <a href="../index.html" class="back-button" style="margin-bottom: var(--space-4);">
+        ← Voltar ao Dashboard
+      </a>
+
+      <div class="journey-progress" style="margin-bottom: var(--space-4);">
+        <span class="journey-label">JORNADA</span>
+        <span class="journey-count">2/6</span>
+      </div>
+
+      <!-- Fase 1: Ideação (Completed) -->
+      <div class="nav-item completed">
+        <span class="phase-icon"></span>
+        <span>Ideação</span>
+      </div>
+
+      <!-- Fase 2: Planejamento (In Progress, with sub-items) -->
+      <div class="nav-item in-progress">
+        <span class="phase-icon"></span>
+        <span>Planejamento</span>
+      </div>
+      <div class="nav-item sub-item completed">
+        <span class="phase-icon"></span>
+        <span>Negócio</span>
+      </div>
+      <div class="nav-item sub-item in-progress">
+        <span class="phase-icon"></span>
+        <span>Técnico</span>
+      </div>
+      <div class="nav-item sub-item blocked">
+        <span class="phase-icon"></span>
+        <span>UX</span>
+      </div>
+
+      <!-- Fase 3: Conexão (Blocked) -->
+      <div class="nav-item blocked">
+        <span class="phase-icon"></span>
+        <span>Conexão</span>
+      </div>
+
+      <!-- Fase 4: Geração (Blocked) -->
+      <div class="nav-item blocked">
+        <span class="phase-icon"></span>
+        <span>Geração</span>
+      </div>
+
+      <!-- Fase 5: Deploy (Blocked) -->
+      <div class="nav-item blocked">
+        <span class="phase-icon"></span>
+        <span>Deploy</span>
+      </div>
+
+      <!-- Fase 6: Online (Blocked) -->
+      <div class="nav-item blocked">
+        <span class="phase-icon"></span>
+        <span>Online</span>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div class="user-info">
+        <div class="user-avatar">RN</div>
+        <div>
+          <div class="user-name">Renato Natali</div>
+          <div class="user-email">renato@email.com</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT DRAWER -->
+  <aside class="chat-drawer" id="chatDrawer">
+    <div class="chat-header">
+      <div class="chat-header-row">
+        <div class="chat-title">Planejamento</div>
+        <button class="close-btn" onclick="toggleChat()">×</button>
+      </div>
+      <div class="progress-indicator">
+        <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+        <span class="progress-text">Fase 2 de 6</span>
+      </div>
+    </div>
+    <div class="chat-messages">
+      <div class="message">
+        <div class="message-avatar">AI</div>
+        <div class="message-content">
+          <div class="message-author">True Coding</div>
+          <div class="message-text">
+            Qual <strong>framework</strong> você prefere? 🛠️
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quick-replies">
+      <div class="quick-replies-label">Sugestoes</div>
+      <div class="quick-replies-buttons">
+        <button class="quick-reply-btn">⚛️ React</button>
+        <button class="quick-reply-btn">🔺 Vue</button>
+        <button class="quick-reply-btn">🅰️ Angular</button>
+      </div>
+    </div>
+    <div class="chat-input-container">
+      <div class="chat-input-wrapper">
+        <input class="chat-input" placeholder="Digite..." />
+        <button class="send-button">Enviar</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mockup Controls -->
+  <div class="mockup-controls">
+    <button class="control-btn" onclick="toggleSidebar()">☰ Sidebar</button>
+    <button class="control-btn" onclick="toggleChat()">💬 Chat</button>
+  </div>
+
+  <!-- Nav -->
+  <div class="mockup-nav">
+    <a href="index.html" class="nav-btn">Hub</a>
+    <a href="desktop-expanded.html" class="nav-btn">Desktop</a>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebarDrawer').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+      document.getElementById('chatDrawer').classList.remove('active');
+    }
+
+    function toggleChat() {
+      document.getElementById('chatDrawer').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+      document.getElementById('sidebarDrawer').classList.remove('active');
+    }
+
+    function closeAll() {
+      document.getElementById('sidebarDrawer').classList.remove('active');
+      document.getElementById('chatDrawer').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
