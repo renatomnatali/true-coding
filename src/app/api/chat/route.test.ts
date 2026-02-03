@@ -18,6 +18,7 @@ vi.mock('@/lib/db/prisma', () => ({
     },
     conversation: {
       create: vi.fn(),
+      update: vi.fn(),
     },
     message: {
       create: vi.fn(),
@@ -223,6 +224,8 @@ describe('POST /api/chat', () => {
         projectId: 'proj-1',
         phase: 'DISCOVERY',
         status: 'ACTIVE',
+        currentQuestion: 1,
+        completedQuestions: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         messages: [],
@@ -234,6 +237,16 @@ describe('POST /api/chat', () => {
         content: 'Hello',
         createdAt: new Date(),
       })
+      mockPrisma.conversation.update.mockResolvedValue({
+        id: 'conv-1',
+        projectId: 'proj-1',
+        phase: 'DISCOVERY',
+        status: 'ACTIVE',
+        currentQuestion: 2,
+        completedQuestions: [1],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as unknown as Awaited<ReturnType<typeof prisma.conversation.update>>)
 
       // Mock streaming response
       async function* mockStream() {

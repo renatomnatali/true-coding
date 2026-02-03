@@ -59,6 +59,8 @@ export async function POST(request: Request) {
           projectId,
           phase: phase.toUpperCase() as 'DISCOVERY' | 'PLANNING',
           status: 'ACTIVE',
+          currentQuestion: 1,
+          completedQuestions: [],
         },
         include: { messages: true },
       })
@@ -72,6 +74,31 @@ export async function POST(request: Request) {
         content: message,
       },
     })
+
+    // Update question progress for discovery phase
+    // When user sends a message, mark current question as completed and advance
+    let currentQuestion = conversation.currentQuestion
+    let completedQuestions = [...conversation.completedQuestions]
+
+    if (phase === 'discovery' && currentQuestion <= 5) {
+      // Mark current question as completed (if not already)
+      if (!completedQuestions.includes(currentQuestion)) {
+        completedQuestions.push(currentQuestion)
+      }
+      // Advance to next question (max 5)
+      const nextQuestion = Math.min(currentQuestion + 1, 5)
+
+      // Update conversation in database
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          currentQuestion: nextQuestion,
+          completedQuestions,
+        },
+      })
+
+      currentQuestion = nextQuestion
+    }
 
     // Build messages array for Claude
     const messages: Message[] = conversation.messages.map((msg) => ({
@@ -109,6 +136,18 @@ export async function POST(request: Request) {
               content: fullResponse,
             },
           })
+
+          // Emit question_progress event for discovery phase
+          if (phase === 'discovery' && currentQuestion <= 5) {
+            const progressEvent = `event: question_progress\ndata: ${JSON.stringify({
+              progress: {
+                current: currentQuestion,
+                total: 5,
+                completedQuestions,
+              },
+            })}\n\n`
+            controller.enqueue(encoder.encode(progressEvent))
+          }
 
           // Check if plan is ready
           if (isPlanReady(fullResponse)) {
