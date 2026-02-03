@@ -7,8 +7,9 @@
  * Padrão: Dado/Quando/Então (Given/When/Then)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ChatPanel } from '@/components/project/ChatPanel'
 import {
   createTestProject,
@@ -27,6 +28,11 @@ vi.mock('@/components/project/ProjectLayout', async () => {
       setChatOpen: vi.fn(),
     }),
   }
+})
+
+// Cleanup mocks after each test to prevent flaky results
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 /**
@@ -337,5 +343,320 @@ describe('Discovery: Barra de Progresso', () => {
     // Então a barra de progresso está em 100%
     const progressBar = document.querySelector('[style*="width"]')
     expect(progressBar).toHaveStyle({ width: '100%' })
+  })
+
+  /**
+   * @progresso
+   * Cenário: Barra de progresso em 20% no início (Q1)
+   * Regra: progress% = currentQuestion / total * 100 = 1/5 * 100 = 20%
+   */
+  it('Barra de progresso em 20% no início (Q1)', () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialQuestionProgress={{ current: 1, total: 5 }}
+      />
+    )
+
+    const progressBar = document.querySelector('[style*="width"]')
+    expect(progressBar).toHaveStyle({ width: '20%' })
+    expect(screen.getByText('Pergunta 1 de 5')).toBeInTheDocument()
+  })
+
+  /**
+   * @progresso
+   * Cenário: Barra de progresso em 40% após Q1 (Q2)
+   */
+  it('Barra de progresso em 40% após Q1 (Q2)', () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialQuestionProgress={{ current: 2, total: 5, completedQuestions: [1] }}
+      />
+    )
+
+    const progressBar = document.querySelector('[style*="width"]')
+    expect(progressBar).toHaveStyle({ width: '40%' })
+    expect(screen.getByText('Pergunta 2 de 5')).toBeInTheDocument()
+  })
+
+  /**
+   * @progresso
+   * Cenário: Barra de progresso em 80% após Q3 (Q4)
+   */
+  it('Barra de progresso em 80% após Q3 (Q4)', () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialQuestionProgress={{ current: 4, total: 5, completedQuestions: [1, 2, 3] }}
+      />
+    )
+
+    const progressBar = document.querySelector('[style*="width"]')
+    expect(progressBar).toHaveStyle({ width: '80%' })
+    expect(screen.getByText('Pergunta 4 de 5')).toBeInTheDocument()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: INÍCIO DO DISCOVERY
+ * =============================================================================
+ */
+describe('Discovery: Início', () => {
+  /**
+   * @inicio
+   * Cenário: Mensagem inicial em projeto novo
+   */
+  it('Exibe mensagem inicial da IA perguntando o que criar', () => {
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
+    })
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={null}
+        initialMessages={[]}
+      />
+    )
+
+    // Então vejo o chat com mensagem inicial da IA
+    expect(screen.getByText(/O que você gostaria de criar/)).toBeInTheDocument()
+    expect(screen.getByText(/Olá! Vamos criar algo incrível/)).toBeInTheDocument()
+  })
+
+  /**
+   * @inicio
+   * Cenário: Quick replies da pergunta 0 aparecem no início
+   */
+  it('Exibe quick replies da pergunta 0 no início', () => {
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
+    })
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={null}
+        initialMessages={[]}
+      />
+    )
+
+    // Então vejo quick replies com sugestões
+    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
+    expect(screen.getByText('🛒 E-commerce')).toBeInTheDocument()
+    expect(screen.getByText('📊 Dashboard')).toBeInTheDocument()
+    expect(screen.getByText('🎨 Portfolio')).toBeInTheDocument()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: QUICK REPLY - ENVIO DIRETO
+ * =============================================================================
+ */
+describe('Discovery: Quick Reply Envio Direto', () => {
+  /**
+   * @quick-reply
+   * Cenário: Clicar em quick reply envia mensagem diretamente
+   * (Atualizado conforme Code-Reviewer - não preenche input)
+   */
+  it('Quick reply envia mensagem diretamente ao clicar', async () => {
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
+    })
+
+    // Mock fetch para evitar erro de rede
+    global.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        body: new ReadableStream({
+          start(controller) {
+            controller.close()
+          },
+        }),
+      })
+    )
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={null}
+        initialMessages={[]}
+      />
+    )
+
+    const quickReplyButton = screen.getByText('📱 App de gestão')
+
+    // Quando clico no quick reply
+    await userEvent.click(quickReplyButton)
+
+    // Então a mensagem é enviada diretamente (aparece como mensagem do usuário)
+    // Nota: após enviar, os quick replies mudam para Q1, então o botão original some
+    await waitFor(() => {
+      const messageElement = screen.getByText('📱 App de gestão')
+      // Verifica que está dentro de um user message bubble (bg-blue-50)
+      expect(messageElement.closest('.bg-blue-50')).not.toBeNull()
+    })
+    // E fetch foi chamado
+    expect(global.fetch).toHaveBeenCalledWith('/api/chat', expect.any(Object))
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: COMPORTAMENTOS DO CHAT
+ * =============================================================================
+ */
+describe('Discovery: Comportamentos do Chat', () => {
+  /**
+   * @chat @enter
+   * Cenário: Enviar mensagem com Enter
+   */
+  it('Envia mensagem ao pressionar Enter', async () => {
+    global.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        body: new ReadableStream({
+          start(controller) {
+            controller.close()
+          },
+        }),
+      })
+    )
+
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+
+    // Dado que digitei uma mensagem
+    await userEvent.type(textarea, 'Minha mensagem de teste')
+
+    // Quando pressiono Enter
+    await userEvent.keyboard('{Enter}')
+
+    // Então a mensagem é enviada (aparece como user bubble)
+    await waitFor(() => {
+      const messageElement = screen.getByText('Minha mensagem de teste')
+      // Verifica que está dentro de um user message bubble (bg-blue-50)
+      expect(messageElement.closest('.bg-blue-50')).not.toBeNull()
+    })
+    // E o input é limpo
+    expect(textarea).toHaveValue('')
+  })
+
+  /**
+   * @chat @shift-enter
+   * Cenário: Nova linha com Shift+Enter
+   */
+  it('Adiciona nova linha ao pressionar Shift+Enter', async () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+
+    // Dado que estou digitando
+    await userEvent.type(textarea, 'Linha 1')
+
+    // Quando pressiono Shift+Enter
+    await userEvent.keyboard('{Shift>}{Enter}{/Shift}')
+
+    // Então uma nova linha é adicionada (valor contém quebra de linha)
+    // E a mensagem NÃO é enviada (ainda está no input)
+    expect(textarea).toHaveValue('Linha 1\n')
+  })
+
+  /**
+   * @chat @disabled
+   * Cenário: Botão enviar desabilitado quando input vazio
+   */
+  it('Botão enviar desabilitado quando input vazio', () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const sendButton = screen.getByText('Enviar')
+    expect(sendButton).toBeDisabled()
+  })
+
+  /**
+   * @chat @disabled
+   * Cenário: Botão enviar habilitado quando há texto
+   */
+  it('Botão enviar habilitado quando há texto', async () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    const sendButton = screen.getByText('Enviar')
+
+    // Dado que digitei uma mensagem
+    await userEvent.type(textarea, 'Teste')
+
+    // Então o botão está habilitado
+    expect(sendButton).not.toBeDisabled()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: LOADING E GERANDO PLANO
+ * =============================================================================
+ */
+describe('Discovery: Loading States', () => {
+  /**
+   * @geracao @loading
+   * Cenário: Texto "Plano pronto" aparece quando plano está pronto
+   */
+  it('Exibe "Plano pronto" quando planReady é true', () => {
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={true}
+      />
+    )
+
+    expect(screen.getByText('Plano pronto')).toBeInTheDocument()
   })
 })
