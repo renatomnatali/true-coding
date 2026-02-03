@@ -1,0 +1,35 @@
+#!/bin/sh
+# Pre-push: verificação completa antes de enviar ao remote
+# Todos os checks devem passar para permitir o push
+
+echo "🚀 Running pre-push checks..."
+echo ""
+
+# 1. Lint
+echo "📝 [1/3] Running lint..."
+npm run lint || {
+  echo "❌ Lint failed! Fix errors before pushing."
+  exit 1
+}
+echo "✅ Lint passed!"
+echo ""
+
+# 2. Tests
+echo "🧪 [2/3] Running tests..."
+npm test || {
+  echo "❌ Tests failed! Fix tests before pushing."
+  exit 1
+}
+echo "✅ Tests passed!"
+echo ""
+
+# 3. Build
+echo "🔨 [3/3] Running build..."
+npm run build || {
+  echo "❌ Build failed! Fix build errors before pushing."
+  exit 1
+}
+echo "✅ Build passed!"
+echo ""
+
+echo "🎉 All checks passed! Pushing..."

@@ -170,11 +170,21 @@ export const DISCOVERY_QUESTIONS = {
 
 /**
  * Quick replies contextuais por pergunta
+ *
+ * IMPORTANTE: A pergunta 0 corresponde à mensagem inicial "O que você quer criar?"
+ * As perguntas 1-5 são as perguntas estruturadas do discovery.
  */
 export const QUICK_REPLIES_BY_QUESTION: Record<number, string[]> = {
-  1: ['📱 App de gestão', '🛒 E-commerce', '📊 Dashboard', '🎨 Portfolio'],
-  2: ['🔐 Autenticação', '📊 Dashboard', '📝 CRUD básico', '🔔 Notificações'],
-  3: ['🎨 Mais simples', '💰 Preço melhor', '⚡ Recursos únicos', '🚀 Mais rápido'],
-  4: ['🔗 Integrações', '🔔 Notificações', '📊 Relatórios', '📱 App mobile'],
-  5: ['💳 Freemium', '📅 Assinatura', '🎁 Gratuito', '💼 Enterprise'],
+  // Pergunta inicial: "O que você quer criar?"
+  0: ['📱 App de gestão', '🛒 E-commerce', '📊 Dashboard', '🎨 Portfolio'],
+  // Q1: "Qual problema você quer resolver e para quem?"
+  1: ['👥 Pequenas empresas', '🎯 Freelancers', '🏢 Times remotos', '🛍️ Lojistas'],
+  // Q2: "Quais são as 3-5 funcionalidades principais?"
+  2: ['🔐 Login/cadastro', '📊 Dashboard', '📝 CRUD completo', '🔔 Notificações'],
+  // Q3: "O que vai diferenciar dos concorrentes?"
+  3: ['🎨 Mais simples', '💰 Preço melhor', '⚡ Mais rápido', '🎯 Mais focado'],
+  // Q4: "Quais features seriam nice-to-have?"
+  4: ['🔗 Integrações', '📊 Relatórios', '📱 App mobile', '🤖 Automações'],
+  // Q5: "Como pretende monetizar?"
+  5: ['💳 Freemium', '📅 Assinatura mensal', '🎁 100% gratuito', '💼 Por usuário'],
 }

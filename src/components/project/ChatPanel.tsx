@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useProjectLayout } from './ProjectLayout'
-import { QuickReplyButtons } from './QuickReplyButtons'
 import { FEATURES } from '@/config/features'
+import { QUICK_REPLIES_BY_QUESTION } from '@/types'
 
 interface Message {
   id: string
@@ -31,28 +31,42 @@ function stripJsonFromDisplay(content: string): string {
 interface QuestionProgress {
   current: number
   total: number
+  completedQuestions?: number[]
 }
 
 interface ChatPanelProps {
   projectId: string
   projectName: string
   initialMessages?: Message[]
+  /** STATE RESTORATION: If businessPlan exists, start in "plan ready" state */
+  initialPlanReady?: boolean
+  /** STATE RESTORATION: Progress from database, not default */
+  initialQuestionProgress?: QuestionProgress | null
   onPlanReady?: (plan: Record<string, unknown>) => void
+  onProgressUpdate?: (progress: QuestionProgress) => void
 }
 
 export function ChatPanel({
   projectId,
-  projectName,
+  projectName: _projectName,
   initialMessages = [],
+  initialPlanReady = false,
+  initialQuestionProgress = null,
   onPlanReady,
+  onProgressUpdate,
 }: ChatPanelProps) {
   const { setChatOpen } = useProjectLayout()
+  // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-05): Load messages from DB
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [questionProgress, setQuestionProgress] = useState<QuestionProgress | null>(null)
+  // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-06): Progress from DB, not default
+  const [questionProgress, setQuestionProgress] = useState<QuestionProgress | null>(initialQuestionProgress)
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false)
+  // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-01/02): If businessPlan exists, start in "plan ready"
+  const [planReady, setPlanReady] = useState(initialPlanReady)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -61,6 +75,14 @@ export function ChatPanel({
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
+    }
+  }, [input])
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
@@ -140,6 +162,8 @@ export function ChatPanel({
               } else if (currentEvent === 'question_progress' && parsed.progress) {
                 console.log('[CHAT] Question progress update:', parsed.progress)
                 setQuestionProgress(parsed.progress)
+                // Notify parent component
+                onProgressUpdate?.(parsed.progress)
                 // Check if this is question 5 (last question before plan generation)
                 if (parsed.progress.current === 5) {
                   setIsGeneratingPlan(true)
@@ -147,6 +171,7 @@ export function ChatPanel({
               } else if (currentEvent === 'plan_ready' && parsed.plan) {
                 console.log('[CHAT] Plan ready detected! Plan:', parsed.plan)
                 setIsGeneratingPlan(false)
+                setPlanReady(true)
                 // Replace message with confirmation instead of showing JSON
                 setMessages((prev) =>
                   prev.map((m) =>
@@ -187,82 +212,148 @@ export function ChatPanel({
     }
   }
 
+  // STATE DERIVATION (per docs/ux/STATES.md):
+  // Get current question from progress or derive from messages
+  const currentQuestionNumber = messages.length === 0
+    ? 0 // Initial state: "O que você quer criar?"
+    : questionProgress?.current || 1
+
+  // CONFIRMATION PHASE: Check if all 5 questions are completed
+  const completedCount = questionProgress?.completedQuestions?.length || 0
+  const isConfirmationPhase = completedCount >= 5
+
+  // PROGRESS BAR RULES (per docs/ux/BEHAVIORS.md):
+  // - 100% when plan is ready
+  // - 100% when in confirmation phase (completed >= 5)
+  // - Otherwise: (current / total) * 100
+  // - Default: 20% (question 1)
+  const progressPercent = planReady || isConfirmationPhase
+    ? 100
+    : questionProgress
+      ? (questionProgress.current / questionProgress.total) * 100
+      : 20
+
+  // QUICK REPLIES RULES (per docs/ux/BEHAVIORS.md):
+  // - CP-01: Se businessPlan existe → NÃO mostrar
+  // - CP-03: Se completedQuestions.length >= 5 → NÃO mostrar (confirmação)
+  const showQuickReplies = !planReady && !isConfirmationPhase && currentQuestionNumber <= 5
+  const quickReplies = showQuickReplies
+    ? (QUICK_REPLIES_BY_QUESTION[currentQuestionNumber] || [])
+    : []
+
   return (
-    <div className="relative flex flex-1 flex-col bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3">
-        <div>
-          <h2 className="font-semibold">Discovery</h2>
-          {FEATURES.PROGRESS_TRACKING && questionProgress ? (
-            <p className="text-xs text-muted-foreground">
-              Pergunta {questionProgress.current} de {questionProgress.total}
-            </p>
-          ) : (
-            <p className="text-xs text-muted-foreground">Converse com a AI</p>
-          )}
+    <div className="relative flex min-h-0 flex-1 flex-col bg-white">
+      {/* Header - matching mockup */}
+      <div className="border-b p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Discovery</h2>
+          <button
+            onClick={() => setChatOpen(false)}
+            className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
+            title="Colapsar chat"
+          >
+            ◀
+          </button>
         </div>
-        {/* Close button - mobile only */}
-        <button
-          onClick={() => setChatOpen(false)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted lg:hidden"
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        {/* Progress Bar - visual like mockup */}
+        {FEATURES.PROGRESS_TRACKING && (
+          <div className="flex items-center gap-3">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full rounded-full bg-amber-500 transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span className="whitespace-nowrap text-sm font-medium text-gray-600">
+              {planReady
+                ? 'Plano pronto'
+                : `Pergunta ${questionProgress?.current || 1} de ${questionProgress?.total || 5}`}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Messages */}
-      <div
-        className="custom-scrollbar flex-1 overflow-y-auto p-4"
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgb(203 213 225) transparent'
-        }}
-      >
-        {messages.length === 0 ? (
-          <div className="pt-8 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <svg className="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
+      {/* Messages - matching mockup */}
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.length === 0 && !planReady ? (
+          <div className="flex flex-col gap-3">
+            {/* Initial AI message like mockup */}
+            <div className="flex gap-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                AI
+              </div>
+              <div className="flex-1">
+                <div className="mb-1 text-sm font-medium text-gray-900">True Coding</div>
+                <div className="text-sm leading-relaxed text-gray-700">
+                  Olá! Vamos criar algo incrível juntos! 🎉
+                  <br /><br />
+                  Para começar: <strong>O que você gostaria de criar?</strong>
+                  <br /><br />
+                  Pode ser um app, site, API, dashboard... Conta pra mim!
+                </div>
+              </div>
             </div>
-            <h3 className="mb-1 font-medium">Comece a conversa</h3>
-            <p className="max-w-[200px] text-sm text-muted-foreground">
-              Descreva o app que voce quer criar para {projectName}
-            </p>
+          </div>
+        ) : messages.length === 0 && planReady ? (
+          <div className="flex flex-col gap-3">
+            {/* STATE RESTORATION: Plan ready but no messages loaded - show confirmation */}
+            <div className="flex gap-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                AI
+              </div>
+              <div className="flex-1">
+                <div className="mb-1 text-sm font-medium text-gray-900">True Coding</div>
+                <div className="text-sm leading-relaxed text-gray-700">
+                  Plano gerado com sucesso! Veja o resumo ao lado e me diga se quer ajustar algo.
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+              <div key={message.id} className="flex gap-3">
+                {/* Avatar */}
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                  className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+                    message.role === 'assistant'
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">
-                    {message.role === 'assistant'
-                      ? stripJsonFromDisplay(message.content)
-                      : message.content}
-                  </p>
+                  {message.role === 'assistant' ? 'AI' : 'Eu'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="mb-1 text-sm font-medium text-gray-900">
+                    {message.role === 'assistant' ? 'True Coding' : 'Você'}
+                  </div>
+                  <div
+                    className={`text-sm leading-relaxed ${
+                      message.role === 'user'
+                        ? 'inline-block rounded-lg bg-blue-50 px-3 py-2'
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">
+                      {message.role === 'assistant'
+                        ? stripJsonFromDisplay(message.content)
+                        : message.content}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
 
+            {/* Typing indicator */}
             {isLoading && messages[messages.length - 1]?.role === 'user' && (
-              <div className="flex justify-start">
-                <div className="rounded-2xl bg-muted px-4 py-3">
-                  <div className="flex gap-1">
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:0.1s]" />
-                    <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:0.2s]" />
-                  </div>
+              <div className="flex gap-3">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                  AI
+                </div>
+                <div className="flex items-center gap-1 rounded-lg bg-gray-100 px-4 py-3">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.1s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.2s]" />
                 </div>
               </div>
             )}
@@ -272,51 +363,59 @@ export function ChatPanel({
         )}
       </div>
 
-      {/* Quick Reply Buttons */}
-      {FEATURES.QUICK_REPLIES && (
-        <QuickReplyButtons
-          currentQuestion={questionProgress?.current ?? null}
-          onSelect={(text) => sendMessage(text)}
-          disabled={isLoading}
-        />
+      {/* Quick Replies - matching mockup */}
+      {FEATURES.QUICK_REPLIES && quickReplies.length > 0 && (
+        <div className="border-t p-4">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            SUGESTÕES RÁPIDAS
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {quickReplies.map((reply, index) => (
+              <button
+                key={index}
+                onClick={() => sendMessage(reply)}
+                disabled={isLoading}
+                className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {reply}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* Input */}
+      {/* Input - matching mockup */}
       <div className="border-t p-4">
         <div className="flex gap-2">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Descreva seu app..."
-            className="flex-1 resize-none rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            rows={2}
+            placeholder="Digite sua resposta..."
+            className="flex-1 resize-none rounded-md border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
+            rows={1}
             disabled={isLoading}
           />
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isLoading}
-            className="flex h-auto w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+            Enviar
           </button>
         </div>
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          Enter para enviar · Shift+Enter para nova linha
-        </p>
       </div>
 
       {/* Loading Overlay - Plan Generation */}
       {isGeneratingPlan && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="rounded-lg bg-card p-6 shadow-lg border">
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="rounded-lg border bg-white p-6 shadow-lg">
             <div className="flex flex-col items-center gap-4">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
               <div className="text-center">
-                <h3 className="font-semibold">Gerando Business Plan...</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <h3 className="font-semibold text-gray-900">Gerando Business Plan...</h3>
+                <p className="mt-1 text-sm text-gray-500">
                   Isso pode levar alguns segundos
                 </p>
               </div>
