@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerando Código | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .generation-step {
+      animation: slideUp 0.3s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 4/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </a>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Geração › Em Progresso</div>
+          <h2 class="workspace-title">Gerando Código...</h2>
+          <p class="workspace-subtitle">AI está criando seu projeto profissional</p>
+        </div>
+
+        <!-- Loading Animation -->
+        <div style="text-align: center; padding: var(--space-8) 0; margin-bottom: var(--space-6);">
+          <div style="width: 80px; height: 80px; border: 6px solid var(--color-gray-200); border-top-color: var(--color-primary); border-radius: 50%; margin: 0 auto var(--space-4); animation: spin 1s linear infinite;"></div>
+          <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+            Gerando código profissional...
+          </div>
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+            Isso pode levar 2-3 minutos
+          </div>
+        </div>
+
+        <!-- Generation Steps -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⚙️ Progresso da Geração</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-3);" id="steps-container">
+              <!-- Step 1 - Completed -->
+              <div class="generation-step" style="padding: var(--space-3); background: var(--color-success-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  ✓
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Estrutura do Projeto
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Criado 43 arquivos e pastas
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2 - Completed -->
+              <div class="generation-step" style="padding: var(--space-3); background: var(--color-success-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-success); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  ✓
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Configurações e Dependencies
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    package.json, tsconfig.json, tailwind.config.js
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 - In Progress -->
+              <div class="generation-step" style="padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0; animation: pulse 1.5s ease-in-out infinite;">
+                  3
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Componentes React
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">
+                    Gerando UI components com TypeScript...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 4 - Pending -->
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  4
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    API Routes e Backend
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    Aguardando...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5 - Pending -->
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  5
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Banco de Dados (Prisma)
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    Aguardando...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 6 - Pending -->
+              <div style="padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-3); opacity: 0.6;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-gray-300); color: var(--color-text-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                  6
+                </div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary);">
+                    Testes e Documentação
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">
+                    Aguardando...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What's Being Generated -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📦 O que está sendo gerado</h3>
+          </div>
+          <div class="card-body">
+            <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 2;">
+              <li><strong>Frontend:</strong> Next.js 15 com App Router, componentes React, Tailwind CSS</li>
+              <li><strong>Backend:</strong> API routes, autenticação Clerk, validação com Zod</li>
+              <li><strong>Banco:</strong> Schema Prisma, migrations, seed data</li>
+              <li><strong>Real-time:</strong> Integração Pusher para rastreamento</li>
+              <li><strong>Pagamentos:</strong> Setup Stripe + PIX</li>
+              <li><strong>Qualidade:</strong> TypeScript strict, ESLint, testes unitários</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn" disabled style="opacity: 0.5; cursor: not-allowed;">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Gerando código agora! 🚀
+                <br><br>
+                Estou criando um projeto profissional completo baseado nos planos que fizemos:
+                <br><br>
+                ✓ Estrutura do projeto
+                <br>
+                ✓ Configurações
+                <br>
+                🔄 Componentes React (em progresso)
+                <br>
+                ⏳ API routes
+                <br>
+                ⏳ Banco de dados
+                <br>
+                ⏳ Testes
+                <br><br>
+                Aguarde enquanto processo tudo...
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div style="padding: var(--space-4); text-align: center; color: var(--color-text-tertiary); font-size: var(--font-size-sm);">
+            Gerando código... Aguarde alguns instantes.
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+
+  <script>
+    // Simulate progress
+    let currentStep = 3;
+    const steps = [
+      { title: 'API Routes e Backend', detail: 'Criando endpoints REST...' },
+      { title: 'Banco de Dados (Prisma)', detail: 'Schema gerado com 6 models' },
+      { title: 'Testes e Documentação', detail: 'README.md, setup guides...' }
+    ];
+
+    function updateProgress() {
+      if (currentStep <= 6) {
+        const stepElements = document.querySelectorAll('#steps-container > div');
+
+        // Mark previous as completed
+        if (currentStep > 3) {
+          const prevIndex = currentStep - 2;
+          stepElements[prevIndex].style.background = 'var(--color-success-light)';
+          stepElements[prevIndex].querySelector('div:first-child').style.background = 'var(--color-success)';
+          stepElements[prevIndex].querySelector('div:first-child').style.animation = 'none';
+          stepElements[prevIndex].querySelector('div:first-child').textContent = '✓';
+        }
+
+        // Mark current as in progress
+        if (currentStep <= 5) {
+          const currentIndex = currentStep - 1;
+          stepElements[currentIndex].style.background = 'var(--color-primary-light)';
+          stepElements[currentIndex].style.opacity = '1';
+          stepElements[currentIndex].querySelector('div:first-child').style.background = 'var(--color-primary)';
+          stepElements[currentIndex].querySelector('div:first-child').style.animation = 'pulse 1.5s ease-in-out infinite';
+          stepElements[currentIndex].querySelector('div:first-child').textContent = currentStep;
+
+          const stepData = steps[currentStep - 4];
+          if (stepData) {
+            stepElements[currentIndex].querySelector('.font-weight-semibold').textContent = stepData.title;
+            stepElements[currentIndex].querySelector('.font-weight-semibold').style.color = 'var(--color-text-primary)';
+            stepElements[currentIndex].querySelector('.text-xs').textContent = stepData.detail;
+            stepElements[currentIndex].querySelector('.text-xs').style.color = 'var(--color-text-secondary)';
+          }
+        }
+
+        currentStep++;
+      } else {
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          window.location.href = '02-code-generated.html';
+        }, 1000);
+      }
+    }
+
+    const progressInterval = setInterval(updateProgress, 3000);
+  </script>
+</body>
+</html>

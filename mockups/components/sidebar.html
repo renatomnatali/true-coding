@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Corrigida | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <style>
+    body {
+      margin: 0;
+      padding: var(--space-8);
+      background: var(--color-bg-secondary);
+      display: flex;
+      gap: var(--space-6);
+    }
+
+    .demo-container {
+      flex: 1;
+    }
+
+    .demo-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .demo-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .demo-sidebar {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar {
+      height: 600px;
+    }
+
+    .annotations {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      max-width: 400px;
+    }
+
+    .annotation-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .annotation-item {
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .annotation-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .annotation-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .annotation-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+      transition: all var(--transition-fast);
+    }
+
+    .back-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <a href="../index.html" class="back-link">← Voltar ao Hub</a>
+
+    <h1 class="demo-title">Sidebar Corrigida</h1>
+    <p class="demo-description">
+      Navegação com hierarquia visual clara, sub-itens indentados com linha conectora,
+      e seções Integrações e Recursos.
+    </p>
+
+    <div class="demo-sidebar">
+      <!-- SIDEBAR CORRIGIDA -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <div class="logo-icon">TC</div>
+            <span>True Coding</span>
+          </div>
+
+          <div class="project-name">Meu App Delivery</div>
+          <a href="#" class="back-link">← Dashboard</a>
+
+          <div class="journey-progress">
+            <div class="journey-progress-header">
+              <span class="journey-label">JORNADA</span>
+              <span class="journey-count">Fase 2/6</span>
+            </div>
+            <div class="journey-dots">
+              <div class="journey-dot completed"></div>
+              <div class="journey-dot current"></div>
+              <div class="journey-dot"></div>
+              <div class="journey-dot"></div>
+              <div class="journey-dot"></div>
+              <div class="journey-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <!-- Fases Section -->
+          <div class="nav-section">
+            <div class="nav-section-title">FASES</div>
+
+            <!-- Fase 1: Ideação (Completed) -->
+            <a href="#" class="nav-item completed">
+              <span class="phase-icon"></span>
+              <span>Ideação</span>
+            </a>
+
+            <!-- Fase 2: Planejamento (In Progress com sub-items) -->
+            <a href="#" class="nav-item in-progress">
+              <span class="phase-icon"></span>
+              <span>Planejamento</span>
+            </a>
+            <a href="#" class="nav-item sub-item completed">
+              <span class="phase-icon"></span>
+              <span>Negócio</span>
+            </a>
+            <a href="#" class="nav-item sub-item in-progress">
+              <span class="phase-icon"></span>
+              <span>Técnico</span>
+            </a>
+            <a href="#" class="nav-item sub-item blocked" title="Complete Negócio e Técnico primeiro">
+              <span class="phase-icon"></span>
+              <span>UX</span>
+            </a>
+
+            <!-- Fase 3: Conexão (Blocked) -->
+            <div class="nav-item blocked" title="Complete Planejamento primeiro">
+              <span class="phase-icon"></span>
+              <span>Conexão</span>
+            </div>
+
+            <!-- Fase 4: Geração (Blocked) -->
+            <div class="nav-item blocked" title="Complete Conexão primeiro">
+              <span class="phase-icon"></span>
+              <span>Geração</span>
+            </div>
+
+            <!-- Fase 5: Deploy (Blocked) -->
+            <div class="nav-item blocked" title="Complete Geração primeiro">
+              <span class="phase-icon"></span>
+              <span>Deploy</span>
+            </div>
+
+            <!-- Fase 6: Online (Blocked) -->
+            <div class="nav-item blocked" title="Complete Deploy primeiro">
+              <span class="phase-icon"></span>
+              <span>Online</span>
+            </div>
+          </div>
+
+          <!-- Integrações Section -->
+          <div class="nav-section">
+            <div class="nav-section-title">INTEGRAÇÕES</div>
+
+            <a href="#" class="nav-item integration connected">
+              <span class="phase-icon">✓</span>
+              <span>GitHub</span>
+              <span class="status-badge">conectado</span>
+            </a>
+
+            <a href="#" class="nav-item integration">
+              <span class="phase-icon">○</span>
+              <span>Vercel</span>
+              <a href="#" class="connect-link">conectar →</a>
+            </a>
+          </div>
+
+          <!-- Recursos Section (só aparece após Fase 4) -->
+          <div class="nav-section">
+            <div class="nav-section-title">RECURSOS</div>
+
+            <a href="#" class="nav-item resource">
+              <span>Repositório</span>
+            </a>
+
+            <a href="#" class="nav-item resource">
+              <span>Site</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div class="user-avatar">RN</div>
+            <div class="user-details">
+              <div class="user-name">Renato Natali</div>
+              <div class="user-email">renato@email.com</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Anotações -->
+  <div class="annotations">
+    <h2 class="annotation-title">✨ Melhorias Implementadas</h2>
+
+    <div class="annotation-item">
+      <div class="annotation-label">1. "Voltar ao Dashboard"</div>
+      <div class="annotation-text">
+        Agora está ABAIXO do nome do projeto como link discreto, não acima do logo.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">2. Progress Global</div>
+      <div class="annotation-text">
+        "JORNADA - Fase 2/6" com dots visuais mostrando progresso geral.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">3. Hierarquia Clara</div>
+      <div class="annotation-text">
+        Sub-itens indentados com linha conectora visual (border-left + pseudo-element).
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">4. Estados Visuais</div>
+      <div class="annotation-text">
+        5 estados: ○ blocked (cinza), ○ available (preto), ◐ in-progress (azul), ✓ completed (verde), ✓ selected (azul).
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">5. Novas Seções</div>
+      <div class="annotation-text">
+        "INTEGRAÇÕES" (GitHub, Vercel) e "RECURSOS" (Repositório, Site) adicionadas.
+      </div>
+    </div>
+
+    <div class="annotation-item">
+      <div class="annotation-label">6. Tooltips</div>
+      <div class="annotation-text">
+        Items bloqueados mostram tooltip explicando o que precisa ser completado primeiro.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

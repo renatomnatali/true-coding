@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Card | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      margin: 0;
+      padding: var(--space-8);
+      background: var(--color-bg-secondary);
+    }
+
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .demo-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .demo-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+      transition: all var(--transition-fast);
+    }
+
+    .back-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .annotations {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+    }
+
+    .annotation-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .annotation-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-3);
+    }
+
+    .code-block {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-primary);
+      overflow-x: auto;
+      margin-top: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <a href="../index.html" class="back-link">← Voltar ao Hub</a>
+
+    <h1 class="demo-title">Project Card</h1>
+    <p class="demo-description">
+      Card de projeto usado no dashboard, com progresso visual, menu de ações e estados hover.
+    </p>
+
+    <!-- Exemplos de Cards em Diferentes Fases -->
+    <h2 class="section-title">Fase 1 - Ideação</h2>
+    <div class="cards-grid">
+      <a href="#" class="project-card">
+        <button class="project-card-menu">⋮</button>
+        <div class="project-card-name">Meu App Delivery</div>
+        <div class="project-card-description">
+          Aplicativo para gerenciar entregas de restaurantes com rastreamento em tempo real
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 1: Ideação</div>
+        </div>
+        <div class="project-card-meta">Atualizado há 2 horas</div>
+      </a>
+    </div>
+
+    <h2 class="section-title">Fase 2 - Planejamento</h2>
+    <div class="cards-grid">
+      <a href="#" class="project-card">
+        <button class="project-card-menu">⋮</button>
+        <div class="project-card-name">Portfolio Pessoal</div>
+        <div class="project-card-description">
+          Site pessoal com portfólio de projetos, blog técnico e informações de contato
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 2: Planejamento</div>
+        </div>
+        <div class="project-card-meta">Atualizado ontem</div>
+      </a>
+    </div>
+
+    <h2 class="section-title">Fase 4 - Geração</h2>
+    <div class="cards-grid">
+      <a href="#" class="project-card">
+        <button class="project-card-menu">⋮</button>
+        <div class="project-card-name">SaaS Dashboard</div>
+        <div class="project-card-description">
+          Painel de métricas e analytics para empresas SaaS com relatórios customizáveis
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot current"></div>
+            <div class="project-card-progress-dot"></div>
+            <div class="project-card-progress-dot"></div>
+          </div>
+          <div class="project-card-phase">Fase 4: Geração</div>
+        </div>
+        <div class="project-card-meta">Atualizado há 5 minutos</div>
+      </a>
+    </div>
+
+    <h2 class="section-title">Fase 6 - Online</h2>
+    <div class="cards-grid">
+      <a href="#" class="project-card">
+        <button class="project-card-menu">⋮</button>
+        <div class="project-card-name">API de Pagamentos</div>
+        <div class="project-card-description">
+          Integração com gateways de pagamento (Stripe, PayPal) para e-commerce
+        </div>
+        <div class="project-card-progress">
+          <div class="project-card-progress-dots">
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+            <div class="project-card-progress-dot completed"></div>
+          </div>
+          <div class="project-card-phase">Fase 6: Online</div>
+        </div>
+        <div class="project-card-meta">Deploy completo há 3 dias</div>
+      </a>
+    </div>
+
+    <!-- Anotações -->
+    <div class="annotations">
+      <h2 class="annotation-title">📐 Especificações do Component</h2>
+
+      <div class="annotation-text">
+        <strong>Estrutura:</strong>
+      </div>
+      <div class="code-block">
+.project-card
+├── .project-card-menu (⋮)
+├── .project-card-name (título)
+├── .project-card-description (2 linhas max)
+├── .project-card-progress
+│   ├── .project-card-progress-dots (6 dots)
+│   └── .project-card-phase (texto)
+└── .project-card-meta (timestamp)
+      </div>
+
+      <div class="annotation-text">
+        <strong>Estados dos Dots:</strong>
+        <br>• <strong>Completed:</strong> Verde (#10b981)
+        <br>• <strong>Current:</strong> Azul (#2563eb)
+        <br>• <strong>Pending:</strong> Cinza (#d1d5db)
+      </div>
+
+      <div class="annotation-text">
+        <strong>Hover Effect:</strong>
+        <br>• Border muda de cinza para azul
+        <br>• Sombra média (shadow-md)
+        <br>• Transform: translateY(-2px)
+        <br>• Transition: 100ms ease
+      </div>
+
+      <div class="annotation-text">
+        <strong>Menu (⋮):</strong>
+        <br>• Posição absoluta (top-right)
+        <br>• 28x28px, background cinza
+        <br>• Click abre dropdown com:
+        <br>&nbsp;&nbsp;- Editar nome/descrição
+        <br>&nbsp;&nbsp;- Ver detalhes
+        <br>&nbsp;&nbsp;- Excluir projeto
+      </div>
+
+      <div class="annotation-text">
+        <strong>Description:</strong>
+        <br>• Max 2 linhas (webkit-line-clamp: 2)
+        <br>• Overflow: ellipsis (...)
+        <br>• Line-height: 1.75 (relaxed)
+      </div>
+
+      <div class="annotation-text">
+        <strong>Responsividade:</strong>
+        <br>• Grid: auto-fill, minmax(320px, 1fr)
+        <br>• Mobile: 1 coluna
+        <br>• Tablet: 2 colunas
+        <br>• Desktop: 3+ colunas
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simular click no menu
+    document.querySelectorAll('.project-card-menu').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('Menu de ações:\n\n1. Editar nome/descrição\n2. Ver detalhes\n3. Excluir projeto');
+      });
+    });
+  </script>
+</body>
+</html>

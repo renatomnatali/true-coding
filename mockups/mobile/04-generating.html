@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerando Código Mobile | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4);
+      z-index: 100;
+      text-align: center;
+    }
+
+    .breadcrumb-mobile {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .page-title-mobile {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+    }
+
+    /* Content */
+    .mobile-content {
+      padding: var(--space-4);
+    }
+
+    /* Loading Animation */
+    .loading-section {
+      text-align: center;
+      padding: var(--space-6) 0;
+      margin-bottom: var(--space-6);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-spinner {
+      width: 56px;
+      height: 56px;
+      border: 4px solid var(--color-gray-200);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      margin: 0 auto var(--space-4);
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .loading-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Progress Steps */
+    .steps-card {
+      background: white;
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--border-radius-md);
+      transition: all 0.3s;
+    }
+
+    .step-item.completed {
+      background: var(--color-success-light);
+    }
+
+    .step-item.in-progress {
+      background: var(--color-primary-light);
+    }
+
+    .step-item.pending {
+      background: var(--color-bg-secondary);
+      opacity: 0.6;
+    }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .step-item.completed .step-icon {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .step-item.in-progress .step-icon {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .step-item.in-progress .step-icon {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .step-item.pending .step-icon {
+      background: var(--color-gray-300);
+      color: var(--color-text-tertiary);
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: 2px;
+    }
+
+    .step-description {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* Stats Card */
+    .stats-card {
+      background: white;
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Info Alert */
+    .info-alert {
+      margin-top: var(--space-4);
+      padding: var(--space-3);
+      background: var(--color-primary-light);
+      border-radius: var(--border-radius-md);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    .info-alert-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="breadcrumb-mobile">Geração › Em Progresso</div>
+    <div class="page-title-mobile">Gerando Código...</div>
+  </header>
+
+  <!-- Content -->
+  <main class="mobile-content">
+    <!-- Loading Animation -->
+    <div class="loading-section">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">Criando seu app</div>
+      <div class="loading-subtitle">True Coding está escrevendo o código...</div>
+    </div>
+
+    <!-- Steps Card -->
+    <div class="steps-card">
+      <h3 class="card-title">
+        <span>⚡</span>
+        Etapas de Geração
+      </h3>
+      <div class="steps-list">
+        <!-- Step 1 - Completed -->
+        <div class="step-item completed">
+          <div class="step-icon">✓</div>
+          <div class="step-content">
+            <div class="step-name">Análise do Plano</div>
+            <div class="step-description">Business e Technical Plan processados</div>
+          </div>
+        </div>
+
+        <!-- Step 2 - Completed -->
+        <div class="step-item completed">
+          <div class="step-icon">✓</div>
+          <div class="step-content">
+            <div class="step-name">Estrutura de Pastas</div>
+            <div class="step-description">43 arquivos criados</div>
+          </div>
+        </div>
+
+        <!-- Step 3 - In Progress -->
+        <div class="step-item in-progress">
+          <div class="step-icon">3</div>
+          <div class="step-content">
+            <div class="step-name">Componentes React</div>
+            <div class="step-description">Gerando UI components...</div>
+          </div>
+        </div>
+
+        <!-- Step 4 - Pending -->
+        <div class="step-item pending">
+          <div class="step-icon">4</div>
+          <div class="step-content">
+            <div class="step-name">API Routes</div>
+            <div class="step-description">Aguardando...</div>
+          </div>
+        </div>
+
+        <!-- Step 5 - Pending -->
+        <div class="step-item pending">
+          <div class="step-icon">5</div>
+          <div class="step-content">
+            <div class="step-name">Database Schema</div>
+            <div class="step-description">Aguardando...</div>
+          </div>
+        </div>
+
+        <!-- Step 6 - Pending -->
+        <div class="step-item pending">
+          <div class="step-icon">6</div>
+          <div class="step-content">
+            <div class="step-name">Testes & Docs</div>
+            <div class="step-description">Aguardando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="stats-card">
+      <h3 class="card-title">
+        <span>📊</span>
+        Estatísticas
+      </h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">43</div>
+          <div class="stat-label">Arquivos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">1.2k</div>
+          <div class="stat-label">Linhas</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Componentes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">8</div>
+          <div class="stat-label">API Routes</div>
+        </div>
+      </div>
+
+      <div class="info-alert">
+        <p class="info-alert-text">
+          💡 <strong>Dica:</strong> Após a geração, você poderá revisar cada arquivo antes de fazer o commit no GitHub.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+
+  <script>
+    // Simulate progress
+    const steps = document.querySelectorAll('.step-item');
+    let currentStep = 2; // Start at step 3 (index 2)
+
+    function updateProgress() {
+      if (currentStep < steps.length) {
+        // Mark previous as completed
+        if (currentStep > 0) {
+          steps[currentStep - 1].classList.remove('in-progress');
+          steps[currentStep - 1].classList.add('completed');
+          steps[currentStep - 1].querySelector('.step-icon').textContent = '✓';
+        }
+
+        // Mark current as in-progress
+        steps[currentStep].classList.remove('pending');
+        steps[currentStep].classList.add('in-progress');
+
+        currentStep++;
+      } else {
+        // All done - would redirect to success page
+        clearInterval(progressInterval);
+      }
+    }
+
+    const progressInterval = setInterval(updateProgress, 2000);
+  </script>
+</body>
+</html>

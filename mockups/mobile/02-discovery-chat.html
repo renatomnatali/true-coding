@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discovery Mobile | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4);
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      flex: 1;
+    }
+
+    .breadcrumb-mobile {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .project-name-header {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .back-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--color-border);
+      background: white;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      background: white;
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .progress-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .progress-count {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--color-gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-warning);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Content Area */
+    .mobile-content {
+      padding: var(--space-4);
+      padding-bottom: 80px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: white;
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .summary-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+    }
+
+    .summary-item {
+      margin-bottom: var(--space-3);
+    }
+
+    .summary-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-question {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+    }
+
+    .summary-answer {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+
+    /* FAB Button */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+
+    .fab-icon {
+      font-size: 24px;
+    }
+
+    .fab.active {
+      transform: rotate(45deg);
+    }
+
+    /* Chat Drawer */
+    .chat-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-drawer.open {
+      transform: translateY(0);
+    }
+
+    .chat-drawer-handle {
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .chat-drawer-handle-bar {
+      width: 32px;
+      height: 4px;
+      background: var(--color-gray-300);
+      border-radius: 2px;
+    }
+
+    .chat-drawer-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-drawer-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .close-drawer {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--color-text-tertiary);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .message {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: var(--font-weight-semibold);
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      flex: 1;
+    }
+
+    .message-author {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .message-text {
+      font-size: var(--font-size-sm);
+      line-height: 1.5;
+      color: var(--color-text-primary);
+    }
+
+    .quick-replies {
+      padding: var(--space-2) var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .quick-replies-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-2);
+    }
+
+    .quick-reply-btn {
+      display: inline-block;
+      padding: 8px 12px;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      margin-right: var(--space-2);
+      margin-bottom: var(--space-2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-reply-btn:active {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+    }
+
+    .chat-input-container {
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid var(--color-border);
+      background: white;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: var(--space-2);
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      resize: none;
+      font-family: inherit;
+    }
+
+    .send-button {
+      padding: 10px 16px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+    }
+
+    /* Backdrop */
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 998;
+    }
+
+    .backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="header-left">
+      <div class="breadcrumb-mobile">Ideação › Descoberta</div>
+      <div class="project-name-header">Meu App Delivery</div>
+    </div>
+    <button class="back-button">←</button>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-label">Discovery</span>
+      <span class="progress-count">Pergunta 3 de 5</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 60%;"></div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <main class="mobile-content">
+    <!-- Summary Card -->
+    <div class="summary-card">
+      <div class="summary-title">Resumo até agora</div>
+
+      <div class="summary-item">
+        <div class="summary-question">1. Qual problema você quer resolver?</div>
+        <div class="summary-answer">
+          Sistema para restaurantes gerenciarem pedidos delivery com rastreamento em tempo real.
+        </div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-question">2. Quais as principais funcionalidades?</div>
+        <div class="summary-answer">
+          • Gestão de pedidos<br>
+          • Cardápio digital editável<br>
+          • Rastreamento em tempo real<br>
+          • Pagamentos (Stripe + PIX)
+        </div>
+      </div>
+
+      <div class="summary-item" style="padding: var(--space-3); background: var(--color-primary-light); border-radius: var(--border-radius-md); border-left: 3px solid var(--color-primary);">
+        <div class="summary-question" style="color: var(--color-primary);">3. Quem é o público-alvo? 🎯</div>
+        <div class="summary-answer" style="color: var(--color-text-secondary); font-style: italic;">
+          Toque no botão 💬 para responder...
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FAB Button -->
+  <button class="fab" id="fabButton">
+    <span class="fab-icon">💬</span>
+  </button>
+
+  <!-- Backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Chat Drawer -->
+  <div class="chat-drawer" id="chatDrawer">
+    <div class="chat-drawer-handle" id="drawerHandle">
+      <div class="chat-drawer-handle-bar"></div>
+    </div>
+    <div class="chat-drawer-header">
+      <div class="chat-drawer-title">Assistente</div>
+      <button class="close-drawer" id="closeDrawer">✕</button>
+    </div>
+    <div class="chat-messages">
+      <div class="message">
+        <div class="message-avatar">AI</div>
+        <div class="message-content">
+          <div class="message-author">True Coding</div>
+          <div class="message-text">
+            Ótimo! Agora me conta: <strong>quem é o público-alvo</strong> do seu app? 🎯
+            <br><br>
+            Quem vai usar? Restaurantes pequenos, grandes, food trucks?
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quick-replies">
+      <div class="quick-replies-label">SUGESTÕES</div>
+      <button class="quick-reply-btn">Restaurantes pequenos</button>
+      <button class="quick-reply-btn">Food trucks</button>
+      <button class="quick-reply-btn">Todos os tamanhos</button>
+    </div>
+    <div class="chat-input-container">
+      <div class="chat-input-wrapper">
+        <textarea class="chat-input" placeholder="Escreva sua resposta..." rows="2"></textarea>
+        <button class="send-button">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: fixed; bottom: var(--space-2); left: 50%; transform: translateX(-50%); z-index: 900;">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+
+  <script>
+    const fabButton = document.getElementById('fabButton');
+    const chatDrawer = document.getElementById('chatDrawer');
+    const backdrop = document.getElementById('backdrop');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const drawerHandle = document.getElementById('drawerHandle');
+
+    function openDrawer() {
+      chatDrawer.classList.add('open');
+      backdrop.classList.add('active');
+      fabButton.classList.add('active');
+    }
+
+    function closeDrawerFunc() {
+      chatDrawer.classList.remove('open');
+      backdrop.classList.remove('active');
+      fabButton.classList.remove('active');
+    }
+
+    fabButton.addEventListener('click', () => {
+      if (chatDrawer.classList.contains('open')) {
+        closeDrawerFunc();
+      } else {
+        openDrawer();
+      }
+    });
+
+    backdrop.addEventListener('click', closeDrawerFunc);
+    closeDrawer.addEventListener('click', closeDrawerFunc);
+    drawerHandle.addEventListener('click', closeDrawerFunc);
+  </script>
+</body>
+</html>

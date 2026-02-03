@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de Negócio - Confirmação | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 2/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </div>
+          <a href="#" class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <div class="nav-item sub-item in-progress">
+            <span>Plano de Negócio</span>
+          </div>
+          <div class="nav-item sub-item available">
+            <span>Plano Técnico</span>
+          </div>
+          <div class="nav-item sub-item available">
+            <span>Plano de UX</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Geração</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Planejamento › Plano de Negócio › Confirmação</div>
+          <h2 class="workspace-title">Plano Atualizado ✅</h2>
+          <p class="workspace-subtitle">Alterações salvas com sucesso</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div style="margin-bottom: var(--space-4); padding: var(--space-4); background: var(--color-success-light); border-radius: var(--border-radius-md); border-left: 4px solid var(--color-success);">
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: 1.5; margin: 0;">
+            ✅ <strong>Alterações salvas!</strong> Seu plano de negócio foi atualizado. Você pode continuar para o Plano Técnico ou fazer mais ajustes.
+          </p>
+        </div>
+
+        <!-- Updated Business Plan -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📊 Visão Geral</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Nome do Projeto
+              </div>
+              <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                DeliveryPro
+              </div>
+            </div>
+            <div style="margin-bottom: var(--space-4);">
+              <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: var(--space-1);">
+                Tagline
+              </div>
+              <div style="font-size: var(--font-size-base); color: var(--color-text-primary); line-height: 1.5;">
+                Gestão inteligente de entregas para pequenos restaurantes
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📋 Resumo do Plano</h3>
+          </div>
+          <div class="card-body">
+            <ul style="font-size: var(--font-size-sm); color: var(--color-text-primary); margin: 0; padding-left: var(--space-5); line-height: 2;">
+              <li><strong>Público-Alvo:</strong> Pequenos restaurantes (5-20 funcionários)</li>
+              <li><strong>Funcionalidades Core:</strong> 4 features principais (pedidos, rastreamento, cardápio, pagamentos)</li>
+              <li><strong>Modelo:</strong> R$ 99/mês + 5% comissão</li>
+              <li><strong>Diferencial:</strong> Comissões 70% menores que iFood</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--border-radius-md);">
+          <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+            📌 Próximo Passo
+          </h4>
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6; margin: 0;">
+            Com o Plano de Negócio aprovado, vou agora criar o <strong>Plano Técnico</strong>, definindo a stack de tecnologia, arquitetura do sistema e estrutura de código do seu projeto.
+          </p>
+        </div>
+
+        <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: space-between;">
+          <button class="btn btn-secondary" onclick="location.href='02-business-plan-edit.html'">
+            ← Fazer Mais Ajustes
+          </button>
+          <button class="btn btn-primary" onclick="location.href='04-technical-plan.html'">
+            Criar Plano Técnico →
+          </button>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Perfeito! ✅ Salvei todas as alterações.
+                <br><br>
+                Seu plano de negócio está completo e aprovado.
+                <br><br>
+                <strong>Posso criar o Plano Técnico agora?</strong>
+                <br><br>
+                Vou definir a stack de tecnologia ideal para o seu projeto (Next.js, React, banco de dados, etc).
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="location.href='04-technical-plan.html'">
+              Sim, criar plano técnico
+            </button>
+            <button class="quick-reply-btn" onclick="location.href='02-business-plan-edit.html'">
+              Revisar plano de negócio
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

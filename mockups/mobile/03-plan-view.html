@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de Negócio Mobile | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4);
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      flex: 1;
+    }
+
+    .breadcrumb-mobile {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .page-title-mobile {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .menu-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--color-border);
+      background: white;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* Tab Navigation */
+    .tabs-mobile {
+      background: white;
+      border-bottom: 1px solid var(--color-border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs-list {
+      display: flex;
+      padding: 0 var(--space-4);
+      gap: var(--space-2);
+    }
+
+    .tab-btn {
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      background: transparent;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    /* Content */
+    .mobile-content {
+      padding: var(--space-4);
+      padding-bottom: 80px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: white;
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    .section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .section-content {
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+    }
+
+    .section-content strong {
+      color: var(--color-text-primary);
+    }
+
+    /* Feature List */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .feature-item {
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    .feature-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .feature-description {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .feature-priority {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--color-success-light);
+      color: var(--color-success);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      margin-top: var(--space-1);
+    }
+
+    /* Bullet List */
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .bullet-list li {
+      padding-left: var(--space-3);
+      margin-bottom: var(--space-2);
+      position: relative;
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+
+    .bullet-list li:before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-weight: bold;
+    }
+
+    /* Bottom Action Bar */
+    .bottom-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      gap: var(--space-2);
+      max-width: 480px;
+      margin: 0 auto;
+      z-index: 100;
+    }
+
+    .btn-mobile {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary-mobile {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-primary-mobile {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: var(--color-success-light);
+      color: var(--color-success);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="header-left">
+      <div class="breadcrumb-mobile">Planejamento › Planos</div>
+      <div class="page-title-mobile">Meu App Delivery</div>
+    </div>
+    <button class="menu-button">⋮</button>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs-mobile">
+    <div class="tabs-list">
+      <button class="tab-btn active">Negócio</button>
+      <button class="tab-btn">Técnico</button>
+      <button class="tab-btn">UX/UI</button>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="mobile-content">
+    <!-- Overview -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon">📋</span>
+        <h2 class="section-title">Visão Geral</h2>
+      </div>
+      <div class="section-content">
+        <strong>DeliveryPro</strong>
+        <p style="margin: var(--space-2) 0;">
+          Sistema completo de gestão de entregas com rastreamento em tempo real para restaurantes
+        </p>
+        <span class="badge">✓ Plano aprovado</span>
+      </div>
+    </div>
+
+    <!-- Problem -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon">🎯</span>
+        <h2 class="section-title">Problema e Solução</h2>
+      </div>
+      <div class="section-content">
+        <strong>Problema:</strong>
+        <p style="margin: var(--space-2) 0;">
+          Restaurantes perdem tempo gerenciando pedidos manualmente, clientes não sabem onde está seu pedido.
+        </p>
+        <strong>Solução:</strong>
+        <p style="margin: var(--space-2) 0;">
+          Plataforma que automatiza gestão de pedidos e oferece rastreamento em tempo real para clientes.
+        </p>
+      </div>
+    </div>
+
+    <!-- Target Audience -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon">👥</span>
+        <h2 class="section-title">Público-Alvo</h2>
+      </div>
+      <div class="section-content">
+        <strong>Primário:</strong> Restaurantes pequenos e médios (5-50 pedidos/dia)
+        <br><br>
+        <strong>Dores:</strong>
+        <ul class="bullet-list">
+          <li>Pedidos por WhatsApp são difíceis de organizar</li>
+          <li>Clientes ligam perguntando onde está o pedido</li>
+          <li>Perdem tempo anotando manualmente</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Core Features -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon">⚡</span>
+        <h2 class="section-title">Funcionalidades Core</h2>
+      </div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-name">Gestão de Pedidos</div>
+          <div class="feature-description">
+            Dashboard para visualizar e gerenciar todos os pedidos em tempo real
+          </div>
+          <span class="feature-priority">Must-have</span>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-name">Rastreamento em Tempo Real</div>
+          <div class="feature-description">
+            Mapa mostrando localização do entregador atualizado a cada 10 segundos
+          </div>
+          <span class="feature-priority">Must-have</span>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-name">Cardápio Digital</div>
+          <div class="feature-description">
+            Editor visual para restaurantes criarem e editarem menu online
+          </div>
+          <span class="feature-priority">Must-have</span>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-name">Pagamentos</div>
+          <div class="feature-description">
+            Integração com Stripe (cartão) e Mercado Pago (PIX)
+          </div>
+          <span class="feature-priority" style="background: var(--color-primary-light); color: var(--color-primary);">Should-have</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monetization -->
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-icon">💰</span>
+        <h2 class="section-title">Monetização</h2>
+      </div>
+      <div class="section-content">
+        <strong>Modelo:</strong> Freemium + Comissões
+        <br><br>
+        <strong>Plano Gratuito:</strong> Até 50 pedidos/mês
+        <br>
+        <strong>Plano Pro:</strong> R$ 99/mês - pedidos ilimitados
+        <br>
+        <strong>Comissões:</strong> 5% sobre pagamentos online processados
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Action Bar -->
+  <div class="bottom-action-bar">
+    <button class="btn-mobile btn-secondary-mobile">Editar</button>
+    <button class="btn-mobile btn-primary-mobile">Próxima Fase →</button>
+  </div>
+
+  <div style="position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); z-index: 90;">
+    <a href="../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">← Hub</a>
+  </div>
+</body>
+</html>

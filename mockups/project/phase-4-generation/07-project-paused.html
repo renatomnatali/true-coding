@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projeto Pausado | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/iterations.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">App Delivery Pro</div>
+        <a href="../../dashboard/list.html" class="back-link">← Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 5/7</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <a href="../phase-1-ideation/01-start.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Ideação</span>
+          </a>
+          <a href="../phase-2-planning/01-business-plan.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Planejamento</span>
+          </a>
+          <a href="../phase-3-connection/01-github-oauth.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Conexão</span>
+          </a>
+          <a href="../phase-4-assessment/01-complexity-analysis.html" class="nav-item completed">
+            <span class="phase-icon"></span>
+            <span>Assessment</span>
+          </a>
+          <div class="nav-item in-progress">
+            <span class="phase-icon"></span>
+            <span>Geração (Pausada)</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Deploy</span>
+          </div>
+          <div class="nav-item blocked">
+            <span class="phase-icon"></span>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">ITERAÇÕES</div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 1: Fundação</span>
+          </div>
+          <div class="nav-item sub-item completed">
+            <span>Iteração 2: Pedidos</span>
+          </div>
+          <div class="nav-item sub-item available">
+            <span>Iteração 3: Pagamentos</span>
+          </div>
+          <div class="nav-item sub-item blocked">
+            <span>Iteração 4: Tracking</span>
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="paused-state">
+          <div class="paused-icon">⏸</div>
+          <h2 class="paused-title">Projeto Pausado</h2>
+          <p class="paused-message">
+            Você pausou o desenvolvimento após a Iteração 2. Seu app atual está online e funcionando perfeitamente!
+            Continue quando quiser.
+          </p>
+
+          <!-- Progress So Far -->
+          <div class="progress-so-far">
+            <h3>Progresso Até Agora</h3>
+
+            <div class="completed-iterations">
+              <div class="completed-iteration-item">
+                <div class="iteration-number">1</div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Fundação
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                    Auth, Restaurantes, Menu Digital
+                  </div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-success); font-weight: var(--font-weight-semibold);">
+                  ✓ Completo
+                </div>
+              </div>
+
+              <div class="completed-iteration-item">
+                <div class="iteration-number">2</div>
+                <div style="flex: 1;">
+                  <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                    Pedidos
+                  </div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                    Carrinho, Sistema de Pedidos, Dashboard
+                  </div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-success); font-weight: var(--font-weight-semibold);">
+                  ✓ Completo
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border);">
+              <div style="text-align: center;">
+                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">
+                  16
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                  Arquivos criados
+                </div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">
+                  +892
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                  Linhas de código
+                </div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">
+                  100%
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-tertiary);">
+                  Testes passando
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current App -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Seu App Atual</h3>
+            </div>
+            <div class="card-body">
+              <div style="text-align: center;">
+                <a href="#" class="app-preview-url" style="font-size: var(--font-size-lg); padding: var(--space-4);">
+                  deliverypro-iter2.vercel.app
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+                <div style="margin-top: var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                  ✓ Funcionando perfeitamente
+                  <br>
+                  ✓ HTTPS habilitado
+                  <br>
+                  ✓ CDN global ativo
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next Iteration -->
+          <div style="padding: var(--space-5); background: var(--color-primary-light); border: 2px solid var(--color-primary); border-radius: var(--border-radius-xl);">
+            <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-2);">
+              Próxima Iteração: Pagamentos
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-primary); line-height: 1.6;">
+              Quando você continuar, vou adicionar:
+              <ul style="margin: var(--space-2) 0 0 var(--space-4); padding: 0;">
+                <li>Integração Stripe (cartão de crédito)</li>
+                <li>Integração PIX</li>
+                <li>Webhooks de confirmação de pagamento</li>
+                <li>Histórico de transações</li>
+              </ul>
+              <br>
+              <strong>Tempo estimado:</strong> ~15 minutos
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="margin-top: var(--space-8); display: flex; gap: var(--space-3); justify-content: center;">
+            <button class="btn btn-secondary btn-lg" onclick="location.href='../../dashboard/list.html'">
+              ← Voltar ao Dashboard
+            </button>
+            <button class="btn btn-success btn-lg" style="font-size: var(--font-size-lg); padding: var(--space-5) var(--space-8);" onclick="location.href='05-iteration-progress.html'">
+              Continuar Agora →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">◀</button>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="message">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              <div class="message-author">True Coding</div>
+              <div class="message-text">
+                Projeto pausado!
+                <br><br>
+                <strong>O que você já tem:</strong>
+                <br>
+                ✓ App funcional online
+                <br>
+                ✓ 2 iterações completas
+                <br>
+                ✓ Sistema de auth + pedidos
+                <br><br>
+                <strong>Faltam 2 iterações:</strong>
+                <br>
+                • Iteração 3: Pagamentos (~15 min)
+                <br>
+                • Iteração 4: Tracking (~18 min)
+                <br><br>
+                Seu app atual está em:
+                <br>
+                <strong>deliverypro-iter2.vercel.app</strong>
+                <br><br>
+                Continue quando quiser! Vou retomar exatamente de onde paramos.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quick-replies">
+          <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
+          <div class="quick-replies-buttons">
+            <button class="quick-reply-btn" onclick="location.href='05-iteration-progress.html'">
+              Continuar projeto
+            </button>
+            <button class="quick-reply-btn">
+              Testar app no ar
+            </button>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Pergunte qualquer coisa..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Hub Link -->
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+</body>
+</html>
