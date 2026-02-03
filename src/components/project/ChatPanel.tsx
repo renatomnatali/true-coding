@@ -213,10 +213,9 @@ export function ChatPanel({
   }
 
   // STATE DERIVATION (per docs/ux/STATES.md):
-  // Get current question from progress or derive from messages
-  const currentQuestionNumber = messages.length === 0
-    ? 0 // Initial state: "O que você quer criar?"
-    : questionProgress?.current || 1
+  // Get current question from progress, falling back to initial state
+  const currentQuestionNumber = questionProgress?.current
+    ?? (messages.length === 0 ? 0 : 1)
 
   // CONFIRMATION PHASE: Check if all 5 questions are completed
   const completedCount = questionProgress?.completedQuestions?.length || 0

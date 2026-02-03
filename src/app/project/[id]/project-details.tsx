@@ -69,9 +69,9 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   // REGRA: Progress from database, not default
   const initialQuestionProgress = discoveryConversation
     ? {
-        current: discoveryConversation.currentQuestion || 1,
+        current: discoveryConversation.currentQuestion ?? 1,
         total: 5,
-        completedQuestions: discoveryConversation.completedQuestions,
+        completedQuestions: discoveryConversation.completedQuestions ?? [],
       }
     : null
 
