@@ -384,11 +384,14 @@ export function ChatPanel({
             {quickReplies.map((reply, index) => (
               <button
                 key={index}
-                onClick={() => sendMessage(reply)}
+                onClick={() => {
+                  setInput(reply.long)
+                  textareaRef.current?.focus()
+                }}
                 disabled={isLoading}
                 className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {reply}
+                {reply.short}
               </button>
             ))}
           </div>

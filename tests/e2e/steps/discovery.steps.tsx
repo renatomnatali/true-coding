@@ -317,7 +317,7 @@ describe('Discovery: Quick Replies', () => {
     // Dado projeto novo sem conversação
     // Então o chat exibe quick replies da pergunta 0
     expect(screen.getByText('SUGESTÕES RÁPIDAS')).toBeInTheDocument()
-    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
+    expect(screen.getByText('App de gestão')).toBeInTheDocument()
   })
 })
 
@@ -455,42 +455,29 @@ describe('Discovery: Início', () => {
       />
     )
 
-    // Então vejo quick replies com sugestões
-    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
-    expect(screen.getByText('🛒 E-commerce')).toBeInTheDocument()
-    expect(screen.getByText('📊 Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('🎨 Portfolio')).toBeInTheDocument()
+    // Então vejo quick replies com snippets curtos
+    expect(screen.getByText('App de gestão')).toBeInTheDocument()
+    expect(screen.getByText('E-commerce')).toBeInTheDocument()
+    expect(screen.getByText('Dashboard')).toBeInTheDocument()
+    expect(screen.getByText('Portfolio')).toBeInTheDocument()
   })
 })
 
 /**
  * =============================================================================
- * CENÁRIOS: QUICK REPLY - ENVIO DIRETO
+ * CENÁRIOS: QUICK REPLY - PREENCHE INPUT
  * =============================================================================
  */
-describe('Discovery: Quick Reply Envio Direto', () => {
+describe('Discovery: Quick Reply Preenche Input', () => {
   /**
    * @quick-reply
-   * Cenário: Clicar em quick reply envia mensagem diretamente
-   * (Atualizado conforme Code-Reviewer - não preenche input)
+   * Cenário: Clicar em quick reply coloca texto completo no input (não envia)
    */
-  it('Quick reply envia mensagem diretamente ao clicar', async () => {
+  it('Quick reply preenche o input com texto completo ao clicar', async () => {
     const project = createTestProject({
       status: 'IDEATION',
       businessPlan: null,
     })
-
-    // Mock fetch para evitar erro de rede
-    global.fetch = vi.fn().mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        body: new ReadableStream({
-          start(controller) {
-            controller.close()
-          },
-        }),
-      })
-    )
 
     render(
       <ChatPanel
@@ -502,20 +489,48 @@ describe('Discovery: Quick Reply Envio Direto', () => {
       />
     )
 
-    const quickReplyButton = screen.getByText('📱 App de gestão')
+    // Quando clico no quick reply "App de gestão"
+    await userEvent.click(screen.getByText('App de gestão'))
 
-    // Quando clico no quick reply
-    await userEvent.click(quickReplyButton)
+    // Então o texto completo aparece no input
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    expect(textarea).toHaveValue('Quero criar um app de gestão')
 
-    // Então a mensagem é enviada diretamente (aparece como mensagem do usuário)
-    // Nota: após enviar, os quick replies mudam para Q1, então o botão original some
-    await waitFor(() => {
-      const messageElement = screen.getByText('📱 App de gestão')
-      // Verifica que está dentro de um user message bubble (bg-blue-50)
-      expect(messageElement.closest('.bg-blue-50')).not.toBeNull()
+    // E nenhuma mensagem do usuário apareceu no chat (não enviou automaticamente)
+    expect(screen.queryByText('Você')).not.toBeInTheDocument()
+  })
+
+  /**
+   * @quick-reply
+   * Cenário: Usuário pode editar o texto no input depois de clicar quick reply
+   */
+  it('Usuário pode editar o texto preenchido pelo quick reply', async () => {
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
     })
-    // E fetch foi chamado
-    expect(global.fetch).toHaveBeenCalledWith('/api/chat', expect.any(Object))
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={null}
+        initialMessages={[]}
+      />
+    )
+
+    await userEvent.click(screen.getByText('App de gestão'))
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    expect(textarea).toHaveValue('Quero criar um app de gestão')
+
+    // Quando edita o texto
+    await userEvent.clear(textarea)
+    await userEvent.type(textarea, 'Quero criar um app de gestão para médicos')
+
+    // Então o input reflete a edição
+    expect(textarea).toHaveValue('Quero criar um app de gestão para médicos')
   })
 })
 
