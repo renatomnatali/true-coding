@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { streamChat, type Message } from '@/lib/ai/claude'
 import { DISCOVERY_SYSTEM_PROMPT } from '@/lib/ai/prompts/discovery'
 import { isPlanReady, extractBusinessPlan } from '@/lib/ai/parsers'
+import { DISCOVERY_QUESTIONS } from '@/types'
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 
@@ -75,25 +76,24 @@ export async function POST(request: Request) {
       },
     })
 
-    // Update question progress for discovery phase
-    // The first user message answers Q0 ("O que criar?") which is built into the UI,
-    // not one of the 5 tracked questions. Only advance after the AI has asked Q1+.
-    let currentQuestion = conversation.currentQuestion
-    const completedQuestions = [...conversation.completedQuestions]
-    // Uses the in-memory snapshot from the Prisma query above — excludes the
-    // message.create on line 70, so length === 0 means this is the first message.
+    // Question progress tracking for discovery phase.
+    // The first user message answers Q0 ("O que criar?") — not one of the 5 tracked
+    // questions. Advancement happens speculatively here and is confirmed or rolled
+    // back after Claude responds (see inside the stream below).
     const existingUserMessages = conversation.messages.filter((m) => m.role === 'USER')
     const isFirstMessage = existingUserMessages.length === 0
+    let currentQuestion = conversation.currentQuestion
+    const completedQuestions = [...conversation.completedQuestions]
+    // Track whether we speculatively advanced so we can roll back if Claude re-asks
+    let speculativelyAdvanced = false
+    const previousQuestion = currentQuestion
 
     if (phase === 'discovery' && !isFirstMessage && currentQuestion <= 5) {
-      // Mark current question as completed (if not already)
       if (!completedQuestions.includes(currentQuestion)) {
         completedQuestions.push(currentQuestion)
       }
-      // Advance to next question (max 5)
       const nextQuestion = Math.min(currentQuestion + 1, 5)
 
-      // Update conversation in database
       await prisma.conversation.update({
         where: { id: conversation.id },
         data: {
@@ -103,6 +103,7 @@ export async function POST(request: Request) {
       })
 
       currentQuestion = nextQuestion
+      speculativelyAdvanced = true
     }
 
     // Build messages array for Claude
@@ -141,6 +142,27 @@ export async function POST(request: Request) {
               content: fullResponse,
             },
           })
+
+          // Rollback check: if we speculatively advanced but Claude re-asked the
+          // same question (its response contains the previous question's prompt),
+          // undo the advancement so progress stays in sync with Claude's state.
+          if (phase === 'discovery' && speculativelyAdvanced && previousQuestion >= 1 && previousQuestion <= 5) {
+            const prevQuestionPrompt = DISCOVERY_QUESTIONS[previousQuestion as keyof typeof DISCOVERY_QUESTIONS]?.prompt
+            if (prevQuestionPrompt && fullResponse.includes(prevQuestionPrompt)) {
+              // Claude re-asked — roll back
+              const rolledBackQuestions = completedQuestions.filter((q) => q !== previousQuestion)
+              await prisma.conversation.update({
+                where: { id: conversation.id },
+                data: {
+                  currentQuestion: previousQuestion,
+                  completedQuestions: rolledBackQuestions,
+                },
+              })
+              currentQuestion = previousQuestion
+              completedQuestions.length = 0
+              completedQuestions.push(...rolledBackQuestions)
+            }
+          }
 
           // Emit question_progress event for discovery phase
           if (phase === 'discovery' && currentQuestion <= 5) {

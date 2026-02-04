@@ -178,13 +178,13 @@ export const QUICK_REPLIES_BY_QUESTION: Record<number, string[]> = {
   // Pergunta inicial: "O que você quer criar?"
   0: ['📱 App de gestão', '🛒 E-commerce', '📊 Dashboard', '🎨 Portfolio'],
   // Q1: "Qual problema você quer resolver e para quem?"
-  1: ['👥 Pequenas empresas', '🎯 Freelancers', '🏢 Times remotos', '🛍️ Lojistas'],
+  1: ['Para pequenas empresas', 'Para freelancers', 'Para times remotos', 'Para lojistas online'],
   // Q2: "Quais são as 3-5 funcionalidades principais?"
-  2: ['🔐 Login/cadastro', '📊 Dashboard', '📝 CRUD completo', '🔔 Notificações'],
+  2: ['Login e cadastro de usuários', 'Dashboard com métricas', 'CRUD completo', 'Sistema de notificações'],
   // Q3: "O que vai diferenciar dos concorrentes?"
-  3: ['🎨 Mais simples', '💰 Preço melhor', '⚡ Mais rápido', '🎯 Mais focado'],
+  3: ['Interface mais simples que os concorrentes', 'Preço mais acessível', 'Mais rápido na execução', 'Mais focado no nicho'],
   // Q4: "Quais features seriam nice-to-have?"
-  4: ['🔗 Integrações', '📊 Relatórios', '📱 App mobile', '🤖 Automações'],
+  4: ['Integrações com outras ferramentas', 'Relatórios detalhados', 'Versão mobile', 'Automações inteligentes'],
   // Q5: "Como pretende monetizar?"
-  5: ['💳 Freemium', '📅 Assinatura mensal', '🎁 100% gratuito', '💼 Por usuário'],
+  5: ['Modelo freemium', 'Assinatura mensal', '100% gratuito', 'Cobrança por usuário'],
 }
