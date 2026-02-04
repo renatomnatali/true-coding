@@ -196,7 +196,7 @@ export const QUICK_REPLIES_BY_QUESTION: Record<number, QuickReply[]> = {
     { short: '👥 Pequenas empresas', long: 'O problema afeta pequenas empresas que precisam organizar seus processos' },
     { short: '🎯 Freelancers',       long: 'O problema afeta freelancers que gerenciam múltiplos clientes' },
     { short: '🏢 Times remotos',     long: 'O problema afeta times remotos que precisam colaborar à distância' },
-    { short: '🛍️ Lojistas online',   long: 'O problema afeta lojistas online que precisam gerenciar suas vendas' },
+    { short: '🛍️ Lojistas',          long: 'O problema afeta lojistas online que precisam gerenciar suas vendas' },
   ],
   // Q2: "Quais são as 3-5 funcionalidades principais?"
   2: [
@@ -222,7 +222,7 @@ export const QUICK_REPLIES_BY_QUESTION: Record<number, QuickReply[]> = {
   // Q5: "Como pretende monetizar?"
   5: [
     { short: '💳 Freemium',       long: 'Modelo freemium com funcionalidades básicas gratuitas e planos pagos' },
-    { short: '📅 Assinatura',     long: 'Assinatura mensal com diferentes níveis de acesso' },
+    { short: '📅 Assinatura mensal', long: 'Assinatura mensal com diferentes níveis de acesso' },
     { short: '🎁 100% gratuito',  long: 'A plataforma será 100% gratuita, monetizada por outra forma' },
     { short: '💼 Por usuário',    long: 'Cobrança por usuário com preço proporcional ao uso' },
   ],
