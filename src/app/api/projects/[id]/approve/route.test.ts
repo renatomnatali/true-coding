@@ -105,6 +105,43 @@ describe('POST /api/projects/[id]/approve', () => {
   })
 
   // ========================================================================
+  // Cenário: Prerequisitos não atendidos (ordem sequencial)
+  // ========================================================================
+
+  it('should return 409 when approving business plan without businessPlan generated', async () => {
+    setupProject({ businessPlan: null })
+
+    const response = await POST(createRequest({ planType: 'business' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(data.error).toBe('PREREQUISITE_NOT_MET')
+    expect(mockChat).not.toHaveBeenCalled()
+  })
+
+  it('should return 409 when approving technical plan before business is approved', async () => {
+    setupProject({ businessPlanApproved: false })
+
+    const response = await POST(createRequest({ planType: 'technical' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(data.error).toBe('PREREQUISITE_NOT_MET')
+    expect(mockChat).not.toHaveBeenCalled()
+  })
+
+  it('should return 409 when approving ux plan before technical is approved', async () => {
+    setupProject({ businessPlanApproved: true, technicalPlanApproved: false })
+
+    const response = await POST(createRequest({ planType: 'ux' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(data.error).toBe('PREREQUISITE_NOT_MET')
+    expect(mockChat).not.toHaveBeenCalled()
+  })
+
+  // ========================================================================
   // Cenário: Aprovar Business Plan → gera Technical Plan
   // (planning.feature lines 86-93)
   // ========================================================================

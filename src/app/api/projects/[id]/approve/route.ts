@@ -27,7 +27,13 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     const project = await prisma.project.findUnique({
       where: { id },
-      include: { user: { select: { clerkId: true } } },
+      select: {
+        user: { select: { clerkId: true } },
+        businessPlan: true,
+        technicalPlan: true,
+        businessPlanApproved: true,
+        technicalPlanApproved: true,
+      },
     })
 
     if (!project) {
@@ -36,6 +42,19 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     if (project.user.clerkId !== userId) {
       return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 })
+    }
+
+    // Guard: prerequisite plans must exist and be approved before advancing
+    if (planType === 'business' && !project.businessPlan) {
+      return NextResponse.json({ error: 'PREREQUISITE_NOT_MET', message: 'Business Plan has not been generated yet' }, { status: 409 })
+    }
+
+    if (planType === 'technical' && !project.businessPlanApproved) {
+      return NextResponse.json({ error: 'PREREQUISITE_NOT_MET', message: 'Business Plan must be approved first' }, { status: 409 })
+    }
+
+    if (planType === 'ux' && !project.technicalPlanApproved) {
+      return NextResponse.json({ error: 'PREREQUISITE_NOT_MET', message: 'Technical Plan must be approved first' }, { status: 409 })
     }
 
     if (planType === 'business') {
