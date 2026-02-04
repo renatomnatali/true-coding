@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ProjectLayout } from '@/components/project/ProjectLayout'
 import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ChatPanel } from '@/components/project/ChatPanel'
@@ -56,6 +57,23 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [uxPlanApproved, setUxPlanApproved] = useState(project.uxPlanApproved)
   const [discoveryProgress, setDiscoveryProgress] = useState<{ current: number; total: number } | null>(null)
   const [isApproving, setIsApproving] = useState(false)
+
+  const searchParams = useSearchParams()
+  const githubJustConnected = searchParams.get('github') === 'connected'
+  const connectionError = searchParams.get('error') === 'github_auth_failed'
+
+  // Clear URL params after reading (single-use flags)
+  useEffect(() => {
+    if (searchParams.get('github') || searchParams.get('error')) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('github')
+      url.searchParams.delete('error')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [searchParams])
+
+  // If there's a connection error, show it; otherwise honour githubJustConnected
+  const effectiveGithubConnected = connectionError ? false : githubJustConnected
 
   const hasGitHub = !!project.user.githubUsername
   const hasVercel = !!project.productionUrl
@@ -188,6 +206,9 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         onApproveTechnicalPlan={() => handleApprovePlan('technical')}
         onApproveUxPlan={() => handleApprovePlan('ux')}
         isApproving={isApproving}
+        hasGitHubToken={hasGitHub}
+        githubJustConnected={effectiveGithubConnected}
+        hasOAuthError={connectionError}
       />
     </ProjectLayout>
   )
