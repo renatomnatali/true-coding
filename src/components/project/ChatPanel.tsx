@@ -82,6 +82,7 @@ export function ChatPanel({
   const [planReady, setPlanReady] = useState(initialPlanReady)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const hasRespondedOnce = useRef(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -99,12 +100,12 @@ export function ChatPanel({
     }
   }, [input])
 
-  // Focus input after AI finishes responding
+  // Focus input after AI finishes responding (não no mount com mensagens restauradas)
   useEffect(() => {
-    if (!isLoading && messages.length > 0) {
+    if (hasRespondedOnce.current && !isLoading) {
       textareaRef.current?.focus()
     }
-  }, [isLoading, messages.length])
+  }, [isLoading])
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
@@ -222,6 +223,7 @@ export function ChatPanel({
         },
       ])
     } finally {
+      hasRespondedOnce.current = true
       setIsLoading(false)
       setIsGeneratingPlan(false)
     }

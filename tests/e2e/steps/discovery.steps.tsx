@@ -479,6 +479,9 @@ describe('Discovery: Quick Reply Preenche Input', () => {
    * Cenário: Clicar em quick reply coloca texto completo no input (não envia)
    */
   it('Quick reply preenche o input com texto completo ao clicar', async () => {
+    const fetchSpy = vi.fn()
+    global.fetch = fetchSpy
+
     const project = createTestProject({
       status: 'IDEATION',
       businessPlan: null,
@@ -501,8 +504,10 @@ describe('Discovery: Quick Reply Preenche Input', () => {
     const textarea = screen.getByPlaceholderText('Digite sua resposta...')
     expect(textarea).toHaveValue('Quero criar um app de gestão')
 
-    // E nenhuma mensagem do usuário apareceu no chat (não enviou automaticamente)
-    expect(screen.queryByText('Você')).not.toBeInTheDocument()
+    // E nenhuma mensagem foi enviada (fetch não foi chamado)
+    expect(fetchSpy).not.toHaveBeenCalled()
+    // E o nome do usuário não aparece no histórico (nenhuma mensagem renderizada)
+    expect(screen.queryByText('Renato')).not.toBeInTheDocument()
   })
 
   /**
