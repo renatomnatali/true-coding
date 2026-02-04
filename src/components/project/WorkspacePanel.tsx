@@ -181,7 +181,7 @@ interface ParsedTechnicalPlan {
     database?: { name: string; provider?: string; description?: string }
     deploy?: { name: string; description?: string }
   }
-  architecture?: { pattern?: string; description?: string }
+  architecture?: { type?: string; pattern?: string; description?: string }
   folderStructure?: string[]
   dataModel?: { entities?: string[]; description?: string }
 }

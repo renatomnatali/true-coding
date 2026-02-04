@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
 import { useProjectLayout } from './ProjectLayout'
 import { FEATURES } from '@/config/features'
 import { QUICK_REPLIES_BY_QUESTION } from '@/types'
@@ -67,6 +68,8 @@ export function ChatPanel({
   onPlanReady,
   onProgressUpdate,
 }: ChatPanelProps) {
+  const { user } = useUser()
+  const userName = user?.firstName || 'Você'
   const { setChatOpen } = useProjectLayout()
   // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-05): Load messages from DB
   const [messages, setMessages] = useState<Message[]>(initialMessages)
@@ -79,6 +82,7 @@ export function ChatPanel({
   const [planReady, setPlanReady] = useState(initialPlanReady)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const hasRespondedOnce = useRef(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -95,6 +99,13 @@ export function ChatPanel({
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
     }
   }, [input])
+
+  // Focus input after AI finishes responding (não no mount com mensagens restauradas)
+  useEffect(() => {
+    if (hasRespondedOnce.current && !isLoading) {
+      textareaRef.current?.focus()
+    }
+  }, [isLoading])
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
@@ -212,6 +223,7 @@ export function ChatPanel({
         },
       ])
     } finally {
+      hasRespondedOnce.current = true
       setIsLoading(false)
       setIsGeneratingPlan(false)
     }
@@ -332,11 +344,11 @@ export function ChatPanel({
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  {message.role === 'assistant' ? 'AI' : 'Eu'}
+                  {message.role === 'assistant' ? 'AI' : userName[0]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="mb-1 text-sm font-medium text-gray-900">
-                    {message.role === 'assistant' ? 'True Coding' : 'Você'}
+                    {message.role === 'assistant' ? 'True Coding' : userName}
                   </div>
                   <div
                     className={`text-sm leading-relaxed ${
@@ -384,11 +396,14 @@ export function ChatPanel({
             {quickReplies.map((reply, index) => (
               <button
                 key={index}
-                onClick={() => sendMessage(reply)}
+                onClick={() => {
+                  setInput(reply.long)
+                  textareaRef.current?.focus()
+                }}
                 disabled={isLoading}
                 className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {reply}
+                {reply.short}
               </button>
             ))}
           </div>
