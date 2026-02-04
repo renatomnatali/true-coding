@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     // Update question progress for discovery phase
     // When user sends a message, mark current question as completed and advance
     let currentQuestion = conversation.currentQuestion
-    let completedQuestions = [...conversation.completedQuestions]
+    const completedQuestions = [...conversation.completedQuestions]
 
     if (phase === 'discovery' && currentQuestion <= 5) {
       // Mark current question as completed (if not already)
