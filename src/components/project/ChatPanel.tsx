@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useProjectLayout } from './ProjectLayout'
 import { FEATURES } from '@/config/features'
 import { QUICK_REPLIES_BY_QUESTION } from '@/types'
@@ -9,6 +9,18 @@ interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+}
+
+// Render **bold** spans in assistant messages
+function renderBoldSpans(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) => {
+    const boldMatch = part.match(/^\*\*(.+)\*\*$/)
+    if (boldMatch) {
+      return <strong key={i}>{boldMatch[1]}</strong>
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>
+  })
 }
 
 // Remove JSON from message for display
@@ -333,11 +345,11 @@ export function ChatPanel({
                         : 'text-gray-700'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">
+                    <div className="whitespace-pre-wrap">
                       {message.role === 'assistant'
-                        ? stripJsonFromDisplay(message.content)
+                        ? renderBoldSpans(stripJsonFromDisplay(message.content))
                         : message.content}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>

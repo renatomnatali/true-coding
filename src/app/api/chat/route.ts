@@ -76,11 +76,16 @@ export async function POST(request: Request) {
     })
 
     // Update question progress for discovery phase
-    // When user sends a message, mark current question as completed and advance
+    // The first user message answers Q0 ("O que criar?") which is built into the UI,
+    // not one of the 5 tracked questions. Only advance after the AI has asked Q1+.
     let currentQuestion = conversation.currentQuestion
     const completedQuestions = [...conversation.completedQuestions]
+    // Uses the in-memory snapshot from the Prisma query above — excludes the
+    // message.create on line 70, so length === 0 means this is the first message.
+    const existingUserMessages = conversation.messages.filter((m) => m.role === 'USER')
+    const isFirstMessage = existingUserMessages.length === 0
 
-    if (phase === 'discovery' && currentQuestion <= 5) {
+    if (phase === 'discovery' && !isFirstMessage && currentQuestion <= 5) {
       // Mark current question as completed (if not already)
       if (!completedQuestions.includes(currentQuestion)) {
         completedQuestions.push(currentQuestion)

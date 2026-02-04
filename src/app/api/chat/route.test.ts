@@ -47,6 +47,21 @@ function createRequest(body: object): Request {
   })
 }
 
+async function drainStream(response: Response): Promise<string> {
+  const reader = response.body?.getReader()
+  const chunks: string[] = []
+  if (reader) {
+    const decoder = new TextDecoder()
+    let done = false
+    while (!done) {
+      const result = await reader.read()
+      done = result.done
+      if (result.value) chunks.push(decoder.decode(result.value))
+    }
+  }
+  return chunks.join('')
+}
+
 describe('POST /api/chat', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -286,6 +301,117 @@ describe('POST /api/chat', () => {
       expect(fullOutput).toContain('event: text')
       expect(fullOutput).toContain('Hello, ')
       expect(fullOutput).toContain('event: done')
+    })
+  })
+
+  describe('Question progress (off-by-one regression)', () => {
+    function setupBaseProject(conversationMessages: { role: string; content: string }[] = []) {
+      mockAuth.mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'db-user-1',
+        clerkId: 'user_123',
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+
+      const existingUserCount = conversationMessages.filter((m) => m.role === 'USER').length
+      const currentQuestion = existingUserCount === 0 ? 1 : existingUserCount + 1
+      const completedQuestions = existingUserCount === 0 ? [] : Array.from({ length: existingUserCount }, (_, i) => i + 1)
+
+      mockPrisma.project.findUnique.mockResolvedValue({
+        id: 'proj-1',
+        name: 'My Project',
+        userId: 'db-user-1',
+        status: 'IDEATION',
+        productionUrl: null,
+        businessPlan: null,
+        githubRepo: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        conversations: [{
+          id: 'conv-1',
+          projectId: 'proj-1',
+          phase: 'DISCOVERY',
+          status: 'ACTIVE',
+          currentQuestion,
+          completedQuestions,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          messages: conversationMessages.map((m, i) => ({
+            id: `msg-${i}`,
+            conversationId: 'conv-1',
+            role: m.role,
+            content: m.content,
+            createdAt: new Date(),
+          })),
+        }],
+      } as unknown as Awaited<ReturnType<typeof prisma.project.findUnique>>)
+
+      mockPrisma.message.create.mockResolvedValue({
+        id: 'msg-new',
+        conversationId: 'conv-1',
+        role: 'USER',
+        content: 'test',
+        createdAt: new Date(),
+      })
+      mockPrisma.conversation.update.mockResolvedValue({
+        id: 'conv-1',
+        projectId: 'proj-1',
+        phase: 'DISCOVERY',
+        status: 'ACTIVE',
+        currentQuestion: currentQuestion + 1,
+        completedQuestions: [...completedQuestions, currentQuestion],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as unknown as Awaited<ReturnType<typeof prisma.conversation.update>>)
+
+      async function* mockStream() { yield 'Resposta do AI' }
+      mockStreamChat.mockReturnValue(mockStream())
+    }
+
+    it('should NOT advance currentQuestion on first user message (Q0 answer)', async () => {
+      setupBaseProject([])
+
+      const response = await POST(createRequest({
+        projectId: 'proj-1',
+        message: 'Quero criar um app de delivery',
+        phase: 'discovery',
+      }))
+
+      await drainStream(response)
+
+      // First message answers Q0 (built-in prompt) — no advance should happen
+      expect(mockPrisma.conversation.update).not.toHaveBeenCalled()
+    })
+
+    it('should advance currentQuestion on second user message (Q1 answer)', async () => {
+      // Conversation has Q0 answered + AI asked Q1
+      setupBaseProject([
+        { role: 'USER', content: 'Quero criar um app de delivery' },
+        { role: 'ASSISTANT', content: '**Qual problema você quer resolver?**' },
+      ])
+
+      const response = await POST(createRequest({
+        projectId: 'proj-1',
+        message: 'Ajudar restaurantes pequenos',
+        phase: 'discovery',
+      }))
+
+      const output = await drainStream(response)
+
+      // Should advance from 2 → 3
+      expect(mockPrisma.conversation.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            currentQuestion: 3,
+            completedQuestions: expect.arrayContaining([2]),
+          }),
+        })
+      )
+
+      expect(output).toContain('event: question_progress')
+      expect(output).toContain('"current":3')
     })
   })
 })
