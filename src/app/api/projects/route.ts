@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db/prisma'
 
 const createProjectSchema = z.object({
   name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
 })
 
 // GET /api/projects - List user's projects
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name } = createProjectSchema.parse(body)
+    const { name, description } = createProjectSchema.parse(body)
 
     // Get or create user
     let user = await prisma.user.findUnique({
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
     const project = await prisma.project.create({
       data: {
         name,
+        description,
         userId: user.id,
         status: 'IDEATION',
       },

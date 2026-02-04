@@ -1,0 +1,8 @@
+export { DashboardHeader } from './DashboardHeader'
+export { DashboardContent } from './DashboardContent'
+export { StatsRow } from './StatsRow'
+export { FilterTabs } from './FilterTabs'
+export type { FilterType, SortType } from './FilterTabs'
+export { ProjectCard } from './ProjectCard'
+export { QuickActions } from './QuickActions'
+export { CreateProjectModal, DeleteProjectModal } from './ProjectModals'
