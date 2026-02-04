@@ -256,9 +256,10 @@ describe('Planning: Business Plan - Aprovação', () => {
 
   /**
    * @business-plan @aprovado @readonly
-   * Cenário: Business Plan aprovado fica somente leitura
+   * Cenário: Business Plan aprovado → avança para Technical Plan (sequencial)
+   * planning.feature line 86-93
    */
-  it('Exibe badge "Aprovado" e esconde botões quando aprovado', () => {
+  it('Após aprovar Business Plan, exibe Technical Plan e esconde Business Plan', () => {
     render(
       <WorkspacePanel
         projectId="test-project"
@@ -266,17 +267,18 @@ describe('Planning: Business Plan - Aprovação', () => {
         status="PLANNING"
         businessPlan={sampleBusinessPlan}
         businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
       />
     )
 
-    // Então vejo o badge "Aprovado" no cabeçalho
-    expect(screen.getByText(/Aprovado/i)).toBeInTheDocument()
-
-    // E NÃO vejo o botão "Editar Plano"
+    // Business Plan não está mais visível como conteúdo principal
     expect(screen.queryByRole('button', { name: /Editar Plano/i })).not.toBeInTheDocument()
 
-    // E NÃO vejo o botão "Aprovar e Continuar"
-    expect(screen.queryByRole('button', { name: /Aprovar e Continuar/i })).not.toBeInTheDocument()
+    // Technical Plan agora é o ativo
+    expect(screen.getByText(/Stack de Tecnologia/i)).toBeInTheDocument()
+
+    // Breadcrumb mostra Business Plan como completed (✓)
+    expect(screen.getByText('✓')).toBeInTheDocument()
   })
 })
 
@@ -326,11 +328,13 @@ describe('Planning: Technical Plan - Visualização', () => {
       />
     )
 
-    // Então vejo a seção "Stack de Tecnologia" ou "Plano Técnico"
-    expect(screen.getByText(/Plano Técnico/i)).toBeInTheDocument()
+    // "Plano Técnico" aparece no breadcrumb e no heading — ambos devem estar presentes
+    const techLabels = screen.getAllByText(/Plano Técnico/i)
+    expect(techLabels.length).toBeGreaterThanOrEqual(1)
 
-    // E vejo informações da stack
-    expect(screen.getByText(/Next\.js/i)).toBeInTheDocument()
+    // E vejo informações da stack (Next.js aparece nome + descrição)
+    const nextJsElements = screen.getAllByText(/Next\.js/i)
+    expect(nextJsElements.length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText(/PostgreSQL/i)).toBeInTheDocument()
   })
 
@@ -369,7 +373,11 @@ describe('Planning: Technical Plan - Aprovação', () => {
    * @technical-plan @aprovado @readonly
    * Cenário: Technical Plan aprovado fica somente leitura
    */
-  it('Exibe badge "Aprovado" e esconde botões quando Technical Plan aprovado', () => {
+  /**
+   * Cenário: Technical Plan aprovado → avança para UX Plan (sequencial)
+   * planning.feature line 149-157
+   */
+  it('Após aprovar Technical Plan, exibe UX Plan e esconde Technical Plan', () => {
     render(
       <WorkspacePanel
         projectId="test-project"
@@ -379,15 +387,19 @@ describe('Planning: Technical Plan - Aprovação', () => {
         businessPlanApproved={true}
         technicalPlan={sampleTechnicalPlan}
         technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
       />
     )
 
-    // Então vejo o badge "Aprovado" para Technical Plan
-    const badges = screen.getAllByText(/Aprovado/i)
-    expect(badges.length).toBeGreaterThanOrEqual(1)
-
-    // E NÃO vejo o botão "Editar Stack"
+    // Technical Plan não está mais visível como conteúdo principal
     expect(screen.queryByRole('button', { name: /Editar Stack/i })).not.toBeInTheDocument()
+
+    // UX Plan agora é o ativo
+    expect(screen.getByText(/Personas & Design/i)).toBeInTheDocument()
+
+    // Breadcrumb mostra 2 planos como completed
+    const checkmarks = screen.getAllByText('✓')
+    expect(checkmarks.length).toBe(2)
   })
 
   /**
@@ -468,12 +480,14 @@ describe('Planning: UX Plan - Visualização', () => {
       />
     )
 
-    // Então vejo a seção "Plano de UX" ou "UX Plan"
-    expect(screen.getByText(/Plano de UX|UX Plan/i)).toBeInTheDocument()
+    // "Plano de UX" aparece no breadcrumb e no heading
+    const uxLabels = screen.getAllByText(/Plano de UX/i)
+    expect(uxLabels.length).toBeGreaterThanOrEqual(1)
 
     // E vejo informações do UX Plan (personas, design tokens)
-    const personaElements = screen.getAllByText(/Personas|João Restaurante/i)
-    expect(personaElements.length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText('João Restaurante')).toBeInTheDocument()
+    const personaLabels = screen.getAllByText(/Personas/i)
+    expect(personaLabels.length).toBeGreaterThanOrEqual(1)
   })
 
   /**
@@ -511,7 +525,11 @@ describe('Planning: UX Plan - Aprovação', () => {
    * @ux-plan @aprovado @readonly
    * Cenário: UX Plan aprovado fica somente leitura
    */
-  it('Exibe badge "Aprovado" quando UX Plan aprovado', () => {
+  /**
+   * Cenário: UX Plan aprovado — todos os planos completados
+   * planning.feature line 216-221
+   */
+  it('Exibe badge "Aprovado" no UX Plan e breadcrumb com todos completed', () => {
     render(
       <WorkspacePanel
         projectId="test-project"
@@ -526,9 +544,15 @@ describe('Planning: UX Plan - Aprovação', () => {
       />
     )
 
-    // Então vejo badges "Aprovado" (múltiplos - business, technical, ux)
-    const badges = screen.getAllByText(/Aprovado/i)
-    expect(badges.length).toBeGreaterThanOrEqual(3)
+    // UX Plan card mostra badge "Aprovado"
+    expect(screen.getByText(/Aprovado/i)).toBeInTheDocument()
+
+    // Breadcrumb mostra todos os 3 planos como completed (✓)
+    const checkmarks = screen.getAllByText('✓')
+    expect(checkmarks.length).toBe(3)
+
+    // NÃO há botão "Aprovar" visível
+    expect(screen.queryByRole('button', { name: /Aprovar/i })).not.toBeInTheDocument()
   })
 
   /**

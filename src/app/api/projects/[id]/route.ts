@@ -79,6 +79,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       'status',
       'businessPlan',
       'technicalPlan',
+      'uxPlan',
       'repoUrl',
       'deployUrl',
     ]
