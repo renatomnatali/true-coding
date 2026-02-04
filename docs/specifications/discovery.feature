@@ -73,9 +73,8 @@ Funcionalidade: Fase de Ideação (Discovery)
     Dado que estou na pergunta 1
     E vejo quick replies: "👥 Pequenas empresas", "🎯 Freelancers", "🏢 Times remotos", "🛍️ Lojistas"
     Quando clico no quick reply "👥 Pequenas empresas"
-    Então a mensagem é enviada diretamente
-    E vejo indicador de "digitando..."
-    E a IA responde com a pergunta 2
+    Então o texto completo aparece no input
+    E o usuário pode revisar, editar e enviar
 
   @pergunta-2
   Cenário: Responder pergunta 2 - Features Core
