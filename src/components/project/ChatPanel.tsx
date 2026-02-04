@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
 import { useProjectLayout } from './ProjectLayout'
 import { FEATURES } from '@/config/features'
 import { QUICK_REPLIES_BY_QUESTION } from '@/types'
@@ -67,6 +68,8 @@ export function ChatPanel({
   onPlanReady,
   onProgressUpdate,
 }: ChatPanelProps) {
+  const { user } = useUser()
+  const userName = user?.firstName || 'Você'
   const { setChatOpen } = useProjectLayout()
   // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-05): Load messages from DB
   const [messages, setMessages] = useState<Message[]>(initialMessages)
@@ -95,6 +98,13 @@ export function ChatPanel({
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
     }
   }, [input])
+
+  // Focus input after AI finishes responding
+  useEffect(() => {
+    if (!isLoading && messages.length > 0) {
+      textareaRef.current?.focus()
+    }
+  }, [isLoading, messages.length])
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
@@ -332,11 +342,11 @@ export function ChatPanel({
                       : 'bg-gray-200 text-gray-700'
                   }`}
                 >
-                  {message.role === 'assistant' ? 'AI' : 'Eu'}
+                  {message.role === 'assistant' ? 'AI' : userName[0]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="mb-1 text-sm font-medium text-gray-900">
-                    {message.role === 'assistant' ? 'True Coding' : 'Você'}
+                    {message.role === 'assistant' ? 'True Coding' : userName}
                   </div>
                   <div
                     className={`text-sm leading-relaxed ${

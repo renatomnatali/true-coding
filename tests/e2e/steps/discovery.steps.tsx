@@ -18,6 +18,11 @@ import {
   type ConversationState,
 } from '../support/test-utils'
 
+// Mock do Clerk
+vi.mock('@clerk/nextjs', () => ({
+  useUser: () => ({ user: { firstName: 'Renato' } }),
+}))
+
 // Mock do useProjectLayout
 vi.mock('@/components/project/ProjectLayout', async () => {
   const actual = await vi.importActual('@/components/project/ProjectLayout')
