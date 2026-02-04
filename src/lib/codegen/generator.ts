@@ -144,7 +144,7 @@ async function generateFileWithAI(
 
   const responseText =
     message.content[0].type === 'text' ? message.content[0].text : ''
-  const result = extractJSON<{ files: GeneratedFile[] }>(responseText)
+  const { data: result } = extractJSON<{ files: GeneratedFile[] }>(responseText)
 
   // Sanitize all file paths to prevent path traversal attacks
   return sanitizeGeneratedFiles(result?.files ?? [])

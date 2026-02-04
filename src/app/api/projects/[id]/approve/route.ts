@@ -79,7 +79,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 async function approveBusiness(projectId: string, businessPlan: unknown) {
   let technicalPlan: unknown
   try {
-    const response = await chat({
+    const { text: response, stopReason } = await chat({
       phase: 'planning',
       systemPrompt: PLANNING_SYSTEM_PROMPT,
       messages: [
@@ -90,7 +90,18 @@ async function approveBusiness(projectId: string, businessPlan: unknown) {
       ],
     })
 
-    technicalPlan = extractJSON(response)
+    if (stopReason === 'max_tokens') {
+      console.warn('[approve] TechnicalPlan: resposta truncada (stop_reason=max_tokens)')
+      return NextResponse.json({ error: 'RESPONSE_TRUNCATED', message: 'A resposta da IA foi truncada. Tente aprovar novamente.' }, { status: 503 })
+    }
+
+    const { data, repaired } = extractJSON(response)
+    if (repaired) {
+      console.warn('[approve] TechnicalPlan: JSON precisou de repair — resposta provavelmente incompleta')
+      return NextResponse.json({ error: 'RESPONSE_TRUNCATED', message: 'A resposta da IA foi truncada. Tente aprovar novamente.' }, { status: 503 })
+    }
+
+    technicalPlan = data
     if (!technicalPlan) {
       return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Falha ao extrair TechnicalPlan da resposta' }, { status: 500 })
     }
@@ -113,7 +124,7 @@ async function approveBusiness(projectId: string, businessPlan: unknown) {
 async function approveTechnical(projectId: string, businessPlan: unknown, technicalPlan: unknown) {
   let uxPlan: unknown
   try {
-    const response = await chat({
+    const { text: response, stopReason } = await chat({
       phase: 'planning',
       systemPrompt: UX_PLAN_SYSTEM_PROMPT,
       messages: [
@@ -124,7 +135,18 @@ async function approveTechnical(projectId: string, businessPlan: unknown, techni
       ],
     })
 
-    uxPlan = extractJSON(response)
+    if (stopReason === 'max_tokens') {
+      console.warn('[approve] UXPlan: resposta truncada (stop_reason=max_tokens)')
+      return NextResponse.json({ error: 'RESPONSE_TRUNCATED', message: 'A resposta da IA foi truncada. Tente aprovar novamente.' }, { status: 503 })
+    }
+
+    const { data, repaired } = extractJSON(response)
+    if (repaired) {
+      console.warn('[approve] UXPlan: JSON precisou de repair — resposta provavelmente incompleta')
+      return NextResponse.json({ error: 'RESPONSE_TRUNCATED', message: 'A resposta da IA foi truncada. Tente aprovar novamente.' }, { status: 503 })
+    }
+
+    uxPlan = data
     if (!uxPlan) {
       return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Falha ao extrair UXPlan da resposta' }, { status: 500 })
     }

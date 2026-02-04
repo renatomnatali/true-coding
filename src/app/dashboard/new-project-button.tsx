@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/toast'
 
 export function NewProjectButton() {
   const [isCreating, setIsCreating] = useState(false)
   const [name, setName] = useState('')
   const [showModal, setShowModal] = useState(false)
   const router = useRouter()
+  const toast = useToast()
 
   const handleCreate = async () => {
     if (!name.trim()) return
@@ -28,7 +30,7 @@ export function NewProjectButton() {
       router.push(`/project/${project.id}`)
     } catch (error) {
       console.error('Error creating project:', error)
-      alert('Failed to create project. Please try again.')
+      toast.error('Erro ao criar projeto. Tente novamente.')
     } finally {
       setIsCreating(false)
     }
