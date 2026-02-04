@@ -20,29 +20,34 @@ export async function GET(request: Request) {
     const state = url.searchParams.get('state')
     const error = url.searchParams.get('error')
 
+    // Read project cookie for project-scoped redirects
+    const cookieStore = await cookies()
+    const projectId = cookieStore.get('github_oauth_project_id')?.value
+
+    // Helper: build redirect target (project page or dashboard)
+    const baseRedirect = projectId
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/project/${projectId}`
+      : `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
+
     // Check for OAuth error from GitHub
     if (error) {
       const errorDescription = url.searchParams.get('error_description')
       console.error('GitHub OAuth error:', error, errorDescription)
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=github_auth_failed`
-      )
+      if (projectId) cookieStore.delete('github_oauth_project_id')
+      return NextResponse.redirect(`${baseRedirect}?error=github_auth_failed`)
     }
 
     if (!code || !state) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=missing_params`
-      )
+      if (projectId) cookieStore.delete('github_oauth_project_id')
+      return NextResponse.redirect(`${baseRedirect}?error=missing_params`)
     }
 
     // Verify state matches cookie
-    const cookieStore = await cookies()
     const savedState = cookieStore.get('github_oauth_state')?.value
 
     if (!savedState || savedState !== state) {
-      return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=invalid_state`
-      )
+      if (projectId) cookieStore.delete('github_oauth_project_id')
+      return NextResponse.redirect(`${baseRedirect}?error=invalid_state`)
     }
 
     // Clear state cookie
@@ -74,12 +79,24 @@ export async function GET(request: Request) {
       },
     })
 
-    // Redirect to dashboard with success
-    return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?github=connected`
-    )
+    // Clear project cookie and redirect with success
+    if (projectId) cookieStore.delete('github_oauth_project_id')
+    return NextResponse.redirect(`${baseRedirect}?github=connected`)
   } catch (error) {
     console.error('GitHub OAuth callback error:', error)
+    // On unexpected errors, try to redirect to project if cookie was set
+    try {
+      const cookieStore = await cookies()
+      const projectId = cookieStore.get('github_oauth_project_id')?.value
+      if (projectId) {
+        cookieStore.delete('github_oauth_project_id')
+        return NextResponse.redirect(
+          `${process.env.NEXT_PUBLIC_APP_URL}/project/${projectId}?error=github_auth_failed`
+        )
+      }
+    } catch {
+      // cookie access failed — fall through to dashboard
+    }
     return NextResponse.redirect(
       `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?error=github_auth_failed`
     )

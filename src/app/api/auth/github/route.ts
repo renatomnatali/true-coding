@@ -4,8 +4,8 @@ import { cookies } from 'next/headers'
 import { getAuthorizationUrl, generateState } from '@/lib/github/oauth'
 import { prisma } from '@/lib/db/prisma'
 
-// GET /api/auth/github - Initiate GitHub OAuth flow
-export async function GET() {
+// GET /api/auth/github?projectId=<id> - Initiate GitHub OAuth flow
+export async function GET(request?: Request) {
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -33,6 +33,18 @@ export async function GET() {
       maxAge: 60 * 10, // 10 minutes
       path: '/',
     })
+
+    // If projectId is provided, save it so callback can redirect back to the project
+    const projectId = request ? new URL(request.url).searchParams.get('projectId') : null
+    if (projectId) {
+      cookieStore.set('github_oauth_project_id', projectId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 10, // 10 minutes
+        path: '/',
+      })
+    }
 
     // Redirect to GitHub authorization
     const authUrl = getAuthorizationUrl(state)
