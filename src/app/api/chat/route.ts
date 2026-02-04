@@ -18,7 +18,7 @@ const QUESTION_KEYWORDS: Record<number, [string, string]> = {
   2: ['funcionalidades', 'must-have'], // "3-5 funcionalidades principais (must-have)"
   3: ['diferenciar', 'concorrentes'],  // "O que vai diferenciar ... concorrentes?"
   4: ['nice-to-have', 'futuro'],       // "nice-to-have para o futuro?"
-  5: ['monetizar', 'projeto'],         // "Como pretende monetizar o projeto?"
+  5: ['monetizar', 'como pretende'],   // "Como pretende monetizar o projeto?"
 }
 
 /** Strip diacritics so "você" → "voce", "são" → "sao", etc. */
