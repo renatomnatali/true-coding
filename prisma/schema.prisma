@@ -55,7 +55,11 @@ model Project {
   businessPlan Json?
 
   // Planning Phase
-  technicalPlan Json?
+  technicalPlan         Json?
+  uxPlan                Json?
+  businessPlanApproved  Boolean @default(false)
+  technicalPlanApproved Boolean @default(false)
+  uxPlanApproved        Boolean @default(false)
 
   // Generation Phase
   githubRepoUrl   String?

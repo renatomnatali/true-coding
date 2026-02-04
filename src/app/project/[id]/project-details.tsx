@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ProjectLayout } from '@/components/project/ProjectLayout'
 import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ChatPanel } from '@/components/project/ChatPanel'
@@ -31,6 +30,10 @@ interface Project {
   status: string
   businessPlan: JsonValue | null
   technicalPlan: JsonValue | null
+  uxPlan: JsonValue | null
+  businessPlanApproved: boolean
+  technicalPlanApproved: boolean
+  uxPlanApproved: boolean
   githubRepoUrl: string | null
   productionUrl: string | null
   user: {
@@ -44,9 +47,13 @@ interface ProjectDetailsProps {
 }
 
 export function ProjectDetails({ project }: ProjectDetailsProps) {
-  const router = useRouter()
   const [status, setStatus] = useState(project.status)
   const [businessPlan, setBusinessPlan] = useState(project.businessPlan)
+  const [technicalPlan, setTechnicalPlan] = useState(project.technicalPlan)
+  const [uxPlan, setUxPlan] = useState(project.uxPlan)
+  const [businessPlanApproved, setBusinessPlanApproved] = useState(project.businessPlanApproved)
+  const [technicalPlanApproved, setTechnicalPlanApproved] = useState(project.technicalPlanApproved)
+  const [uxPlanApproved, setUxPlanApproved] = useState(project.uxPlanApproved)
   const [discoveryProgress, setDiscoveryProgress] = useState<{ current: number; total: number } | null>(null)
   const [isApproving, setIsApproving] = useState(false)
 
@@ -82,10 +89,16 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         : JSON.stringify(businessPlan, null, 2))
     : null
 
-  const technicalPlanStr = project.technicalPlan
-    ? (typeof project.technicalPlan === 'string'
-        ? project.technicalPlan
-        : JSON.stringify(project.technicalPlan, null, 2))
+  const technicalPlanStr = technicalPlan
+    ? (typeof technicalPlan === 'string'
+        ? technicalPlan
+        : JSON.stringify(technicalPlan, null, 2))
+    : null
+
+  const uxPlanStr = uxPlan
+    ? (typeof uxPlan === 'string'
+        ? uxPlan
+        : JSON.stringify(uxPlan, null, 2))
     : null
 
   const handlePlanReady = (plan: Record<string, unknown>) => {
@@ -97,24 +110,34 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
     setDiscoveryProgress(progress)
   }
 
-  const handleApprove = async () => {
+  const handleApprovePlan = async (planType: 'business' | 'technical' | 'ux') => {
     if (isApproving) return
     setIsApproving(true)
 
     try {
-      // Update project status to next phase
-      const response = await fetch(`/api/projects/${project.id}`, {
-        method: 'PATCH',
+      const response = await fetch(`/api/projects/${project.id}/approve`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'CONNECTING' }),
+        body: JSON.stringify({ planType }),
       })
 
       if (!response.ok) {
-        throw new Error('Falha ao aprovar plano')
+        const err = await response.json()
+        throw new Error(err.message || 'Falha ao aprovar plano')
       }
 
-      setStatus('CONNECTING')
-      router.refresh()
+      const data = await response.json()
+
+      if (planType === 'business') {
+        setBusinessPlanApproved(true)
+        setTechnicalPlan(data.technicalPlan as JsonValue)
+      } else if (planType === 'technical') {
+        setTechnicalPlanApproved(true)
+        setUxPlan(data.uxPlan as JsonValue)
+      } else {
+        setUxPlanApproved(true)
+        setStatus('CONNECTING')
+      }
     } catch (error) {
       console.error('Erro ao aprovar plano:', error)
       alert('Erro ao aprovar plano. Tente novamente.')
@@ -154,10 +177,17 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         status={status}
         businessPlan={businessPlanStr}
         technicalPlan={technicalPlanStr}
+        uxPlan={uxPlanStr}
+        businessPlanApproved={businessPlanApproved}
+        technicalPlanApproved={technicalPlanApproved}
+        uxPlanApproved={uxPlanApproved}
         repoUrl={project.githubRepoUrl}
         deployUrl={project.productionUrl}
         discoveryProgress={discoveryProgress}
-        onApprove={handleApprove}
+        onApprove={() => handleApprovePlan('business')}
+        onApproveTechnicalPlan={() => handleApprovePlan('technical')}
+        onApproveUxPlan={() => handleApprovePlan('ux')}
+        isApproving={isApproving}
       />
     </ProjectLayout>
   )

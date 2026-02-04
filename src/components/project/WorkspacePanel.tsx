@@ -51,6 +51,7 @@ interface WorkspacePanelProps {
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
   onApproveUxPlan?: () => void
+  isApproving?: boolean
 }
 
 export function WorkspacePanel({
@@ -70,6 +71,7 @@ export function WorkspacePanel({
   onSavePlan,
   onApproveTechnicalPlan,
   onApproveUxPlan,
+  isApproving,
 }: WorkspacePanelProps) {
   const { setChatOpen } = useProjectLayout()
 
@@ -78,7 +80,7 @@ export function WorkspacePanel({
     case 'IDEATION':
       return <IdeationWorkspace projectName={projectName} discoveryProgress={discoveryProgress} onStartChat={() => setChatOpen(true)} />
     case 'PLANNING':
-      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} uxPlan={uxPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} uxPlanApproved={uxPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} onApproveUxPlan={onApproveUxPlan} />
+      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} uxPlan={uxPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} uxPlanApproved={uxPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} onApproveUxPlan={onApproveUxPlan} isApproving={isApproving} />
     case 'CONNECTING':
       return <ConnectingWorkspace />
     case 'GENERATING':
@@ -207,7 +209,15 @@ function isValidHexColor(value: string): boolean {
   return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(value)
 }
 
-// Phase: PLANNING
+// Derive which plan sub-phase is active
+// Business → Technical → UX (sequential, per planning.feature)
+function getActivePlanPhase(businessPlanApproved: boolean, technicalPlanApproved: boolean): 'business' | 'technical' | 'ux' {
+  if (!businessPlanApproved) return 'business'
+  if (!technicalPlanApproved) return 'technical'
+  return 'ux'
+}
+
+// Phase: PLANNING — renders only the current active sub-plan
 function PlanningWorkspace({
   businessPlan,
   technicalPlan,
@@ -219,6 +229,7 @@ function PlanningWorkspace({
   onSavePlan,
   onApproveTechnicalPlan,
   onApproveUxPlan,
+  isApproving = false,
 }: {
   businessPlan?: string | null
   technicalPlan?: string | null
@@ -230,353 +241,388 @@ function PlanningWorkspace({
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
   onApproveUxPlan?: () => void
+  isApproving?: boolean
 }) {
-  // Parse business plan JSON
-  const plan = businessPlan ? parsePlan(businessPlan) : null
+  const activePlan = getActivePlanPhase(businessPlanApproved, technicalPlanApproved)
 
-  // Parse technical plan JSON
-  const techPlan = technicalPlan ? parseTechnicalPlan(technicalPlan) : null
-
-  // Parse UX plan JSON
-  const uxPlanParsed = uxPlan ? parseUxPlan(uxPlan) : null
-
-  // Edit mode state
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedPlan, setEditedPlan] = useState<ParsedPlan | null>(null)
-
-  // Enter edit mode
-  const handleEdit = () => {
-    if (plan) {
-      setEditedPlan({ ...plan })
-      setIsEditing(true)
-    }
-  }
-
-  // Cancel edit
-  const handleCancel = () => {
-    setEditedPlan(null)
-    setIsEditing(false)
-  }
-
-  // Save changes
-  const handleSave = () => {
-    if (editedPlan && onSavePlan) {
-      onSavePlan(editedPlan)
-    }
-    setIsEditing(false)
-    setEditedPlan(null)
-  }
-
-  // Update field in edit mode
-  const updateField = (field: keyof ParsedPlan, value: string) => {
-    if (editedPlan) {
-      setEditedPlan({ ...editedPlan, [field]: value })
-    }
-  }
-
-  // Use edited plan in edit mode, otherwise original
-  const displayPlan = isEditing ? editedPlan : plan
+  // Sub-phase breadcrumb
+  const SUB_PHASES = [
+    { key: 'business', label: 'Plano de Negócio', state: businessPlanApproved ? 'completed' : activePlan === 'business' ? 'active' : 'blocked' },
+    { key: 'technical', label: 'Plano Técnico', state: technicalPlanApproved ? 'completed' : activePlan === 'technical' ? 'active' : 'blocked' },
+    { key: 'ux', label: 'Plano de UX', state: uxPlanApproved ? 'completed' : activePlan === 'ux' ? 'active' : 'blocked' },
+  ] as const
 
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="mx-auto max-w-3xl space-y-6">
-        <div>
-          <h2 className="mb-2 text-xl font-bold">Plano do Projeto</h2>
-          <p className="text-sm text-muted-foreground">
-            Revise o plano gerado. Peça ajustes no chat se necessário.
-          </p>
+        {/* Sub-phase progress strip */}
+        <div className="flex items-center gap-2">
+          {SUB_PHASES.map((phase, i) => (
+            <div key={phase.key} className="flex items-center gap-2">
+              <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
+                phase.state === 'completed' ? 'bg-green-100 text-green-700' :
+                phase.state === 'active' ? 'bg-blue-100 text-blue-700' :
+                'bg-gray-100 text-gray-400'
+              }`}>
+                {phase.state === 'completed' ? '✓' : i + 1}
+              </div>
+              <span className={`text-sm ${
+                phase.state === 'active' ? 'font-semibold text-gray-900' :
+                phase.state === 'completed' ? 'text-green-700' :
+                'text-gray-400'
+              }`}>{phase.label}</span>
+              {i < SUB_PHASES.length - 1 && <span className="mx-1 text-gray-300">→</span>}
+            </div>
+          ))}
         </div>
 
-        {displayPlan ? (
-          <>
-            {/* Header */}
-            <div className="rounded-xl border bg-card p-6">
-              <div className="flex items-start justify-between">
-                <h3 className="text-2xl font-bold">{displayPlan.name}</h3>
-                {businessPlanApproved && (
-                  <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                    Aprovado
-                  </span>
+        {/* Render only the active sub-plan */}
+        {activePlan === 'business' && (
+          <BusinessPlanView
+            businessPlan={businessPlan}
+            businessPlanApproved={businessPlanApproved}
+            onApprove={onApprove}
+            onSavePlan={onSavePlan}
+            isApproving={isApproving}
+          />
+        )}
+
+        {activePlan === 'technical' && (
+          <TechnicalPlanView
+            technicalPlan={technicalPlan}
+            technicalPlanApproved={technicalPlanApproved}
+            onApprove={onApproveTechnicalPlan}
+            isApproving={isApproving}
+          />
+        )}
+
+        {activePlan === 'ux' && (
+          <UxPlanView
+            uxPlan={uxPlan}
+            uxPlanApproved={uxPlanApproved}
+            onApprove={onApproveUxPlan}
+            isApproving={isApproving}
+          />
+        )}
+
+        {/* Loading overlay while generating next plan */}
+        {isApproving && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="rounded-lg border bg-white p-6 shadow-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                <p className="text-sm font-medium text-gray-700">
+                  {activePlan === 'business' ? 'Gerando Plano Técnico...' :
+                   activePlan === 'technical' ? 'Gerando Plano de UX...' :
+                   'Aprovando...'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Sub-component: Business Plan
+function BusinessPlanView({
+  businessPlan,
+  businessPlanApproved,
+  onApprove,
+  onSavePlan,
+  isApproving,
+}: {
+  businessPlan?: string | null
+  businessPlanApproved?: boolean
+  onApprove?: () => void
+  onSavePlan?: (plan: ParsedPlan) => void
+  isApproving?: boolean
+}) {
+  const plan = businessPlan ? parsePlan(businessPlan) : null
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedPlan, setEditedPlan] = useState<ParsedPlan | null>(null)
+
+  const handleEdit = () => { if (plan) { setEditedPlan({ ...plan }); setIsEditing(true) } }
+  const handleCancel = () => { setEditedPlan(null); setIsEditing(false) }
+  const handleSave = () => { if (editedPlan && onSavePlan) onSavePlan(editedPlan); setIsEditing(false); setEditedPlan(null) }
+  const updateField = (field: keyof ParsedPlan, value: string) => { if (editedPlan) setEditedPlan({ ...editedPlan, [field]: value }) }
+
+  const displayPlan = isEditing ? editedPlan : plan
+
+  return (
+    <>
+      <div>
+        <h2 className="mb-1 text-xl font-bold">Plano de Negócio</h2>
+        <p className="text-sm text-muted-foreground">Revise o plano gerado. Peça ajustes no chat se necessário.</p>
+      </div>
+
+      {displayPlan ? (
+        <>
+          <div className="rounded-xl border bg-card p-6">
+            <div className="flex items-start justify-between">
+              <h3 className="text-2xl font-bold">{displayPlan.name}</h3>
+              {businessPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
+            </div>
+            {isEditing ? (
+              <input type="text" value={editedPlan?.tagline || ''} onChange={(e) => updateField('tagline', e.target.value)}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-lg text-muted-foreground focus:border-blue-500 focus:outline-none" placeholder="Tagline do projeto" />
+            ) : displayPlan.tagline && <p className="mt-1 text-lg text-muted-foreground">{displayPlan.tagline}</p>}
+            {displayPlan.description && <p className="mt-3 text-sm">{displayPlan.description}</p>}
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {displayPlan.problemStatement && (
+              <div className="rounded-xl border bg-card p-5">
+                <h4 className="mb-2 flex items-center gap-2 font-semibold"><span className="text-lg">🎯</span> Problema</h4>
+                <p className="text-sm text-muted-foreground">{displayPlan.problemStatement}</p>
+              </div>
+            )}
+            {displayPlan.targetAudience && (
+              <div className="rounded-xl border bg-card p-5">
+                <h4 className="mb-2 flex items-center gap-2 font-semibold"><span className="text-lg">👥</span> Público-Alvo</h4>
+                <p className="text-sm font-medium">{displayPlan.targetAudience.primary}</p>
+                {displayPlan.targetAudience.painPoints && (
+                  <ul className="mt-2 space-y-1">
+                    {displayPlan.targetAudience.painPoints.map((pain: string, i: number) => (
+                      <li key={i} className="text-xs text-muted-foreground">• {pain}</li>
+                    ))}
+                  </ul>
                 )}
               </div>
+            )}
+          </div>
+
+          {displayPlan.coreFeatures && displayPlan.coreFeatures.length > 0 && (
+            <div className="rounded-xl border bg-card p-5">
+              <h4 className="mb-4 flex items-center gap-2 font-semibold"><span className="text-lg">⚡</span> Funcionalidades Principais</h4>
+              <div className="space-y-3">
+                {displayPlan.coreFeatures.map((feature: { id: string; name: string; description: string; priority: string }, i: number) => (
+                  <div key={feature.id || i} className="flex items-start gap-3 rounded-lg bg-muted/50 p-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">{i + 1}</div>
+                    <div>
+                      <p className="font-medium">{feature.name}</p>
+                      <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {displayPlan.monetization && (
+            <div className="rounded-xl border bg-card p-5">
+              <h4 className="mb-2 flex items-center gap-2 font-semibold"><span className="text-lg">💰</span> Monetização</h4>
+              <p className="text-sm">
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">{displayPlan.monetization.model}</span>
+                <span className="ml-2 text-muted-foreground">{displayPlan.monetization.description}</span>
+              </p>
+            </div>
+          )}
+
+          {!businessPlanApproved && (
+            <div className="flex justify-end gap-3">
               {isEditing ? (
-                <input
-                  type="text"
-                  value={editedPlan?.tagline || ''}
-                  onChange={(e) => updateField('tagline', e.target.value)}
-                  className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-lg text-muted-foreground focus:border-blue-500 focus:outline-none"
-                  placeholder="Tagline do projeto"
-                />
+                <>
+                  <button onClick={handleCancel} className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Cancelar</button>
+                  <button onClick={handleSave} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Salvar Alterações</button>
+                </>
               ) : (
-                displayPlan.tagline && (
-                  <p className="mt-1 text-lg text-muted-foreground">{displayPlan.tagline}</p>
-                )
+                <>
+                  <button onClick={handleEdit} className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Editar Plano</button>
+                  <button onClick={onApprove} disabled={isApproving}
+                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+                    Aprovar e Continuar
+                  </button>
+                </>
               )}
-              {displayPlan.description && (
-                <p className="mt-3 text-sm">{displayPlan.description}</p>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
+        </div>
+      )}
+    </>
+  )
+}
+
+// Sub-component: Technical Plan
+function TechnicalPlanView({
+  technicalPlan,
+  technicalPlanApproved,
+  onApprove,
+  isApproving,
+}: {
+  technicalPlan?: string | null
+  technicalPlanApproved?: boolean
+  onApprove?: () => void
+  isApproving?: boolean
+}) {
+  const techPlan = technicalPlan ? parseTechnicalPlan(technicalPlan) : null
+
+  return (
+    <>
+      <div>
+        <h2 className="mb-1 text-xl font-bold">Plano Técnico</h2>
+        <p className="text-sm text-muted-foreground">Arquitetura e tecnologias do projeto.</p>
+      </div>
+
+      <div className="rounded-xl border bg-card p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+            </div>
+            <h3 className="font-semibold">Stack de Tecnologia</h3>
+          </div>
+          {technicalPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
+        </div>
+
+        {techPlan ? (
+          <>
+            {techPlan.architecture && (
+              <div className="mt-4 rounded-lg bg-muted/50 p-3">
+                <p className="text-xs font-semibold uppercase text-gray-500">Arquitetura</p>
+                <p className="font-medium">{techPlan.architecture.type}</p>
+                <p className="text-xs text-muted-foreground">{techPlan.architecture.description}</p>
+              </div>
+            )}
+            <div className="mt-4 space-y-3">
+              {techPlan.stack?.frontend && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="font-medium">{techPlan.stack.frontend.name}</p>
+                  <p className="text-xs text-muted-foreground">{techPlan.stack.frontend.description}</p>
+                </div>
+              )}
+              {techPlan.stack?.backend && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="font-medium">{techPlan.stack.backend.name}</p>
+                  <p className="text-xs text-muted-foreground">{techPlan.stack.backend.description}</p>
+                </div>
+              )}
+              {techPlan.stack?.database && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="font-medium">{techPlan.stack.database.name}</p>
+                  <p className="text-xs text-muted-foreground">{techPlan.stack.database.description}</p>
+                </div>
+              )}
+              {techPlan.stack?.deploy && (
+                <div className="rounded-lg bg-muted/50 p-3">
+                  <p className="font-medium">{techPlan.stack.deploy.name}</p>
+                  <p className="text-xs text-muted-foreground">{techPlan.stack.deploy.description}</p>
+                </div>
               )}
             </div>
 
-            {/* Problem & Audience */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {displayPlan.problemStatement && (
-                <div className="rounded-xl border bg-card p-5">
-                  <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                    <span className="text-lg">🎯</span> Problema
-                  </h4>
-                  <p className="text-sm text-muted-foreground">{displayPlan.problemStatement}</p>
-                </div>
-              )}
-              {displayPlan.targetAudience && (
-                <div className="rounded-xl border bg-card p-5">
-                  <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                    <span className="text-lg">👥</span> Público-Alvo
-                  </h4>
-                  <p className="text-sm font-medium">{displayPlan.targetAudience.primary}</p>
-                  {displayPlan.targetAudience.painPoints && (
-                    <ul className="mt-2 space-y-1">
-                      {displayPlan.targetAudience.painPoints.map((pain: string, i: number) => (
-                        <li key={i} className="text-xs text-muted-foreground">• {pain}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </div>
+            {!technicalPlanApproved && (
+              <div className="mt-4 flex justify-end gap-3">
+                <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Editar Stack</button>
+                <button onClick={onApprove} disabled={isApproving}
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+                  Aprovar e Continuar
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="mt-4 rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
+        )}
+      </div>
+    </>
+  )
+}
 
-            {/* Features */}
-            {displayPlan.coreFeatures && displayPlan.coreFeatures.length > 0 && (
-              <div className="rounded-xl border bg-card p-5">
-                <h4 className="mb-4 flex items-center gap-2 font-semibold">
-                  <span className="text-lg">⚡</span> Funcionalidades Principais
-                </h4>
+// Sub-component: UX Plan
+function UxPlanView({
+  uxPlan,
+  uxPlanApproved,
+  onApprove,
+  isApproving,
+}: {
+  uxPlan?: string | null
+  uxPlanApproved?: boolean
+  onApprove?: () => void
+  isApproving?: boolean
+}) {
+  const uxPlanParsed = uxPlan ? parseUxPlan(uxPlan) : null
+
+  return (
+    <>
+      <div>
+        <h2 className="mb-1 text-xl font-bold">Plano de UX</h2>
+        <p className="text-sm text-muted-foreground">Personas, jornadas e design tokens.</p>
+      </div>
+
+      <div className="rounded-xl border bg-card p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100 text-pink-600">
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <h3 className="font-semibold">Personas & Design</h3>
+          </div>
+          {uxPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
+        </div>
+
+        {uxPlanParsed ? (
+          <>
+            {uxPlanParsed.personas && uxPlanParsed.personas.length > 0 && (
+              <div className="mt-4">
+                <h4 className="mb-3 font-medium">Personas</h4>
                 <div className="space-y-3">
-                  {displayPlan.coreFeatures.map((feature: { id: string; name: string; description: string; priority: string }, i: number) => (
-                    <div key={feature.id || i} className="flex items-start gap-3 rounded-lg bg-muted/50 p-3">
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
-                        {i + 1}
-                      </div>
-                      <div>
-                        <p className="font-medium">{feature.name}</p>
-                        <p className="text-xs text-muted-foreground">{feature.description}</p>
-                      </div>
+                  {uxPlanParsed.personas.map((persona, i) => (
+                    <div key={i} className="rounded-lg bg-muted/50 p-3">
+                      <p className="font-medium">{persona.name}</p>
+                      {persona.role && <p className="text-xs text-muted-foreground">{persona.role}</p>}
+                      {persona.goals && persona.goals.length > 0 && (
+                        <ul className="mt-2 space-y-1">
+                          {persona.goals.map((goal, j) => <li key={j} className="text-xs text-muted-foreground">• {goal}</li>)}
+                        </ul>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Monetization */}
-            {displayPlan.monetization && (
-              <div className="rounded-xl border bg-card p-5">
-                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                  <span className="text-lg">💰</span> Monetização
-                </h4>
-                <p className="text-sm">
-                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                    {displayPlan.monetization.model}
-                  </span>
-                  <span className="ml-2 text-muted-foreground">{displayPlan.monetization.description}</span>
-                </p>
+            {uxPlanParsed.designTokens && (
+              <div className="mt-4">
+                <h4 className="mb-3 font-medium">Design Tokens</h4>
+                <div className="rounded-lg bg-muted/50 p-3">
+                  {uxPlanParsed.designTokens.colors?.primary && (
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-4 rounded"
+                        style={{ backgroundColor: isValidHexColor(uxPlanParsed.designTokens.colors.primary) ? uxPlanParsed.designTokens.colors.primary : undefined }} />
+                      <p className="text-xs text-muted-foreground">Primary: {uxPlanParsed.designTokens.colors.primary}</p>
+                    </div>
+                  )}
+                  {uxPlanParsed.designTokens.typography?.fontFamily && (
+                    <p className="text-xs text-muted-foreground">Font: {uxPlanParsed.designTokens.typography.fontFamily}</p>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* CTA - Different buttons based on state */}
-            {!businessPlanApproved && (
-              <div className="flex justify-end gap-3">
-                {isEditing ? (
-                  <>
-                    <button
-                      onClick={handleCancel}
-                      className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                    >
-                      Salvar Alterações
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleEdit}
-                      className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted"
-                    >
-                      Editar Plano
-                    </button>
-                    <button
-                      onClick={onApprove}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                    >
-                      Aprovar e Continuar
-                    </button>
-                  </>
-                )}
+            {!uxPlanApproved && (
+              <div className="mt-4 flex justify-end gap-3">
+                <button onClick={onApprove} disabled={isApproving}
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+                  Aprovar e Continuar
+                </button>
               </div>
             )}
           </>
         ) : (
-          <div className="rounded-xl border bg-card p-6">
-            <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
-              Aguardando geração do plano...
-            </div>
-          </div>
+          <div className="mt-4 rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
         )}
-
-        {/* Technical Plan */}
-        <div className="rounded-xl border bg-card p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold">Plano Técnico</h3>
-                <p className="text-xs text-muted-foreground">Arquitetura e tecnologias</p>
-              </div>
-            </div>
-            {technicalPlanApproved && (
-              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                Aprovado
-              </span>
-            )}
-          </div>
-          {techPlan ? (
-            <>
-              {/* Stack display */}
-              <div className="space-y-3">
-                {techPlan.stack?.frontend && (
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    <p className="font-medium">{techPlan.stack.frontend.name}</p>
-                    <p className="text-xs text-muted-foreground">{techPlan.stack.frontend.description}</p>
-                  </div>
-                )}
-                {techPlan.stack?.database && (
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    <p className="font-medium">{techPlan.stack.database.name}</p>
-                    <p className="text-xs text-muted-foreground">{techPlan.stack.database.description}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* CTA buttons for Technical Plan */}
-              {!technicalPlanApproved && (
-                <div className="mt-4 flex justify-end gap-3">
-                  <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">
-                    Editar Stack
-                  </button>
-                  <button
-                    onClick={onApproveTechnicalPlan}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                  >
-                    Aprovar e Continuar
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
-              Aguardando geração do plano...
-            </div>
-          )}
-        </div>
-
-        {/* UX Plan */}
-        <div className="rounded-xl border bg-card p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100 text-pink-600">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold">Plano de UX</h3>
-                <p className="text-xs text-muted-foreground">Personas e design tokens</p>
-              </div>
-            </div>
-            {uxPlanApproved && (
-              <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                Aprovado
-              </span>
-            )}
-          </div>
-          {uxPlanParsed ? (
-            <>
-              {/* Personas section */}
-              {uxPlanParsed.personas && uxPlanParsed.personas.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="mb-3 font-medium">Personas</h4>
-                  <div className="space-y-3">
-                    {uxPlanParsed.personas.map((persona, i) => (
-                      <div key={i} className="rounded-lg bg-muted/50 p-3">
-                        <p className="font-medium">{persona.name}</p>
-                        {persona.role && (
-                          <p className="text-xs text-muted-foreground">{persona.role}</p>
-                        )}
-                        {persona.goals && persona.goals.length > 0 && (
-                          <ul className="mt-2 space-y-1">
-                            {persona.goals.map((goal, j) => (
-                              <li key={j} className="text-xs text-muted-foreground">• {goal}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Design Tokens section */}
-              {uxPlanParsed.designTokens && (
-                <div className="mb-4">
-                  <h4 className="mb-3 font-medium">Design Tokens</h4>
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    {uxPlanParsed.designTokens.colors?.primary && (
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-4 w-4 rounded"
-                          style={{ backgroundColor: isValidHexColor(uxPlanParsed.designTokens.colors.primary) ? uxPlanParsed.designTokens.colors.primary : undefined }}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Primary: {uxPlanParsed.designTokens.colors.primary}
-                        </p>
-                      </div>
-                    )}
-                    {uxPlanParsed.designTokens.typography?.fontFamily && (
-                      <p className="text-xs text-muted-foreground">
-                        Font: {uxPlanParsed.designTokens.typography.fontFamily}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* CTA buttons for UX Plan */}
-              {!uxPlanApproved && (
-                <div className="mt-4 flex justify-end gap-3">
-                  <button
-                    onClick={onApproveUxPlan}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                  >
-                    Aprovar e Continuar
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">
-              Aguardando geração do plano...
-            </div>
-          )}
-        </div>
       </div>
-    </div>
+    </>
   )
 }
 
