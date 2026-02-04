@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { POST, claudeReAsked } from './route'
+import { POST } from './route'
+import { claudeReAsked } from '@/lib/ai/discovery-progress'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
