@@ -5,7 +5,7 @@ import { getAuthorizationUrl, generateState } from '@/lib/github/oauth'
 import { prisma } from '@/lib/db/prisma'
 
 // GET /api/auth/github?projectId=<id> - Initiate GitHub OAuth flow
-export async function GET(request?: Request) {
+export async function GET(request: Request) {
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -35,7 +35,7 @@ export async function GET(request?: Request) {
     })
 
     // If projectId is provided, save it so callback can redirect back to the project
-    const projectId = request ? new URL(request.url).searchParams.get('projectId') : null
+    const projectId = new URL(request.url).searchParams.get('projectId')
     if (projectId) {
       cookieStore.set('github_oauth_project_id', projectId, {
         httpOnly: true,

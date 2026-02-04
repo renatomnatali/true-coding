@@ -28,6 +28,8 @@ import { auth } from '@clerk/nextjs/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/db/prisma'
 
+const GITHUB_AUTH_URL = 'https://app.test/api/auth/github'
+
 describe('GET /api/auth/github', () => {
   const mockCookieStore = {
     set: vi.fn(),
@@ -43,7 +45,7 @@ describe('GET /api/auth/github', () => {
   it('should return 401 when not authenticated', async () => {
     vi.mocked(auth).mockResolvedValue({ userId: null } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
 
-    const response = await GET()
+    const response = await GET(new Request(GITHUB_AUTH_URL))
     const data = await response.json()
 
     expect(response.status).toBe(401)
@@ -54,7 +56,7 @@ describe('GET /api/auth/github', () => {
     vi.mocked(auth).mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
 
-    const response = await GET()
+    const response = await GET(new Request(GITHUB_AUTH_URL))
     const data = await response.json()
 
     expect(response.status).toBe(404)
@@ -65,7 +67,7 @@ describe('GET /api/auth/github', () => {
     vi.mocked(auth).mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
     vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: 1, clerkId: 'user_123' } as Awaited<ReturnType<typeof prisma.user.findUnique>>)
 
-    const response = await GET()
+    const response = await GET(new Request(GITHUB_AUTH_URL))
 
     expect(response.status).toBe(307) // Redirect
     expect(response.headers.get('location')).toContain('github.com/login/oauth/authorize')
@@ -76,7 +78,7 @@ describe('GET /api/auth/github', () => {
     vi.mocked(auth).mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
     vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: 1, clerkId: 'user_123' } as Awaited<ReturnType<typeof prisma.user.findUnique>>)
 
-    await GET()
+    await GET(new Request(GITHUB_AUTH_URL))
 
     expect(mockCookieStore.set).toHaveBeenCalledWith(
       'github_oauth_state',
