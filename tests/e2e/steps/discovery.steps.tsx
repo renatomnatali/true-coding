@@ -322,7 +322,7 @@ describe('Discovery: Quick Replies', () => {
     // Dado projeto novo sem conversação
     // Então o chat exibe quick replies da pergunta 0
     expect(screen.getByText('SUGESTÕES RÁPIDAS')).toBeInTheDocument()
-    expect(screen.getByText('App de gestão')).toBeInTheDocument()
+    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
   })
 })
 
@@ -460,11 +460,11 @@ describe('Discovery: Início', () => {
       />
     )
 
-    // Então vejo quick replies com snippets curtos
-    expect(screen.getByText('App de gestão')).toBeInTheDocument()
-    expect(screen.getByText('E-commerce')).toBeInTheDocument()
-    expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Portfolio')).toBeInTheDocument()
+    // Então vejo quick replies com snippets curtos (com emoji conforme discovery.feature)
+    expect(screen.getByText('📱 App de gestão')).toBeInTheDocument()
+    expect(screen.getByText('🛒 E-commerce')).toBeInTheDocument()
+    expect(screen.getByText('📊 Dashboard')).toBeInTheDocument()
+    expect(screen.getByText('🎨 Portfolio')).toBeInTheDocument()
   })
 })
 
@@ -497,8 +497,8 @@ describe('Discovery: Quick Reply Preenche Input', () => {
       />
     )
 
-    // Quando clico no quick reply "App de gestão"
-    await userEvent.click(screen.getByText('App de gestão'))
+    // Quando clico no quick reply "📱 App de gestão"
+    await userEvent.click(screen.getByText('📱 App de gestão'))
 
     // Então o texto completo aparece no input
     const textarea = screen.getByPlaceholderText('Digite sua resposta...')
@@ -530,7 +530,7 @@ describe('Discovery: Quick Reply Preenche Input', () => {
       />
     )
 
-    await userEvent.click(screen.getByText('App de gestão'))
+    await userEvent.click(screen.getByText('📱 App de gestão'))
 
     const textarea = screen.getByPlaceholderText('Digite sua resposta...')
     expect(textarea).toHaveValue('Quero criar um app de gestão')

@@ -186,44 +186,44 @@ export interface QuickReply {
 export const QUICK_REPLIES_BY_QUESTION: Record<number, QuickReply[]> = {
   // Pergunta inicial: "O que você quer criar?"
   0: [
-    { short: 'App de gestão',  long: 'Quero criar um app de gestão' },
-    { short: 'E-commerce',     long: 'Quero criar uma plataforma de e-commerce' },
-    { short: 'Dashboard',      long: 'Quero criar um dashboard analítico' },
-    { short: 'Portfolio',      long: 'Quero criar um portfolio pessoal' },
+    { short: '📱 App de gestão',  long: 'Quero criar um app de gestão' },
+    { short: '🛒 E-commerce',     long: 'Quero criar uma plataforma de e-commerce' },
+    { short: '📊 Dashboard',      long: 'Quero criar um dashboard analítico' },
+    { short: '🎨 Portfolio',      long: 'Quero criar um portfolio pessoal' },
   ],
   // Q1: "Qual problema você quer resolver e para quem?"
   1: [
-    { short: 'Pequenas empresas', long: 'O problema afeta pequenas empresas que precisam organizar seus processos' },
-    { short: 'Freelancers',       long: 'O problema afeta freelancers que gerenciam múltiplos clientes' },
-    { short: 'Times remotos',     long: 'O problema afeta times remotos que precisam colaborar à distância' },
-    { short: 'Lojistas online',   long: 'O problema afeta lojistas online que precisam gerenciar suas vendas' },
+    { short: '👥 Pequenas empresas', long: 'O problema afeta pequenas empresas que precisam organizar seus processos' },
+    { short: '🎯 Freelancers',       long: 'O problema afeta freelancers que gerenciam múltiplos clientes' },
+    { short: '🏢 Times remotos',     long: 'O problema afeta times remotos que precisam colaborar à distância' },
+    { short: '🛍️ Lojistas',          long: 'O problema afeta lojistas online que precisam gerenciar suas vendas' },
   ],
   // Q2: "Quais são as 3-5 funcionalidades principais?"
   2: [
-    { short: 'Login/cadastro',  long: 'Sistema de autenticação com login e cadastro de usuários' },
-    { short: 'Dashboard',       long: 'Dashboard com métricas e visão geral dos dados' },
-    { short: 'CRUD completo',   long: 'Funcionalidades completas de criar, ler, atualizar e deletar registros' },
-    { short: 'Notificações',    long: 'Sistema de notificações para alertar usuários sobre eventos importantes' },
+    { short: '🔐 Login/cadastro',  long: 'Sistema de autenticação com login e cadastro de usuários' },
+    { short: '📊 Dashboard',       long: 'Dashboard com métricas e visão geral dos dados' },
+    { short: '📝 CRUD completo',   long: 'Funcionalidades completas de criar, ler, atualizar e deletar registros' },
+    { short: '🔔 Notificações',    long: 'Sistema de notificações para alertar usuários sobre eventos importantes' },
   ],
   // Q3: "O que vai diferenciar dos concorrentes?"
   3: [
-    { short: 'Interface simples', long: 'A interface será muito mais simples e intuitiva que os concorrentes' },
-    { short: 'Preço acessível',   long: 'O preço será mais acessível que as alternativas do mercado' },
-    { short: 'Mais rápido',       long: 'A plataforma será muito mais rápida na execução das tarefas' },
-    { short: 'Nicho específico',  long: 'Vai ser mais focado no nicho específico que os concorrentes não atendem bem' },
+    { short: '🎨 Mais simples',    long: 'A interface será muito mais simples e intuitiva que os concorrentes' },
+    { short: '💰 Preço melhor',    long: 'O preço será mais acessível que as alternativas do mercado' },
+    { short: '⚡ Mais rápido',     long: 'A plataforma será muito mais rápida na execução das tarefas' },
+    { short: '🎯 Mais focado',     long: 'Vai ser mais focado no nicho específico que os concorrentes não atendem bem' },
   ],
   // Q4: "Quais features seriam nice-to-have?"
   4: [
-    { short: 'Integrações',   long: 'Integrações com outras ferramentas populares como Slack e email' },
-    { short: 'Relatórios',    long: 'Relatórios detalhados e exportáveis para acompanhamento' },
-    { short: 'App mobile',    long: 'Versão mobile nativa para uso no celular' },
-    { short: 'Automações',    long: 'Automações inteligentes para reduzir trabalho repetitivo' },
+    { short: '🔗 Integrações',   long: 'Integrações com outras ferramentas populares como Slack e email' },
+    { short: '📊 Relatórios',    long: 'Relatórios detalhados e exportáveis para acompanhamento' },
+    { short: '📱 App mobile',    long: 'Versão mobile nativa para uso no celular' },
+    { short: '🤖 Automações',    long: 'Automações inteligentes para reduzir trabalho repetitivo' },
   ],
   // Q5: "Como pretende monetizar?"
   5: [
-    { short: 'Freemium',       long: 'Modelo freemium com funcionalidades básicas gratuitas e planos pagos' },
-    { short: 'Assinatura',     long: 'Assinatura mensal com diferentes níveis de acesso' },
-    { short: '100% gratuito',  long: 'A plataforma será 100% gratuita, monetizada por outra forma' },
-    { short: 'Por usuário',    long: 'Cobrança por usuário com preço proporcional ao uso' },
+    { short: '💳 Freemium',       long: 'Modelo freemium com funcionalidades básicas gratuitas e planos pagos' },
+    { short: '📅 Assinatura mensal', long: 'Assinatura mensal com diferentes níveis de acesso' },
+    { short: '🎁 100% gratuito',  long: 'A plataforma será 100% gratuita, monetizada por outra forma' },
+    { short: '💼 Por usuário',    long: 'Cobrança por usuário com preço proporcional ao uso' },
   ],
 }
