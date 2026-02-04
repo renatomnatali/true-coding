@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { POST } from './route'
+import { POST, claudeReAsked } from './route'
 
 // Mock Clerk auth
 vi.mock('@clerk/nextjs/server', () => ({
@@ -413,5 +413,114 @@ describe('POST /api/chat', () => {
       expect(output).toContain('event: question_progress')
       expect(output).toContain('"current":3')
     })
+
+    it('should rollback currentQuestion when Claude re-asks the same question', async () => {
+      // Manually set up conversation at Q3 with 2 prior user messages (Q0 answer + Q1 answer).
+      // currentQuestion = 3, completedQuestions = [1, 2].
+      // The new user message answers Q3 → speculative advance to 4.
+      // But Claude re-asks Q3 → rollback to 3.
+      mockAuth.mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'db-user-1', clerkId: 'user_123', email: 'test@example.com',
+        createdAt: new Date(), updatedAt: new Date(),
+      })
+      mockPrisma.project.findUnique.mockResolvedValue({
+        id: 'proj-1', name: 'Test', userId: 'db-user-1', status: 'IDEATION',
+        productionUrl: null, businessPlan: null, githubRepo: null,
+        createdAt: new Date(), updatedAt: new Date(),
+        conversations: [{
+          id: 'conv-1', projectId: 'proj-1', phase: 'DISCOVERY', status: 'ACTIVE',
+          currentQuestion: 3,
+          completedQuestions: [1, 2],
+          createdAt: new Date(), updatedAt: new Date(),
+          messages: [
+            { id: 'msg-0', conversationId: 'conv-1', role: 'USER', content: 'App de delivery', createdAt: new Date() },
+            { id: 'msg-1', conversationId: 'conv-1', role: 'ASSISTANT', content: 'Qual problema?', createdAt: new Date() },
+            { id: 'msg-2', conversationId: 'conv-1', role: 'USER', content: 'Para restaurantes', createdAt: new Date() },
+            { id: 'msg-3', conversationId: 'conv-1', role: 'ASSISTANT', content: 'Quais funcionalidades?', createdAt: new Date() },
+            { id: 'msg-4', conversationId: 'conv-1', role: 'USER', content: 'CRUD e dashboard', createdAt: new Date() },
+            { id: 'msg-5', conversationId: 'conv-1', role: 'ASSISTANT', content: 'O que vai diferenciar dos concorrentes?', createdAt: new Date() },
+          ],
+        }],
+      } as unknown as Awaited<ReturnType<typeof prisma.project.findUnique>>)
+      mockPrisma.message.create.mockResolvedValue({ id: 'msg-new', conversationId: 'conv-1', role: 'USER', content: 'test', createdAt: new Date() })
+      mockPrisma.conversation.update.mockResolvedValue({} as unknown as Awaited<ReturnType<typeof prisma.conversation.update>>)
+
+      // Claude re-asks Q3 — keywords "diferenciar" + "concorrentes"
+      async function* reAskStream() {
+        yield 'Entendi. **O que vai diferenciar seu projeto dos concorrentes?**'
+      }
+      mockStreamChat.mockReturnValue(reAskStream())
+
+      const response = await POST(createRequest({
+        projectId: 'proj-1',
+        message: 'Mais focado no nicho',
+        phase: 'discovery',
+      }))
+
+      const output = await drainStream(response)
+
+      // conversation.update called twice: (1) speculative advance 3→4, (2) rollback back to 3
+      const updateCalls = mockPrisma.conversation.update.mock.calls
+      expect(updateCalls.length).toBe(2)
+
+      // First call: speculative advance
+      expect((updateCalls[0][0] as { data: { currentQuestion: number } }).data.currentQuestion).toBe(4)
+      // Second call: rollback
+      expect((updateCalls[1][0] as { data: { currentQuestion: number } }).data.currentQuestion).toBe(3)
+
+      // Progress event should contain the rolled-back value (3), not 4
+      expect(output).toContain('event: question_progress')
+      expect(output).toContain('"current":3')
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// claudeReAsked — keyword detection unit tests
+// ---------------------------------------------------------------------------
+describe('claudeReAsked', () => {
+  it('detects Q1 re-ask with diacritics stripped (voce/você)', () => {
+    // System prompt style (no diacritics)
+    expect(claudeReAsked(1, '**Qual problema voce quer resolver e para quem?**')).toBe(true)
+    // Claude might also output with diacritics
+    expect(claudeReAsked(1, 'Qual problema você quer resolver e para quem?')).toBe(true)
+  })
+
+  it('detects Q2 re-ask with "são" / "sao"', () => {
+    expect(claudeReAsked(2, 'Quais sao as 3-5 funcionalidades principais (must-have)?')).toBe(true)
+    expect(claudeReAsked(2, 'Quais são as funcionalidades must-have?')).toBe(true)
+  })
+
+  it('detects Q3 re-ask', () => {
+    expect(claudeReAsked(3, '**O que vai diferenciar seu projeto dos concorrentes?**')).toBe(true)
+  })
+
+  it('detects Q4 re-ask with quoted and unquoted nice-to-have', () => {
+    expect(claudeReAsked(4, 'Quais features seriam nice-to-have para o futuro?')).toBe(true)
+    expect(claudeReAsked(4, 'Quais features seriam "nice-to-have" para o futuro?')).toBe(true)
+  })
+
+  it('detects Q5 re-ask', () => {
+    expect(claudeReAsked(5, 'Como pretende monetizar o projeto?')).toBe(true)
+  })
+
+  it('does NOT match when keywords are absent', () => {
+    expect(claudeReAsked(1, 'Entendi, vamos continuar.')).toBe(false)
+    expect(claudeReAsked(3, 'Ótimo diferencial!')).toBe(false)
+    expect(claudeReAsked(5, 'Modelo freemium parece ótimo.')).toBe(false)
+  })
+
+  it('does NOT match for an unknown question number', () => {
+    expect(claudeReAsked(0, 'O que você quer criar?')).toBe(false)
+    expect(claudeReAsked(6, 'Anything here')).toBe(false)
+  })
+
+  it('is case-insensitive', () => {
+    expect(claudeReAsked(3, 'DIFERENCIAR seu projeto dos CONCORRENTES')).toBe(true)
+  })
+
+  it('works with bold markdown wrapping the question', () => {
+    expect(claudeReAsked(2, 'Certo! **Quais são as funcionalidades must-have do projeto?**')).toBe(true)
   })
 })
