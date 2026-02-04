@@ -43,7 +43,12 @@ export async function* streamChat(
   }
 }
 
-export async function chat(options: StreamChatOptions): Promise<string> {
+export interface ChatResult {
+  text: string
+  stopReason: string
+}
+
+export async function chat(options: StreamChatOptions): Promise<ChatResult> {
   const config = MODEL_CONFIG[options.phase]
   const anthropic = getAnthropicClient()
 
@@ -55,5 +60,8 @@ export async function chat(options: StreamChatOptions): Promise<string> {
   })
 
   const textBlock = response.content.find((block) => block.type === 'text')
-  return textBlock?.type === 'text' ? textBlock.text : ''
+  return {
+    text: textBlock?.type === 'text' ? textBlock.text : '',
+    stopReason: response.stop_reason ?? 'end_turn',
+  }
 }

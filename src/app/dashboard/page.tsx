@@ -2,7 +2,6 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/prisma'
 import { DashboardHeader, DashboardContent } from '@/components/dashboard'
-import { ToastProvider } from '@/components/ui/toast'
 
 export default async function DashboardPage() {
   const { userId } = await auth()
@@ -42,11 +41,9 @@ export default async function DashboardPage() {
   })
 
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-gray-50">
-        <DashboardHeader />
-        <DashboardContent projects={projects} />
-      </div>
-    </ToastProvider>
+    <div className="min-h-screen bg-gray-50">
+      <DashboardHeader />
+      <DashboardContent projects={projects} />
+    </div>
   )
 }

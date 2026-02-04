@@ -11,34 +11,37 @@ describe('extractJSON', () => {
 
 Let me know if you want changes.`
 
-    const result = extractJSON<{ name: string; description: string }>(response)
-    expect(result).toEqual({
+    const { data, repaired } = extractJSON<{ name: string; description: string }>(response)
+    expect(data).toEqual({
       name: 'Test App',
       description: 'A test application',
     })
+    expect(repaired).toBe(false)
   })
 
   it('should extract direct JSON without code block', () => {
     const response = `The result is {"status": "success", "count": 42}`
 
-    const result = extractJSON<{ status: string; count: number }>(response)
-    expect(result).toEqual({ status: 'success', count: 42 })
+    const { data, repaired } = extractJSON<{ status: string; count: number }>(response)
+    expect(data).toEqual({ status: 'success', count: 42 })
+    expect(repaired).toBe(false)
   })
 
-  it('should return null for invalid JSON', () => {
+  it('should return null data for invalid JSON', () => {
     const response = `\`\`\`json
 {invalid json here}
 \`\`\``
 
-    const result = extractJSON(response)
-    expect(result).toBeNull()
+    const { data } = extractJSON(response)
+    expect(data).toBeNull()
   })
 
-  it('should return null when no JSON found', () => {
+  it('should return null data when no JSON found', () => {
     const response = 'This is just plain text without any JSON'
 
-    const result = extractJSON(response)
-    expect(result).toBeNull()
+    const { data, repaired } = extractJSON(response)
+    expect(data).toBeNull()
+    expect(repaired).toBe(false)
   })
 
   it('should handle nested JSON objects', () => {
@@ -53,15 +56,51 @@ Let me know if you want changes.`
 }
 \`\`\``
 
-    const result = extractJSON<{
+    const { data, repaired } = extractJSON<{
       user: { name: string; settings: { theme: string } }
     }>(response)
-    expect(result).toEqual({
+    expect(data).toEqual({
       user: {
         name: 'John',
         settings: { theme: 'dark' },
       },
     })
+    expect(repaired).toBe(false)
+  })
+
+  it('should repair truncated code block and set repaired flag', () => {
+    // Simulates a response cut off mid-JSON (no closing ```)
+    const response = `Here is the plan:
+
+\`\`\`json
+{"architecture": {"type": "monolith", "description": "Next.js"}, "stack": ["react", "prisma"]`
+
+    const { data, repaired } = extractJSON<{ architecture: { type: string; description: string }; stack: string[] }>(response)
+    expect(repaired).toBe(true)
+    expect(data).toEqual({
+      architecture: { type: 'monolith', description: 'Next.js' },
+      stack: ['react', 'prisma'],
+    })
+  })
+
+  it('should repair truncated bare JSON and set repaired flag', () => {
+    // Bare JSON (no code block) that is incomplete
+    const response = `Result: {"sections": [{"title": "Auth", "items": ["login"]`
+
+    const { data, repaired } = extractJSON<{ sections: { title: string; items: string[] }[] }>(response)
+    expect(repaired).toBe(true)
+    expect(data).toEqual({ sections: [{ title: 'Auth', items: ['login'] }] })
+  })
+
+  it('should strip trailing comma before closing brace during repair', () => {
+    const response = `\`\`\`json
+{"name": "App", "version": "1.0",}`
+
+    const { data, repaired } = extractJSON<{ name: string; version: string }>(response)
+    // trailing comma is a malformed JSON but the closing ``` is present so level-1 fails,
+    // falls to level-3 bare match which also fails parse, then repairs
+    expect(data).toEqual({ name: 'App', version: '1.0' })
+    expect(repaired).toBe(true)
   })
 })
 

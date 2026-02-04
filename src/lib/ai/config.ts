@@ -6,7 +6,7 @@ export const MODEL_CONFIG = {
   },
   planning: {
     model: 'claude-sonnet-4-20250514' as const,
-    maxTokens: 4096,
+    maxTokens: 16384,
     temperature: 0.3,
   },
   codegen: {

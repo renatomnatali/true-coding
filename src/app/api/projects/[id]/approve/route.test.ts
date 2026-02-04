@@ -148,7 +148,10 @@ describe('POST /api/projects/[id]/approve', () => {
 
   it('should generate technicalPlan when approving business plan', async () => {
     setupProject()
-    mockChat.mockResolvedValue(`Here is the plan:\n\`\`\`json\n{"architecture":{"type":"monolith","description":"Next.js"},"stack":[]}\n\`\`\``)
+    mockChat.mockResolvedValue({
+      text: `Here is the plan:\n\`\`\`json\n{"architecture":{"type":"monolith","description":"Next.js"},"stack":[]}\n\`\`\``,
+      stopReason: 'end_turn',
+    })
 
     const response = await POST(createRequest({ planType: 'business' }), createMockParams())
 
@@ -165,7 +168,10 @@ describe('POST /api/projects/[id]/approve', () => {
 
   it('should call Claude with businessPlan context for technical plan generation', async () => {
     setupProject()
-    mockChat.mockResolvedValue('```json\n{"architecture":{"type":"monolith"}}\n```')
+    mockChat.mockResolvedValue({
+      text: '```json\n{"architecture":{"type":"monolith"}}\n```',
+      stopReason: 'end_turn',
+    })
 
     await POST(createRequest({ planType: 'business' }), createMockParams())
 
@@ -192,7 +198,10 @@ describe('POST /api/projects/[id]/approve', () => {
       businessPlanApproved: true,
       technicalPlan: { architecture: { type: 'monolith' } },
     })
-    mockChat.mockResolvedValue('```json\n{"personas":[{"name":"João","age":30,"role":"Dev","goals":["g1"],"painPoints":["p1"]}]}\n```')
+    mockChat.mockResolvedValue({
+      text: '```json\n{"personas":[{"name":"João","age":30,"role":"Dev","goals":["g1"],"painPoints":["p1"]}]}\n```',
+      stopReason: 'end_turn',
+    })
 
     const response = await POST(createRequest({ planType: 'technical' }), createMockParams())
 
@@ -254,12 +263,68 @@ describe('POST /api/projects/[id]/approve', () => {
 
   it('should return 500 when Claude returns unparseable JSON', async () => {
     setupProject()
-    mockChat.mockResolvedValue('Sorry, I cannot generate that.')
+    mockChat.mockResolvedValue({
+      text: 'Sorry, I cannot generate that.',
+      stopReason: 'end_turn',
+    })
 
     const response = await POST(createRequest({ planType: 'business' }), createMockParams())
     const data = await response.json()
 
     expect(response.status).toBe(500)
     expect(data.error).toBe('GENERATION_ERROR')
+  })
+
+  // ========================================================================
+  // Cenário: Resposta truncada pela API (stop_reason = max_tokens)
+  // ========================================================================
+
+  it('should return 503 RESPONSE_TRUNCATED when TechnicalPlan is truncated by max_tokens', async () => {
+    setupProject()
+    mockChat.mockResolvedValue({
+      text: '```json\n{"architecture": {"type": "monolith"',
+      stopReason: 'max_tokens',
+    })
+
+    const response = await POST(createRequest({ planType: 'business' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(data.error).toBe('RESPONSE_TRUNCATED')
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
+  })
+
+  it('should return 503 RESPONSE_TRUNCATED when UXPlan is truncated by max_tokens', async () => {
+    setupProject({
+      businessPlanApproved: true,
+      technicalPlan: { architecture: { type: 'monolith' } },
+    })
+    mockChat.mockResolvedValue({
+      text: '```json\n{"personas": [{"name": "João"',
+      stopReason: 'max_tokens',
+    })
+
+    const response = await POST(createRequest({ planType: 'technical' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(data.error).toBe('RESPONSE_TRUNCATED')
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
+  })
+
+  it('should return 503 when JSON required repair even without max_tokens stop_reason', async () => {
+    setupProject()
+    // stop_reason is end_turn but the JSON block has no closing ``` — extractJSON will repair it
+    mockChat.mockResolvedValue({
+      text: '```json\n{"architecture": {"type": "monolith", "description": "Next.js"}',
+      stopReason: 'end_turn',
+    })
+
+    const response = await POST(createRequest({ planType: 'business' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(data.error).toBe('RESPONSE_TRUNCATED')
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
   })
 })

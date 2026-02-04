@@ -7,6 +7,7 @@ import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ChatPanel } from '@/components/project/ChatPanel'
 import { WorkspacePanel } from '@/components/project/WorkspacePanel'
 import type { JsonValue } from '@prisma/client/runtime/library'
+import { useToast } from '@/components/ui/toast'
 
 interface Message {
   id: string
@@ -57,6 +58,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [uxPlanApproved, setUxPlanApproved] = useState(project.uxPlanApproved)
   const [discoveryProgress, setDiscoveryProgress] = useState<{ current: number; total: number } | null>(null)
   const [isApproving, setIsApproving] = useState(false)
+  const toast = useToast()
 
   const searchParams = useSearchParams()
   const githubJustConnected = searchParams.get('github') === 'connected'
@@ -157,8 +159,9 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         setStatus('CONNECTING')
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao aprovar plano. Tente novamente.'
       console.error('Erro ao aprovar plano:', error)
-      alert('Erro ao aprovar plano. Tente novamente.')
+      toast.error(message)
     } finally {
       setIsApproving(false)
     }

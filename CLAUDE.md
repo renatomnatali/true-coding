@@ -31,6 +31,23 @@ npm run db:studio # Abre Prisma Studio
 
 Leia `docs/trunk-based-development.md` para detalhes completos.
 
+### Regras obrigatorias (aprendidas na prática)
+
+**Regra 1 — Gherkin é a fonte de verdade para comportamento.**
+Antes de implementar ou alterar qualquer comportamento, ler o `.feature` correspondente em `docs/specifications/`. Se o codigo diverge do Gherkin, o Gherkin define o que está correto. Se o Gherkin está outdated, atualizar o Gherkin PRIMEIRO, depois o codigo. Exemplo do que não fazer: remover emojis das quick replies sem verificar que `discovery.feature` os exigia.
+
+**Regra 2 — Não trocar de branch no meio de uma tarefa.**
+Se um PR externo precisa de atencao (review pendente, CI falhou), anotar e voltar depois. Nunca fazer stash → checkout outra branch → trabalho → push → voltar. Isso multiplica contexto e gasta creditos sem valor.
+
+**Regra 3 — Sugestoes do Code-Reviewer são para avaliar, não aplicar cegamente.**
+Quando o reviewer diz "suggestion", avaliar contra: (a) o que o Gherkin diz, (b) a intent do usuario. Se houver conflito, o usuario decide. Nunca aplicar sugestao que muda comportamento sem validar contra as specs.
+
+**Regra 4 — Testes devem cobrir as assertions do Gherkin.**
+Se o Gherkin diz que o botao mostra `📱 App de gestão`, deve existir um teste que verifica `screen.getByText('📱 App de gestão')`. Testes que verificam apenas "nao crashou" nao protegem contra regressoes de comportamento. Antes de mergear um PR, cruzar-referenciar as assertions dos testes com os cenarios do `.feature` relevante.
+
+**Regra 5 — Uma tarefa por vez.**
+Nao abrir PR B enquanto PR A nao esta mergado, a menos que sejam verdadeiramente independentes. Isso reduz branches ativos e evita merge conflicts e confusao de contexto.
+
 ## Fluxo de PR (OBRIGATORIO)
 
 1. Criar branch e fazer commits
