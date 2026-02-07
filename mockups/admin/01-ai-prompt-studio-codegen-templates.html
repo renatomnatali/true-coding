@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Prompt Studio (Codegen Templates) | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      width: 240px;
+      background: var(--color-bg-primary);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      font-size: var(--font-size-lg);
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .sidebar-meta {
+      margin-top: var(--space-4);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .sidebar-nav {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .sidebar-item {
+      padding: var(--space-3);
+      border-radius: var(--border-radius-md);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-item.active {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .sidebar-pill {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-tertiary);
+    }
+
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .breadcrumb {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .header-title h1 {
+      margin: 0;
+      font-size: var(--font-size-2xl);
+      color: var(--color-text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .env-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-full);
+      padding: var(--space-1);
+      font-size: var(--font-size-xs);
+    }
+
+    .env-toggle button {
+      border: none;
+      background: transparent;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+    }
+
+    .env-toggle button.active {
+      background: var(--color-primary);
+      color: #fff;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .fixed-pill {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .status-bar {
+      padding: var(--space-3) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .status-chip {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .content {
+      padding: var(--space-6);
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .panel {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-group-label {
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--color-text-tertiary);
+      margin: var(--space-3) 0 var(--space-2);
+    }
+
+    .prompt-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .prompt-item.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+
+    .prompt-item-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .prompt-item-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-secondary);
+    }
+
+    .badge.success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: var(--space-6);
+    }
+
+    .section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .form-row.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .helper-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .preview-box {
+      border: 1px dashed var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+    }
+
+    .alert {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+
+    .template-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .template-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+    }
+
+    .template-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .mockup-nav {
+      position: fixed;
+      bottom: var(--space-4);
+      right: var(--space-4);
+      display: flex;
+      gap: var(--space-2);
+      z-index: var(--z-toast);
+    }
+
+    .nav-btn {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+    }
+
+    .nav-btn.primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+
+      .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .sidebar-item {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-row,
+      .form-row.three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">TC</span>
+          True Coding
+        </div>
+        <div class="sidebar-meta">Modulo administrativo - IA</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-item active">Prompt Studio <span class="sidebar-pill">CMS</span></div>
+        <div class="sidebar-item">Modelos LLM <span class="sidebar-pill">3</span></div>
+        <div class="sidebar-item">Limites e tokens</div>
+        <div class="sidebar-item">Templates de plano</div>
+        <div class="sidebar-item">Chaves API</div>
+        <div class="sidebar-item">Guardrails</div>
+        <div class="sidebar-item">Logs e auditoria</div>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <div class="header-title">
+          <span class="breadcrumb">Admin / IA</span>
+          <h1>Prompt Studio</h1>
+        </div>
+        <div class="header-actions">
+          <div class="env-toggle" role="group" aria-label="Selecionar ambiente">
+            <button class="active">Staging</button>
+            <button>Producao</button>
+          </div>
+          <button class="btn btn-secondary btn-sm">Ver docs</button>
+          <span class="fixed-pill">Prompts fixos</span>
+        </div>
+      </header>
+
+      <div class="status-bar">
+        <div>
+          Status: <span class="status-chip">Tudo salvo</span> - Fonte: src/lib/ai/prompts/codegen.ts
+        </div>
+        <div>
+          Templates ativos: 7 - Saida: JSON { files[] }
+        </div>
+      </div>
+
+      <section class="content">
+        <div class="panel">
+          <div class="panel-title">Prompts do pipeline</div>
+          <div class="panel-subtitle">Pontos pre-determinados. Nao ha criacao manual.</div>
+          <input class="search-input" type="search" placeholder="Buscar prompt fixo" aria-label="Buscar prompt">
+
+          <div class="prompt-group-label">Discovery</div>
+          <a class="prompt-item" href="01-ai-prompt-studio.html">
+            <div class="prompt-item-title">Discovery - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v12</span>
+              <span>Atualizado ha 2h</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Planning</div>
+          <a class="prompt-item" href="01-ai-prompt-studio-planning.html">
+            <div class="prompt-item-title">Planning - TechnicalPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v7</span>
+              <span>Atualizado ha 1d</span>
+            </div>
+          </a>
+          <a class="prompt-item" href="01-ai-prompt-studio-ux-plan.html">
+            <div class="prompt-item-title">Planning - UXPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v5</span>
+              <span>Atualizado ha 2d</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Codegen</div>
+          <a class="prompt-item" href="01-ai-prompt-studio-codegen.html">
+            <div class="prompt-item-title">Codegen - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v9</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+          <a class="prompt-item active" href="01-ai-prompt-studio-codegen-templates.html">
+            <div class="prompt-item-title">Codegen - Templates</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v4</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            Templates de prompt
+            <span class="helper-pill">CODEGEN_PROMPTS</span>
+          </div>
+          <div class="panel-subtitle">Prompts pre-definidos usados na geracao de arquivos.</div>
+
+          <div class="alert">
+            <strong>Atencao:</strong>
+            Mudancas aqui afetam arquivos gerados para todo o pipeline.
+          </div>
+
+          <div class="editor-grid">
+            <div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="template-name">Template selecionado</label>
+                  <select id="template-name" class="form-select">
+                    <option>packageJson</option>
+                    <option>prismaSchema</option>
+                    <option selected>pageComponent</option>
+                    <option>uiComponent</option>
+                    <option>apiRoute</option>
+                    <option>testFile</option>
+                    <option>githubActions</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="output-schema">Saida JSON (fixa) - somente leitura</label>
+                  <textarea id="output-schema" class="form-textarea" rows="3" readonly>{ "files": [{ "path": "...", "content": "...", "description": "..." }] }</textarea>
+                  <div class="form-helper">Mudancas exigem ajuste de codigo.</div>
+                </div>
+              </div>
+
+              <div class="form-group" id="template-package-json">
+                <label class="form-label">packageJson</label>
+                <textarea class="form-textarea" rows="4">Gere o package.json com:
+- Nome do projeto: {projectName}
+- Scripts: dev, build, start, lint, test
+- Dependencies baseadas no TechnicalPlan
+- DevDependencies para testing e linting
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-prisma-schema">
+                <label class="form-label">prismaSchema</label>
+                <textarea class="form-textarea" rows="4">Gere o schema.prisma com:
+- Entidades do dataModel
+- Relacionamentos corretos
+- Indices para queries comuns
+- Enums quando apropriado
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-page-component">
+                <label class="form-label">pageComponent</label>
+                <textarea class="form-textarea" rows="5">Gere o componente de pagina {pageName}:
+- Path: {pagePath}
+- Descricao: {description}
+- Componentes filhos: {components}
+- Data fetching: {dataFetching}
+- Inclua metadata para SEO
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-ui-component">
+                <label class="form-label">uiComponent</label>
+                <textarea class="form-textarea" rows="5">Gere o componente {componentName}:
+- Descricao: {description}
+- Props: {props}
+- Use shadcn/ui quando apropriado
+- Inclua estados de loading e erro
+- Adicione 'use client' se necessario
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-api-route">
+                <label class="form-label">apiRoute</label>
+                <textarea class="form-textarea" rows="6">Gere a API route:
+- Method: {method}
+- Path: {path}
+- Request body: {requestBody}
+- Response: {responseBody}
+- Autenticacao: {authentication}
+- Inclua validacao com Zod
+- Tratamento de erros adequado
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-test-file">
+                <label class="form-label">testFile</label>
+                <textarea class="form-textarea" rows="5">Gere testes para {fileName}:
+- Use Vitest + Testing Library
+- Teste casos de sucesso
+- Teste casos de erro
+- Teste edge cases relevantes
+</textarea>
+              </div>
+
+              <div class="form-group" id="template-github-actions">
+                <label class="form-label">githubActions</label>
+                <textarea class="form-textarea" rows="5">Gere o workflow CI:
+- Trigger em push e PR para main
+- Jobs: lint, test, build
+- Cache de node_modules
+- Matrix de Node versions (20)
+</textarea>
+              </div>
+
+              <div class="card-footer" style="justify-content: flex-end;">
+                <button class="btn btn-secondary">Salvar rascunho</button>
+                <button class="btn btn-primary">Publicar</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-title">Atalhos</div>
+              <div class="template-list">
+                <a class="template-link" href="#template-package-json">packageJson</a>
+                <a class="template-link" href="#template-prisma-schema">prismaSchema</a>
+                <a class="template-link" href="#template-page-component">pageComponent</a>
+                <a class="template-link" href="#template-ui-component">uiComponent</a>
+                <a class="template-link" href="#template-api-route">apiRoute</a>
+                <a class="template-link" href="#template-test-file">testFile</a>
+                <a class="template-link" href="#template-github-actions">githubActions</a>
+              </div>
+              <div style="height: var(--space-4);"></div>
+              <div class="section-title">Simular template</div>
+              <div class="simulator">
+                <div class="simulator-header">
+                  <div>
+                    <div class="simulator-title">Template selecionado</div>
+                    <div class="simulator-subtitle">Entrada real + placeholders resolvidos</div>
+                  </div>
+                  <span class="badge success">Sandbox</span>
+                </div>
+                <div class="preview-box">Entrada (preview)
+TechnicalPlan + placeholders resolvidos</div>
+                <div style="height: var(--space-3);"></div>
+                <div class="preview-box">Saida (preview JSON)
+{ "files": [{ "path": "src/app/page.tsx", "content": "..." }] }</div>
+                <div style="height: var(--space-3);"></div>
+                <div class="simulator-actions">
+                  <button class="btn btn-secondary btn-sm">Rodar com exemplo padrao</button>
+                  <button class="btn btn-secondary btn-sm">Rodar com ultimo plano</button>
+                </div>
+                <div class="simulator-meta">Ultima execucao: 22 min atras • Tokens: 780 • Creditos: 6</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="01-ai-prompt-studio-codegen.html" class="nav-btn">Prompt anterior</a>
+    <a href="01-ai-prompt-studio.html" class="nav-btn primary">Voltar ao inicio</a>
+  </div>
+</body>
+</html>

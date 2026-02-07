@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta B - Duas Colunas Chat-First</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    /* Header */
+    .header {
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .back-btn:hover { color: #1a1a1a; }
+    .divider {
+      width: 1px;
+      height: 20px;
+      background: #e5e5e5;
+    }
+    .logo { font-weight: 700; font-size: 18px; }
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .project-name { font-weight: 600; }
+    .status-badge {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 16px 24px;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      z-index: 99;
+    }
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      background: #e5e5e5;
+      color: #888;
+    }
+    .step.active .step-dot {
+      background: #2563eb;
+      color: #fff;
+    }
+    .step.completed .step-dot {
+      background: #10b981;
+      color: #fff;
+    }
+    .step-label {
+      font-size: 13px;
+      color: #888;
+    }
+    .step.active .step-label {
+      color: #2563eb;
+      font-weight: 500;
+    }
+    .step-arrow {
+      color: #ccc;
+      margin: 0 4px;
+    }
+
+    /* Main Content */
+    .main {
+      margin-top: 120px;
+      height: calc(100vh - 120px);
+      display: flex;
+    }
+
+    /* Chat Panel */
+    .chat-panel {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #e5e5e5;
+      background: #fff;
+    }
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .chat-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .chat-subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .welcome-message {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .welcome-icon {
+      width: 64px;
+      height: 64px;
+      background: #eff6ff;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+    .welcome-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .welcome-text {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .suggestions {
+      margin-top: 24px;
+    }
+    .suggestions-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .chip {
+      padding: 8px 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .chat-input {
+      padding: 16px 24px;
+      border-top: 1px solid #e5e5e5;
+      background: #fafafa;
+    }
+    .input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .input-wrapper textarea {
+      flex: 1;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 14px;
+      resize: none;
+      font-family: inherit;
+      background: #fff;
+    }
+    .input-wrapper textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 20px;
+      transition: background 0.15s;
+    }
+    .send-btn:hover {
+      background: #1d4ed8;
+    }
+    .input-hint {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Result Panel */
+    .result-panel {
+      width: 50%;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+    }
+    .result-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #e5e5e5;
+      background: #fff;
+    }
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .result-content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .result-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      color: #888;
+    }
+    .result-empty-icon {
+      width: 80px;
+      height: 80px;
+      background: #f0f0f0;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+    .result-empty-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 8px;
+    }
+    .result-empty-text {
+      font-size: 14px;
+      max-width: 280px;
+    }
+
+    /* Label */
+    .proposal-label {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="#" class="back-btn">← Voltar</a>
+      <div class="divider"></div>
+      <span class="logo">True Coding</span>
+    </div>
+    <div class="header-center">
+      <span class="project-name">way to mp3</span>
+      <span class="status-badge">Em ideacao</span>
+    </div>
+    <div class="header-right">
+      <div class="avatar"></div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-steps">
+      <div class="step active">
+        <div class="step-dot">1</div>
+        <span class="step-label">Ideacao</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-dot">2</div>
+        <span class="step-label">Plano</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-dot">3</div>
+        <span class="step-label">GitHub</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-dot">4</div>
+        <span class="step-label">Geracao</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step">
+        <div class="step-dot">5</div>
+        <span class="step-label">Deploy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Chat Panel -->
+    <section class="chat-panel">
+      <div class="chat-header">
+        <div class="chat-title">Descreva seu app</div>
+        <div class="chat-subtitle">Converse com a AI para definir o projeto</div>
+      </div>
+      <div class="chat-messages">
+        <div class="welcome-message">
+          <div class="welcome-icon">💬</div>
+          <h2 class="welcome-title">Vamos criar way to mp3!</h2>
+          <p class="welcome-text">
+            Descreva o app que voce quer criar. Seja especifico sobre
+            funcionalidades, publico-alvo e diferenciais.
+          </p>
+          <div class="suggestions">
+            <div class="suggestions-label">Ou comece com uma sugestao:</div>
+            <div class="suggestion-chips">
+              <button class="chip">Conversor de video</button>
+              <button class="chip">App de streaming</button>
+              <button class="chip">Playlist manager</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <div class="input-wrapper">
+          <textarea rows="2" placeholder="Descreva o app que voce quer criar..."></textarea>
+          <button class="send-btn">↑</button>
+        </div>
+        <div class="input-hint">Enter para enviar · Shift+Enter para nova linha</div>
+      </div>
+    </section>
+
+    <!-- Result Panel -->
+    <section class="result-panel">
+      <div class="result-header">
+        <div class="result-title">Resultado</div>
+      </div>
+      <div class="result-content">
+        <div class="result-empty">
+          <div class="result-empty-icon"></div>
+          <div class="result-empty-title">Aguardando definicao</div>
+          <p class="result-empty-text">
+            Converse com a AI no chat ao lado. Quando o plano estiver pronto,
+            ele aparecera aqui para revisao.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="proposal-label">Proposta B: Duas Colunas Chat-First</div>
+</body>
+</html>
