@@ -221,6 +221,48 @@ describe('Planning: Business Plan - Edição', () => {
     expect(screen.getByText('Entregas rápidas e seguras')).toBeInTheDocument()
     expect(screen.queryByText('Novo tagline alterado')).not.toBeInTheDocument()
   })
+
+  /**
+   * @business-plan @edicao @comportamento
+   * Cenário: Salvar alterações chama onSavePlan com dados editados
+   */
+  it('Chama onSavePlan com os dados editados ao salvar', async () => {
+    const onSavePlan = vi.fn()
+
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        onSavePlan={onSavePlan}
+      />
+    )
+
+    // Quando clico em "Editar Plano"
+    const editButton = screen.getByRole('button', { name: /Editar Plano/i })
+    await userEvent.click(editButton)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Salvar Alterações/i })).toBeInTheDocument()
+    })
+
+    // E altero o campo "tagline"
+    const taglineInput = screen.getByDisplayValue('Entregas rápidas e seguras')
+    await userEvent.clear(taglineInput)
+    await userEvent.type(taglineInput, 'Tagline editado pelo usuário')
+
+    // Quando clico em "Salvar Alterações"
+    const saveButton = screen.getByRole('button', { name: /Salvar Alterações/i })
+    await userEvent.click(saveButton)
+
+    // Então onSavePlan é chamado com o plano editado
+    await waitFor(() => {
+      expect(onSavePlan).toHaveBeenCalledTimes(1)
+      const editedPlan = onSavePlan.mock.calls[0][0]
+      expect(editedPlan.tagline).toBe('Tagline editado pelo usuário')
+    })
+  })
 })
 
 /**
@@ -255,6 +297,29 @@ describe('Planning: Business Plan - Aprovação', () => {
   })
 
   /**
+   * @business-plan @aprovacao @loading @comportamento
+   * Cenário: isApproving=true exibe overlay de loading e desabilita botão
+   */
+  it('Exibe overlay "Gerando Plano Técnico..." quando isApproving=true', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        isApproving={true}
+      />
+    )
+
+    // Então vejo o overlay de loading
+    expect(screen.getByText('Gerando Plano Técnico...')).toBeInTheDocument()
+
+    // E o botão "Aprovar e Continuar" está desabilitado
+    const approveButton = screen.getByRole('button', { name: /Aprovar e Continuar/i })
+    expect(approveButton).toBeDisabled()
+  })
+
+  /**
    * @business-plan @aprovado @readonly
    * Cenário: Business Plan aprovado → avança para Technical Plan (sequencial)
    * planning.feature line 86-93
@@ -278,6 +343,30 @@ describe('Planning: Business Plan - Aprovação', () => {
     expect(screen.getByText(/Stack de Tecnologia/i)).toBeInTheDocument()
 
     // Breadcrumb mostra Business Plan como completed (✓)
+    expect(screen.getByText('✓')).toBeInTheDocument()
+  })
+
+  /**
+   * @business-plan @aprovado @readonly @comportamento
+   * Cenário: Business Plan aprovado não exibe botão "Editar Plano"
+   */
+  it('Business Plan aprovado não exibe botão Editar quando apenas ele está aprovado', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={null}
+      />
+    )
+
+    // Business Plan aprovado não exibe botão "Editar Plano"
+    // (mas ainda pode estar visível se technical plan não foi gerado)
+    expect(screen.queryByRole('button', { name: /Editar Plano/i })).not.toBeInTheDocument()
+
+    // Breadcrumb mostra Business Plan como completed
     expect(screen.getByText('✓')).toBeInTheDocument()
   })
 })
