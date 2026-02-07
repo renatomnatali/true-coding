@@ -239,6 +239,36 @@ describe('Discovery: Restauração de Estado', () => {
       const progressBar = document.querySelector('[style*="width"]')
       expect(progressBar).toHaveStyle({ width: '60%' })
     })
+
+    /**
+     * @restauracao @quick-replies @comportamento
+     * Cenário: Quick replies da pergunta 3 aparecem após restauração
+     */
+    it('vejo quick replies da pergunta 3 após restauração', () => {
+      render(
+        <ChatPanel
+          projectId={project.id}
+          projectName={project.name}
+          initialMessages={conversation.messages.map(m => ({
+            id: m.id,
+            role: m.role.toLowerCase() as 'user' | 'assistant',
+            content: m.content,
+          }))}
+          initialPlanReady={false}
+          initialQuestionProgress={{
+            current: 3,
+            total: 5,
+            completedQuestions: [1, 2],
+          }}
+        />
+      )
+
+      // Então vejo quick replies da pergunta 3 (Diferenciais)
+      expect(screen.getByText('🎨 Mais simples')).toBeInTheDocument()
+      expect(screen.getByText('💰 Preço melhor')).toBeInTheDocument()
+      expect(screen.getByText('⚡ Mais rápido')).toBeInTheDocument()
+      expect(screen.getByText('🎯 Mais focado')).toBeInTheDocument()
+    })
   })
 
   /**
@@ -546,6 +576,92 @@ describe('Discovery: Quick Reply Preenche Input', () => {
 
 /**
  * =============================================================================
+ * CENÁRIOS: QUICK REPLIES POR PERGUNTA (Q1-Q5) - COMPORTAMENTO
+ * =============================================================================
+ */
+describe('Discovery: Quick Replies por Pergunta (Q1-Q5)', () => {
+  /**
+   * Labels esperados conforme QUICK_REPLIES_BY_QUESTION em src/types/index.ts
+   * e discovery.feature
+   */
+  const EXPECTED_LABELS: Record<number, string[]> = {
+    1: ['👥 Pequenas empresas', '🎯 Freelancers', '🏢 Times remotos', '🛍️ Lojistas'],
+    2: ['🔐 Login/cadastro', '📊 Dashboard', '📝 CRUD completo', '🔔 Notificações'],
+    3: ['🎨 Mais simples', '💰 Preço melhor', '⚡ Mais rápido', '🎯 Mais focado'],
+    4: ['🔗 Integrações', '📊 Relatórios', '📱 App mobile', '🤖 Automações'],
+    5: ['💳 Freemium', '📅 Assinatura mensal', '🎁 100% gratuito', '💼 Por usuário'],
+  }
+
+  /**
+   * @quick-replies @comportamento
+   * Cenário: Quick replies das perguntas 1-5 exibem labels com emoji
+   */
+  it.each([
+    { question: 1, completedQuestions: [] },
+    { question: 2, completedQuestions: [1] },
+    { question: 3, completedQuestions: [1, 2] },
+    { question: 4, completedQuestions: [1, 2, 3] },
+    { question: 5, completedQuestions: [1, 2, 3, 4] },
+  ])('Quick replies da pergunta $question exibem labels corretos com emojis', ({ question, completedQuestions }) => {
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
+    })
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={{ current: question, total: 5, completedQuestions }}
+        initialMessages={[]}
+      />
+    )
+
+    // Verifica que todos os labels esperados aparecem
+    const expectedLabels = EXPECTED_LABELS[question]
+    expectedLabels.forEach(label => {
+      expect(screen.getByText(label)).toBeInTheDocument()
+    })
+  })
+
+  /**
+   * @quick-replies @comportamento
+   * Cenário: Clicar em quick reply da pergunta 1 preenche o input
+   */
+  it('Quick reply Q1 "👥 Pequenas empresas" preenche input ao clicar', async () => {
+    const fetchSpy = vi.fn()
+    global.fetch = fetchSpy
+
+    const project = createTestProject({
+      status: 'IDEATION',
+      businessPlan: null,
+    })
+
+    render(
+      <ChatPanel
+        projectId={project.id}
+        projectName={project.name}
+        initialPlanReady={false}
+        initialQuestionProgress={{ current: 1, total: 5, completedQuestions: [] }}
+        initialMessages={[]}
+      />
+    )
+
+    // Quando clico no quick reply "👥 Pequenas empresas"
+    await userEvent.click(screen.getByText('👥 Pequenas empresas'))
+
+    // Então o texto completo aparece no input
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    expect(textarea).toHaveValue('O problema afeta pequenas empresas que precisam organizar seus processos')
+
+    // E nenhuma mensagem foi enviada (fetch não foi chamado)
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+})
+
+/**
+ * =============================================================================
  * CENÁRIOS: COMPORTAMENTOS DO CHAT
  * =============================================================================
  */
@@ -683,5 +799,72 @@ describe('Discovery: Loading States', () => {
     )
 
     expect(screen.getByText('Plano pronto')).toBeInTheDocument()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: ERRO NA API - COMPORTAMENTO
+ * =============================================================================
+ */
+describe('Discovery: Erro na API', () => {
+  /**
+   * @erro @api @comportamento
+   * Cenário: Exibe mensagem de erro quando fetch rejeita
+   */
+  it('Exibe mensagem de erro quando fetch rejeita', async () => {
+    // Mock fetch para rejeitar com erro de rede
+    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
+
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    await userEvent.type(textarea, 'Minha mensagem')
+    await userEvent.keyboard('{Enter}')
+
+    // Então vejo mensagem de erro
+    await waitFor(() => {
+      expect(screen.getByText(/Desculpe, ocorreu um erro/)).toBeInTheDocument()
+      expect(screen.getByText(/Tente novamente/)).toBeInTheDocument()
+    })
+  })
+
+  /**
+   * @erro @api @comportamento
+   * Cenário: Exibe mensagem de erro quando API retorna não-OK
+   */
+  it('Exibe mensagem de erro quando API retorna não-OK', async () => {
+    // Mock fetch para retornar resposta não-OK
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({ error: 'Internal server error' }),
+    })
+
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    await userEvent.type(textarea, 'Minha mensagem')
+    await userEvent.keyboard('{Enter}')
+
+    // Então vejo mensagem de erro
+    await waitFor(() => {
+      expect(screen.getByText(/Desculpe, ocorreu um erro/)).toBeInTheDocument()
+      expect(screen.getByText(/Tente novamente/)).toBeInTheDocument()
+    })
   })
 })

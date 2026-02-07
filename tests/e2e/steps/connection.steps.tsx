@@ -313,3 +313,74 @@ describe('ConnectionPhase → auto-trigger repo creation', () => {
     })
   })
 })
+
+// ---------------------------------------------------------------------------
+// Erro na criação do repositório — COMPORTAMENTO
+// ---------------------------------------------------------------------------
+describe('ConnectionPhase → erro na criação do repositório', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  /**
+   * @erro @comportamento
+   * Cenário: API retorna erro durante criação do repo
+   */
+  it('Exibe ErrorView quando API retorna não-OK durante criação do repo', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ message: 'Failed to create repository' }),
+    })
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    // Aguarda a chamada de API e o erro
+    await waitFor(() => {
+      expect(screen.getByText('Erro na Conexão com GitHub')).toBeDefined()
+    })
+
+    // Verifica que a tela de erro genérica é exibida com steps de resolução
+    expect(screen.getByText(/autorização foi negada/)).toBeDefined()
+    // "Reconectar GitHub" aparece múltiplas vezes (steps + botão)
+    const reconnectElements = screen.getAllByText(/Reconectar GitHub/)
+    expect(reconnectElements.length).toBeGreaterThanOrEqual(1)
+  })
+
+  /**
+   * @erro @comportamento
+   * Cenário: Erro de rede durante criação do repo
+   */
+  it('Exibe ErrorView quando ocorre erro de rede durante criação do repo', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    // Aguarda a rejeição e renderização do erro
+    await waitFor(() => {
+      expect(screen.getByText('Erro na Conexão com GitHub')).toBeDefined()
+    })
+  })
+
+  /**
+   * @erro @comportamento
+   * Cenário: Link "Reconectar GitHub" aparece após falha
+   */
+  it('"Reconectar GitHub" aparece após falha na criação do repo', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ message: 'Repository creation failed' }),
+    })
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Erro na Conexão com GitHub')).toBeDefined()
+    })
+
+    // Verifica que o link "Reconectar GitHub" está presente
+    const links = document.querySelectorAll('a')
+    const reconnectLink = Array.from(links).find((a) => a.textContent?.includes('Reconectar GitHub'))
+    expect(reconnectLink).toBeDefined()
+    expect(reconnectLink?.getAttribute('href')).toBe('/api/auth/github?projectId=proj-test-1')
+  })
+})
