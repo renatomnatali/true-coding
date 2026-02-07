@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Prompt Studio (Planning) | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      width: 240px;
+      background: var(--color-bg-primary);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      font-size: var(--font-size-lg);
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .sidebar-meta {
+      margin-top: var(--space-4);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .sidebar-nav {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .sidebar-item {
+      padding: var(--space-3);
+      border-radius: var(--border-radius-md);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-item.active {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .sidebar-pill {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-tertiary);
+    }
+
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .breadcrumb {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .header-title h1 {
+      margin: 0;
+      font-size: var(--font-size-2xl);
+      color: var(--color-text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .env-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-full);
+      padding: var(--space-1);
+      font-size: var(--font-size-xs);
+    }
+
+    .env-toggle button {
+      border: none;
+      background: transparent;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+    }
+
+    .env-toggle button.active {
+      background: var(--color-primary);
+      color: #fff;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .fixed-pill {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .status-bar {
+      padding: var(--space-3) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .status-chip {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .content {
+      padding: var(--space-6);
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .panel {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-group-label {
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--color-text-tertiary);
+      margin: var(--space-3) 0 var(--space-2);
+    }
+
+    .prompt-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .prompt-item.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+
+    .prompt-item-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .prompt-item-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-secondary);
+    }
+
+    .badge.success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: var(--space-6);
+    }
+
+    .section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .form-row.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .helper-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .token-progress {
+      height: 8px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-full);
+      overflow: hidden;
+      margin-top: var(--space-2);
+    }
+
+    .token-progress-fill {
+      height: 100%;
+      width: 38%;
+      background: var(--color-primary);
+    }
+
+    .preview-box {
+      border: 1px dashed var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+    }
+
+    .alert {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+
+    .version-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .version-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .mockup-nav {
+      position: fixed;
+      bottom: var(--space-4);
+      right: var(--space-4);
+      display: flex;
+      gap: var(--space-2);
+      z-index: var(--z-toast);
+    }
+
+    .nav-btn {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+    }
+
+    .nav-btn.primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+
+      .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .sidebar-item {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-row,
+      .form-row.three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">TC</span>
+          True Coding
+        </div>
+        <div class="sidebar-meta">Modulo administrativo - IA</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-item active">Prompt Studio <span class="sidebar-pill">CMS</span></div>
+        <div class="sidebar-item">Modelos LLM <span class="sidebar-pill">3</span></div>
+        <div class="sidebar-item">Limites e tokens</div>
+        <div class="sidebar-item">Templates de plano</div>
+        <div class="sidebar-item">Chaves API</div>
+        <div class="sidebar-item">Guardrails</div>
+        <div class="sidebar-item">Logs e auditoria</div>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <div class="header-title">
+          <span class="breadcrumb">Admin / IA</span>
+          <h1>Prompt Studio</h1>
+        </div>
+        <div class="header-actions">
+          <div class="env-toggle" role="group" aria-label="Selecionar ambiente">
+            <button class="active">Staging</button>
+            <button>Producao</button>
+          </div>
+          <button class="btn btn-secondary btn-sm">Ver docs</button>
+          <span class="fixed-pill">Prompts fixos</span>
+        </div>
+      </header>
+
+      <div class="status-bar">
+        <div>
+          Status: <span class="status-chip">Tudo salvo</span> - Fonte: src/lib/ai/prompts/planning.ts
+        </div>
+        <div>
+          Modelo ativo: claude-sonnet-4-20250514 - Max tokens: 16384
+        </div>
+      </div>
+
+      <section class="content">
+        <div class="panel">
+          <div class="panel-title">Prompts do pipeline</div>
+          <div class="panel-subtitle">Pontos pre-determinados. Nao ha criacao manual.</div>
+          <input class="search-input" type="search" placeholder="Buscar prompt fixo" aria-label="Buscar prompt">
+
+          <div class="prompt-group-label">Discovery</div>
+          <a class="prompt-item" href="01-ai-prompt-studio.html">
+            <div class="prompt-item-title">Discovery - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v12</span>
+              <span>Atualizado ha 2h</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Planning</div>
+          <a class="prompt-item active" href="01-ai-prompt-studio-planning.html">
+            <div class="prompt-item-title">Planning - TechnicalPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v7</span>
+              <span>Atualizado ha 1d</span>
+            </div>
+          </a>
+          <a class="prompt-item" href="01-ai-prompt-studio-ux-plan.html">
+            <div class="prompt-item-title">Planning - UXPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v5</span>
+              <span>Atualizado ha 2d</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Codegen</div>
+          <a class="prompt-item" href="01-ai-prompt-studio-codegen.html">
+            <div class="prompt-item-title">Codegen - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v9</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+          <a class="prompt-item" href="01-ai-prompt-studio-codegen-templates.html">
+            <div class="prompt-item-title">Codegen - Templates</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v4</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            Editor do prompt
+            <span class="helper-pill">Auto-salvar</span>
+          </div>
+          <div class="panel-subtitle">Prompt real do sistema para gerar o TechnicalPlan com nivel minimo desativado.</div>
+
+          <div class="alert">
+            <strong>Atencao:</strong>
+            Mudancas impactam o plano tecnico gerado em todos os projetos.
+          </div>
+
+          <div class="editor-grid">
+            <div>
+              <div class="form-group">
+                <label class="form-label" for="prompt-name">Nome do prompt</label>
+                <input id="prompt-name" class="form-input" type="text" value="Planning - TechnicalPlan">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="prompt-phase">Fase</label>
+                  <select id="prompt-phase" class="form-select">
+                    <option>Ideacao</option>
+                    <option>Discovery</option>
+                    <option selected>Planejamento</option>
+                    <option>Geracao</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="prompt-model">Modelo</label>
+                  <select id="prompt-model" class="form-select">
+                    <option>claude-3-haiku-20240307</option>
+                    <option selected>claude-sonnet-4-20250514</option>
+                    <option>claude-3-5-sonnet</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row three">
+                <div class="form-group">
+                  <label class="form-label" for="max-tokens">Max tokens</label>
+                  <input id="max-tokens" class="form-input" type="number" value="16384">
+                  <div class="token-progress">
+                    <div class="token-progress-fill"></div>
+                  </div>
+                  <div class="form-helper">Estimativa atual: 6.300 tokens</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="temperature">Temperature</label>
+                  <input id="temperature" class="form-input" type="text" value="0.3">
+                  <div class="form-helper">Mais baixo = plano consistente</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="prompt-scope">Escopo</label>
+                  <input id="prompt-scope" class="form-input" type="text" value="PLANNING_SYSTEM_PROMPT">
+                  <div class="form-helper">Chave fixa no codigo</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="output-model">Modelo de saida (admin-only)</label>
+                <input id="output-model" class="form-input" type="text" value="TechnicalPlan" readonly>
+                <div class="form-helper">Modelo predefinido para o plano tecnico.</div>
+              </div>
+
+              <div class="section-title">Niveis de detalhe expostos ao usuario</div>
+              <div class="level-options">
+                <div class="level-option disabled">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Minimo</span>
+                    <span class="level-option-credit">Indisponivel</span>
+                  </div>
+                  <p class="level-option-desc">Nivel minimo desativado para manter qualidade tecnica.</p>
+                  <div class="level-option-impact">Impacto: evita gaps que afetam a codificacao.</div>
+                </div>
+                <div class="level-option selected">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Completo (padrao)</span>
+                    <span class="level-option-credit">180 creditos</span>
+                  </div>
+                  <p class="level-option-desc">Arquitetura, stack, dados, paginas e testes essenciais.</p>
+                  <div class="level-option-impact">Impacto: alta aderencia e menos retrabalho.</div>
+                </div>
+                <div class="level-option">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Detalhado</span>
+                    <span class="level-option-credit">260 creditos</span>
+                  </div>
+                  <p class="level-option-desc">Plano completo com riscos, escalabilidade e observabilidade.</p>
+                  <div class="level-option-impact">Impacto: maximo sucesso na codificacao.</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Regras de credito por nivel</label>
+                <div class="credit-list">
+                  <div class="credit-item"><span>Completo (padrao)</span><strong>180 creditos</strong></div>
+                  <div class="credit-item"><span>Detalhado</span><strong>260 creditos</strong></div>
+                </div>
+                <div class="form-helper">Nivel minimo desativado.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="impact-warning">Aviso de impacto (usuario)</label>
+                <textarea id="impact-warning" class="form-textarea" rows="3">Plano tecnico e sempre completo para maximizar qualidade do codigo e aderencia ao esperado.</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="system-prompt">Prompt do sistema (real)</label>
+                <textarea id="system-prompt" class="form-textarea" rows="14">Voce e um arquiteto de software especializado em aplicacoes web modernas.
+
+## Contexto
+Voce recebera um BusinessPlan e deve gerar um TechnicalPlan detalhado.
+
+## Stack Fixa (MVP)
+Para o MVP, use SEMPRE esta stack:
+- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
+- **Estilizacao**: Tailwind CSS 4, shadcn/ui
+- **Backend**: Next.js API Routes
+- **Banco**: Prisma + PostgreSQL (Neon)
+- **Auth**: Clerk
+- **Deploy**: Vercel
+
+## O que Gerar
+
+1. **Arquitetura**
+   - Tipo: monolith (Next.js fullstack)
+   - Descricao da estrutura
+
+2. **Stack** (usar a fixa acima)
+
+3. **Modelo de Dados**
+   - Entidades necessarias
+   - Campos e tipos
+   - Relacionamentos
+
+4. **Endpoints de API**
+   - Apenas os necessarios para as features
+   - RESTful
+
+5. **Paginas**
+   - Rotas necessarias
+   - Tipo de renderizacao (SSR/SSG/CSR)
+
+6. **Componentes**
+   - Componentes principais
+   - Props esperadas
+
+7. **Estrutura de Arquivos**
+   - Arvore de diretorios
+   - Arquivos principais
+
+8. **CI/CD**
+   - GitHub Actions
+   - Jobs: lint, test, build
+
+9. **Variaveis de Ambiente**
+   - Quais sao necessarias
+   - Valores de exemplo
+
+## Regras
+
+1. Seja pratico - nao over-engineer
+2. Use convencoes do ecossistema Next.js
+3. Priorize simplicidade para MVP
+4. Inclua testes desde o inicio
+5. Siga Trunk-Based Development
+
+## Formato de Saida
+
+Responda com o TechnicalPlan em JSON:
+
+```json
+{
+  "architecture": {
+    "type": "monolith",
+    "description": "Next.js fullstack com API Routes"
+  },
+  "stack": [
+    {
+      "category": "frontend",
+      "name": "Next.js",
+      "version": "15.x",
+      "justification": "App Router, Server Components"
+    }
+  ],
+  "dataModel": {
+    "entities": [
+      {
+        "name": "User",
+        "description": "Usuario do sistema",
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "required": true,
+            "unique": true
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "from": "User",
+        "to": "Project",
+        "type": "one-to-many"
+      }
+    ]
+  },
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/items",
+      "description": "Lista todos os items",
+      "authentication": true,
+      "requestBody": null,
+      "responseBody": { "items": "Item[]" }
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "name": "Home",
+      "description": "Pagina inicial",
+      "components": ["Hero", "Features"],
+      "dataFetching": "SSG"
+    }
+  ],
+  "components": [
+    {
+      "name": "Hero",
+      "description": "Secao hero da landing page",
+      "props": {
+        "title": "string",
+        "subtitle": "string"
+      }
+    }
+  ],
+  "fileStructure": [
+    {
+      "path": "src/app",
+      "type": "directory",
+      "children": [
+        {
+          "path": "src/app/page.tsx",
+          "type": "file",
+          "description": "Pagina inicial"
+        }
+      ]
+    }
+  ],
+  "cicd": {
+    "provider": "github-actions",
+    "triggers": ["push", "pull_request"],
+    "jobs": [
+      {
+        "name": "lint-and-test",
+        "steps": ["checkout", "setup-node", "install", "lint", "test", "build"]
+      }
+    ]
+  },
+  "environment": {
+    "variables": [
+      {
+        "name": "DATABASE_URL",
+        "description": "URL de conexao PostgreSQL",
+        "required": true,
+        "secret": true,
+        "example": "postgresql://..."
+      }
+    ]
+  }
+}
+```
+</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="output-schema">Modelo JSON (TechnicalPlan) - somente leitura</label>
+                <textarea id="output-schema" class="form-textarea" rows="12" readonly>{
+  "architecture": { "type": "monolith", "description": "Next.js fullstack com API Routes" },
+  "stack": [
+    { "category": "frontend", "name": "Next.js", "version": "15.x", "justification": "App Router, Server Components" }
+  ],
+  "dataModel": {
+    "entities": [
+      {
+        "name": "User",
+        "description": "Usuario do sistema",
+        "fields": [
+          { "name": "id", "type": "String", "required": true, "unique": true }
+        ]
+      }
+    ],
+    "relationships": [
+      { "from": "User", "to": "Project", "type": "one-to-many" }
+    ]
+  },
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/items",
+      "description": "Lista todos os items",
+      "authentication": true,
+      "requestBody": null,
+      "responseBody": { "items": "Item[]" }
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "name": "Home",
+      "description": "Pagina inicial",
+      "components": ["Hero", "Features"],
+      "dataFetching": "SSG"
+    }
+  ],
+  "components": [
+    {
+      "name": "Hero",
+      "description": "Secao hero da landing page",
+      "props": { "title": "string", "subtitle": "string" }
+    }
+  ],
+  "fileStructure": [
+    {
+      "path": "src/app",
+      "type": "directory",
+      "children": [
+        { "path": "src/app/page.tsx", "type": "file", "description": "Pagina inicial" }
+      ]
+    }
+  ],
+  "cicd": {
+    "provider": "github-actions",
+    "triggers": ["push", "pull_request"],
+    "jobs": [
+      { "name": "lint-and-test", "steps": ["checkout", "setup-node", "install", "lint", "test", "build"] }
+    ]
+  },
+  "environment": {
+    "variables": [
+      { "name": "DATABASE_URL", "description": "URL de conexao PostgreSQL", "required": true, "secret": true, "example": "postgresql://..." }
+    ]
+  }
+}</textarea>
+                <div class="form-helper">Mudancas exigem ajuste de codigo.</div>
+              </div>
+
+              <div class="card-footer" style="justify-content: flex-end;">
+                <button class="btn btn-secondary">Salvar rascunho</button>
+                <button class="btn btn-primary">Publicar</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-title">Simular pipeline</div>
+              <div class="simulator">
+                <div class="simulator-header">
+                  <div>
+                    <div class="simulator-title">Entrada: BusinessPlan</div>
+                    <div class="simulator-subtitle">Ultimo plano aprovado ou exemplo padrao</div>
+                  </div>
+                  <span class="badge success">Sandbox</span>
+                </div>
+                <div class="preview-box">BusinessPlan (preview)
+{ "coreFeatures": ["Pedidos", "Pagamentos"], "targetAudience": "Restaurantes" }</div>
+                <div style="height: var(--space-3);"></div>
+                <div class="preview-box">TechnicalPlan (preview JSON)
+{ "architecture": { "type": "monolith" }, "stack": ["Next.js", "Prisma"] }</div>
+                <div style="height: var(--space-3);"></div>
+                <div class="simulator-actions">
+                  <button class="btn btn-secondary btn-sm">Rodar com exemplo padrao</button>
+                  <button class="btn btn-secondary btn-sm">Rodar com ultimo plano</button>
+                </div>
+                <div class="simulator-meta">Ultima execucao: 10 min atras • Tokens: 6.1k • Creditos: 42</div>
+              </div>
+              <div style="height: var(--space-4);"></div>
+              <div class="section-title">Versoes</div>
+              <div class="version-list">
+                <div class="version-item">v7 - Publicado - 1d atras - por Ana</div>
+                <div class="version-item">v6 - Publicado - 6d atras - por Bruno</div>
+                <div class="version-item">v5 - Arquivado - 18d atras - por Camila</div>
+              </div>
+              <div style="height: var(--space-4);"></div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%;">Ver diff completo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="01-ai-prompt-studio.html" class="nav-btn">Prompt anterior</a>
+    <a href="01-ai-prompt-studio-ux-plan.html" class="nav-btn primary">Proximo prompt -></a>
+  </div>
+</body>
+</html>
