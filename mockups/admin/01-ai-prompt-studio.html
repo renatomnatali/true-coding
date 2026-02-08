@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Prompt Studio (Discovery) | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      width: 240px;
+      background: var(--color-bg-primary);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      font-size: var(--font-size-lg);
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .sidebar-meta {
+      margin-top: var(--space-4);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .sidebar-nav {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .sidebar-item {
+      padding: var(--space-3);
+      border-radius: var(--border-radius-md);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-item.active {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .sidebar-pill {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-tertiary);
+    }
+
+    .admin-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-header {
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .breadcrumb {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .header-title h1 {
+      margin: 0;
+      font-size: var(--font-size-2xl);
+      color: var(--color-text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .env-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-full);
+      padding: var(--space-1);
+      font-size: var(--font-size-xs);
+    }
+
+    .env-toggle button {
+      border: none;
+      background: transparent;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      cursor: pointer;
+      color: var(--color-text-secondary);
+    }
+
+    .env-toggle button.active {
+      background: var(--color-primary);
+      color: #fff;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .fixed-pill {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .status-bar {
+      padding: var(--space-3) var(--space-6);
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .status-chip {
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .content {
+      padding: var(--space-6);
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    .panel {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-3);
+    }
+
+    .prompt-group-label {
+      font-size: var(--font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--color-text-tertiary);
+      margin: var(--space-3) 0 var(--space-2);
+    }
+
+    .prompt-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .prompt-item.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+
+    .prompt-item-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .prompt-item-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-secondary);
+    }
+
+    .badge.success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: var(--space-6);
+    }
+
+    .section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .form-row.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .helper-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-2);
+      border-radius: var(--border-radius-full);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    .token-progress {
+      height: 8px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-full);
+      overflow: hidden;
+      margin-top: var(--space-2);
+    }
+
+    .token-progress-fill {
+      height: 100%;
+      width: 52%;
+      background: var(--color-primary);
+    }
+
+    .preview-box {
+      border: 1px dashed var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+    }
+
+    .alert {
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+
+    .version-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .version-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-3);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .mockup-nav {
+      position: fixed;
+      bottom: var(--space-4);
+      right: var(--space-4);
+      display: flex;
+      gap: var(--space-2);
+      z-index: var(--z-toast);
+    }
+
+    .nav-btn {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+    }
+
+    .nav-btn.primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+
+      .admin-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .sidebar-item {
+        flex: 1 1 140px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-row,
+      .form-row.three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">TC</span>
+          True Coding
+        </div>
+        <div class="sidebar-meta">Modulo administrativo - IA</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-item active">Prompt Studio <span class="sidebar-pill">CMS</span></div>
+        <div class="sidebar-item">Modelos LLM <span class="sidebar-pill">3</span></div>
+        <div class="sidebar-item">Limites e tokens</div>
+        <div class="sidebar-item">Templates de plano</div>
+        <div class="sidebar-item">Chaves API</div>
+        <div class="sidebar-item">Guardrails</div>
+        <div class="sidebar-item">Logs e auditoria</div>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-header">
+        <div class="header-title">
+          <span class="breadcrumb">Admin / IA</span>
+          <h1>Prompt Studio</h1>
+        </div>
+        <div class="header-actions">
+          <div class="env-toggle" role="group" aria-label="Selecionar ambiente">
+            <button class="active">Staging</button>
+            <button>Producao</button>
+          </div>
+          <button class="btn btn-secondary btn-sm">Ver docs</button>
+          <span class="fixed-pill">Prompts fixos</span>
+        </div>
+      </header>
+
+      <div class="status-bar">
+        <div>
+          Status: <span class="status-chip">Tudo salvo</span> - Fonte: src/lib/ai/prompts/discovery.ts
+        </div>
+        <div>
+          Modelo ativo: claude-3-haiku-20240307 - Max tokens: 1024
+        </div>
+      </div>
+
+      <section class="content">
+        <div class="panel">
+          <div class="panel-title">Prompts do pipeline</div>
+          <div class="panel-subtitle">Pontos pre-determinados. Nao ha criacao manual.</div>
+          <input class="search-input" type="search" placeholder="Buscar prompt fixo" aria-label="Buscar prompt">
+
+          <div class="prompt-group-label">Discovery</div>
+          <a class="prompt-item active" href="01-ai-prompt-studio.html">
+            <div class="prompt-item-title">Discovery - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v12</span>
+              <span>Atualizado ha 2h</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Planning</div>
+          <a class="prompt-item" href="01-ai-prompt-studio-planning.html">
+            <div class="prompt-item-title">Planning - TechnicalPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v7</span>
+              <span>Atualizado ha 1d</span>
+            </div>
+          </a>
+          <a class="prompt-item" href="01-ai-prompt-studio-ux-plan.html">
+            <div class="prompt-item-title">Planning - UXPlan</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v5</span>
+              <span>Atualizado ha 2d</span>
+            </div>
+          </a>
+
+          <div class="prompt-group-label">Codegen</div>
+          <a class="prompt-item" href="01-ai-prompt-studio-codegen.html">
+            <div class="prompt-item-title">Codegen - System Prompt</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v9</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+          <a class="prompt-item" href="01-ai-prompt-studio-codegen-templates.html">
+            <div class="prompt-item-title">Codegen - Templates</div>
+            <div class="prompt-item-meta">
+              <span class="badge success">Publicado</span>
+              <span>v4</span>
+              <span>Atualizado ha 5d</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            Editor do prompt
+            <span class="helper-pill">Auto-salvar</span>
+          </div>
+          <div class="panel-subtitle">Prompt base fixo + campos estruturados (perguntas, niveis e avisos).</div>
+
+          <div class="alert">
+            <strong>Atencao:</strong>
+            O prompt base e somente leitura. Ajustes acontecem pelos campos estruturados abaixo.
+          </div>
+
+          <div class="editor-grid">
+            <div>
+              <div class="form-group">
+                <label class="form-label" for="prompt-name">Nome do prompt</label>
+                <input id="prompt-name" class="form-input" type="text" value="Discovery - System Prompt">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="prompt-phase">Fase</label>
+                  <select id="prompt-phase" class="form-select">
+                    <option>Ideacao</option>
+                    <option selected>Discovery</option>
+                    <option>Planejamento</option>
+                    <option>Geracao</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="prompt-model">Modelo</label>
+                  <select id="prompt-model" class="form-select">
+                    <option selected>claude-3-haiku-20240307</option>
+                    <option>claude-sonnet-4-20250514</option>
+                    <option>claude-3-5-sonnet</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row three">
+                <div class="form-group">
+                  <label class="form-label" for="max-tokens">Max tokens</label>
+                  <input id="max-tokens" class="form-input" type="number" value="1024">
+                  <div class="token-progress">
+                    <div class="token-progress-fill"></div>
+                  </div>
+                  <div class="form-helper">Estimativa atual: 530 tokens</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="temperature">Temperature</label>
+                  <input id="temperature" class="form-input" type="text" value="0.7">
+                  <div class="form-helper">Mais alto = respostas criativas</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="prompt-scope">Escopo</label>
+                  <input id="prompt-scope" class="form-input" type="text" value="DISCOVERY_SYSTEM_PROMPT">
+                  <div class="form-helper">Chave fixa no codigo</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="output-model">Modelo de saida (admin-only)</label>
+                <input id="output-model" class="form-input" type="text" value="BusinessPlan" readonly>
+                <div class="form-helper">Modelo predefinido no sistema.</div>
+              </div>
+
+              <div class="section-title">Niveis de detalhe expostos ao usuario</div>
+              <div class="level-options">
+                <div class="level-option">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Minimo</span>
+                    <span class="level-option-credit">60 creditos</span>
+                  </div>
+                  <p class="level-option-desc">Resumo executivo rapido para validar a ideia.</p>
+                  <div class="level-option-impact">Impacto: menos contexto pode reduzir aderencia do codigo.</div>
+                </div>
+                <div class="level-option selected">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Padrao</span>
+                    <span class="level-option-credit">120 creditos</span>
+                  </div>
+                  <p class="level-option-desc">Equilibrio entre negocio, requisitos e foco no MVP.</p>
+                  <div class="level-option-impact">Impacto: alta aderencia ao plano e ao codigo.</div>
+                </div>
+                <div class="level-option">
+                  <div class="level-option-header">
+                    <span class="level-option-title">Detalhado</span>
+                    <span class="level-option-credit">220 creditos</span>
+                  </div>
+                  <p class="level-option-desc">Plano completo com riscos, metricas e estrategia.</p>
+                  <div class="level-option-impact">Impacto: maior sucesso na codificacao e alinhamento.</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Regras de credito por nivel</label>
+                <div class="credit-list">
+                  <div class="credit-item"><span>Minimo</span><strong>60 creditos</strong></div>
+                  <div class="credit-item"><span>Padrao</span><strong>120 creditos</strong></div>
+                  <div class="credit-item"><span>Detalhado</span><strong>220 creditos</strong></div>
+                </div>
+                <div class="form-helper">Exibido na jornada antes de gerar o plano.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="impact-warning">Aviso de impacto (usuario)</label>
+                <textarea id="impact-warning" class="form-textarea" rows="3">Planos mais detalhados aumentam a qualidade do codigo e reduzem retrabalho, mas consomem mais creditos.</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="system-prompt">Prompt do sistema (base, somente leitura)</label>
+                <textarea id="system-prompt" class="form-textarea" rows="14" readonly>Voce e um consultor de produto que conduz um discovery estruturado em EXATAMENTE 5 perguntas.
+
+## REGRA CRITICA - UMA PERGUNTA POR VEZ
+
+VOCE DEVE fazer APENAS UMA pergunta por mensagem. NUNCA faca multiplas perguntas.
+Aguarde a resposta do usuario antes de fazer a proxima pergunta.
+
+## Perguntas fixas
+Use a lista definida no bloco "Perguntas fixas (5)".
+Nao reordene. Uma pergunta por mensagem.
+
+## Fluxo
+
+1. Usuario diz o que quer criar
+2. Voce faz a Pergunta 1 (problema e publico)
+3. Usuario responde
+4. Voce faz a Pergunta 2 (features core)
+5. Usuario responde
+6. Voce faz a Pergunta 3 (diferenciais)
+7. Usuario responde
+8. Voce faz a Pergunta 4 (nice-to-have)
+9. Usuario responde
+10. Voce faz a Pergunta 5 (monetizacao)
+11. Usuario responde
+12. Voce resume tudo e pede confirmacao
+13. Usuario confirma
+14. Voce gera o BusinessPlan em JSON
+
+## Formato das Respostas
+
+- Seja breve (2-3 frases no maximo antes da pergunta)
+- Faca a pergunta em **negrito**
+- Use 1 emoji no maximo
+- NAO de exemplos extensos - apenas a pergunta direta
+
+## Exemplo de Resposta CORRETA
+
+"Legal! Um app de delivery para restaurantes pequenos. &#127829;
+
+**Qual problema especifico voce quer resolver e quem seria o publico-alvo principal?**"
+
+## Exemplo de Resposta INCORRETA (NAO FACA ISSO)
+
+"Legal! Algumas perguntas:
+1. Qual o problema?
+2. Quem e o publico?
+3. Quais as features?"
+
+## Quando Gerar o Plano
+
+Gere o BusinessPlan SOMENTE apos:
+1. Ter feito as 5 perguntas
+2. O usuario confirmar o resumo
+
+## Formato do BusinessPlan
+
+Responda com JSON no schema fixo BUSINESSPLAN_SCHEMA.
+</textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="fixed-questions">Perguntas fixas (5)</label>
+                <textarea id="fixed-questions" class="form-textarea" rows="6">1. Qual problema voce quer resolver e para quem?
+2. Quais sao as 3-5 funcionalidades principais (must-have)?
+3. O que vai diferenciar seu projeto dos concorrentes?
+4. Quais features seriam nice-to-have para o futuro?
+5. Como pretende monetizar o projeto?</textarea>
+                <div class="form-helper">Editavel. Usado para compor o prompt base.</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="default-answers">Respostas padrao (teste)</label>
+                <textarea id="default-answers" class="form-textarea" rows="6">1. App para restaurantes pequenos gerenciarem pedidos e entregas.
+2. Cadastro de cardapio, pedidos em tempo real, rastreio de entrega.
+3. Comissao menor e painel simples em portugues.
+4. Programa de fidelidade e integracao com WhatsApp.
+5. Assinatura mensal + taxa por pedido.</textarea>
+                <div class="form-helper">Usado no botao "Rodar com respostas padrao".</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="output-schema">Modelo JSON (BusinessPlan) - somente leitura</label>
+                <textarea id="output-schema" class="form-textarea" rows="12" readonly>{
+  "name": "Nome do Projeto",
+  "tagline": "Uma frase que resume o produto",
+  "description": "Descricao de 2-3 frases",
+  "problemStatement": "O problema que resolve",
+  "targetAudience": {
+    "primary": "Publico principal",
+    "secondary": "Publico secundario (opcional)",
+    "painPoints": ["Dor 1", "Dor 2", "Dor 3"]
+  },
+  "coreFeatures": [
+    {
+      "id": "feature-1",
+      "name": "Nome da Feature",
+      "description": "Descricao",
+      "priority": "must-have",
+      "complexity": "low|medium|high"
+    }
+  ],
+  "niceToHaveFeatures": [],
+  "monetization": {
+    "model": "free|freemium|subscription|one-time",
+    "description": "Como vai monetizar"
+  },
+  "competitors": [
+    {
+      "name": "Concorrente",
+      "differentiator": "Nosso diferencial"
+    }
+  ],
+  "successMetrics": [
+    {
+      "name": "Metrica",
+      "target": "Alvo",
+      "timeframe": "Prazo"
+    }
+  ]
+}</textarea>
+                <div class="form-helper">Mudancas exigem ajuste de codigo.</div>
+              </div>
+
+              <div class="card-footer" style="justify-content: flex-end;">
+                <button class="btn btn-secondary">Salvar rascunho</button>
+                <button class="btn btn-primary">Publicar</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="section-title">Simular jornada</div>
+              <div class="simulator">
+                <div class="simulator-header">
+                  <div>
+                    <div class="simulator-title">Chat de Discovery</div>
+                    <div class="simulator-subtitle">Prompt publicado + modelo selecionado</div>
+                  </div>
+                  <span class="badge success">Sandbox</span>
+                </div>
+                <div class="simulator-messages">
+                  <div class="simulator-message">
+                    <div class="simulator-avatar">AI</div>
+                    <div class="simulator-bubble">Legal! &#127829;<br><strong>Qual problema voce quer resolver e para quem?</strong></div>
+                  </div>
+                  <div class="simulator-message user">
+                    <div class="simulator-avatar">AD</div>
+                    <div class="simulator-bubble">Restaurantes pequenos precisam reduzir taxas e controlar pedidos.</div>
+                  </div>
+                  <div class="simulator-message">
+                    <div class="simulator-avatar">AI</div>
+                    <div class="simulator-bubble"><strong>Pergunta 2:</strong> Quais sao as funcionalidades principais?</div>
+                  </div>
+                </div>
+                <div class="simulator-actions">
+                  <button class="btn btn-secondary btn-sm">Rodar com respostas padrao</button>
+                  <button class="btn btn-secondary btn-sm">Rodar com ultima conversa</button>
+                </div>
+                <div class="simulator-input">
+                  <textarea class="form-textarea" rows="2" placeholder="Responda como usuario..."></textarea>
+                  <button class="btn btn-primary btn-sm">Enviar</button>
+                </div>
+                <button class="btn btn-primary btn-sm" style="width: 100%;">Finalizar e gerar plano (preview)</button>
+                <div style="height: var(--space-3);"></div>
+                <div class="preview-box">BusinessPlan (preview JSON)
+{ "name": "Delivery Local", "tagline": "Menos taxa, mais controle", "coreFeatures": ["Pedidos", "Rastreio", "Pagamentos"] }</div>
+                <div class="simulator-meta">Ultima execucao: 2 min atras • Tokens: 842 • Creditos: 18</div>
+              </div>
+              <div style="height: var(--space-4);"></div>
+              <div class="section-title">Versoes</div>
+              <div class="version-list">
+                <div class="version-item">v12 - Publicado - 2h atras - por Ana</div>
+                <div class="version-item">v11 - Publicado - 3d atras - por Bruno</div>
+                <div class="version-item">v10 - Arquivado - 10d atras - por Camila</div>
+              </div>
+              <div style="height: var(--space-4);"></div>
+              <button class="btn btn-secondary btn-sm" style="width: 100%;">Ver diff completo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="mockup-nav">
+    <a href="../index.html" class="nav-btn">Hub</a>
+    <a href="01-ai-prompt-studio-planning.html" class="nav-btn primary">Proximo prompt -></a>
+  </div>
+</body>
+</html>
