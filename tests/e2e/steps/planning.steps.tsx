@@ -337,9 +337,11 @@ describe('Planning: Business Plan - Aprovação', () => {
     )
 
     // Business Plan não está mais visível como conteúdo principal
-    expect(screen.queryByRole('button', { name: /Editar Plano/i })).not.toBeInTheDocument()
+    // (título "Plano de Negócio" aparece apenas no breadcrumb, não como heading)
+    expect(screen.queryByRole('heading', { name: /Plano de Negócio/i })).not.toBeInTheDocument()
 
-    // Technical Plan agora é o ativo
+    // Technical Plan agora é o ativo - novo título é "Arquitetura Técnica"
+    expect(screen.getByText(/Arquitetura Técnica/i)).toBeInTheDocument()
     expect(screen.getByText(/Stack de Tecnologia/i)).toBeInTheDocument()
 
     // Breadcrumb mostra Business Plan como completed (✓)
@@ -371,27 +373,57 @@ describe('Planning: Business Plan - Aprovação', () => {
   })
 })
 
-// Sample Technical Plan for tests
+// Sample Technical Plan for tests - nova estrutura baseada no mockup
 const sampleTechnicalPlan = JSON.stringify({
   stack: {
-    frontend: { name: 'Next.js', version: '15', description: 'React framework com SSR' },
-    backend: { name: 'Next.js API Routes', description: 'API serverless' },
-    database: { name: 'PostgreSQL', provider: 'Neon', description: 'Banco relacional serverless' },
-    deploy: { name: 'Vercel', description: 'Plataforma de deploy' },
+    categories: [
+      { name: 'Frontend', technologies: ['Next.js 15', 'React 19', 'TypeScript', 'Tailwind CSS'] },
+      { name: 'Backend', technologies: ['Next.js API Routes', 'Prisma ORM', 'PostgreSQL'] },
+      { name: 'Autenticação', technologies: ['Clerk'] },
+      { name: 'Infraestrutura', technologies: ['Vercel', 'Supabase'] },
+    ],
   },
   architecture: {
-    pattern: 'Monolito modular',
-    description: 'Aplicação Next.js com App Router',
+    pattern: 'Monolito modular com App Router',
+    organization: 'Feature-based folders',
+    stateManagement: 'Zustand + React Query',
+    fileStructure: 'src/\\n├── app/\\n├── components/\\n├── lib/\\n└── types/',
   },
-  folderStructure: [
-    'src/app/',
-    'src/components/',
-    'src/lib/',
-    'prisma/',
+  database: {
+    description: 'Schema completo com relacionamentos',
+    prismaSchema: 'model User {\\n  id String @id\\n  name String\\n}',
+    summary: '4 models, 6 relações, 8 índices',
+  },
+  apiEndpoints: [
+    {
+      category: '🔐 Autenticação',
+      endpoints: [
+        { method: 'POST', path: '/api/auth/register', description: 'Registrar usuário' },
+        { method: 'GET', path: '/api/auth/me', description: 'Dados do usuário' },
+      ],
+    },
+    {
+      category: '📦 Pedidos',
+      endpoints: [
+        { method: 'GET', path: '/api/orders', description: 'Listar pedidos' },
+        { method: 'POST', path: '/api/orders', description: 'Criar pedido' },
+      ],
+    },
   ],
-  dataModel: {
-    entities: ['User', 'Order', 'Restaurant', 'MenuItem'],
-    description: 'Modelo relacional com Prisma ORM',
+  security: {
+    authentication: ['Clerk JWT com expiração de 1h', 'RBAC com 4 roles'],
+    apiProtection: ['Rate Limiting: 10 req/s', 'Input Validation com Zod'],
+    sensitiveData: ['Pagamentos via Stripe (PCI-compliant)'],
+    compliance: ['LGPD: Consentimento explícito'],
+  },
+  performance: {
+    caching: [
+      { name: 'CDN (Vercel Edge)', description: 'Assets estáticos com cache de 1 ano' },
+      { name: 'React Query', description: 'Client-side cache com staleTime de 30s' },
+    ],
+    database: ['Índices estratégicos em foreign keys'],
+    frontend: ['Code splitting com dynamic imports'],
+    goals: { fcp: '< 1.8s', lcp: '< 2.5s', tti: '< 3.8s', cls: '< 0.1' },
   },
 })
 
@@ -445,10 +477,135 @@ describe('Planning: Technical Plan - Visualização', () => {
     )
 
     // Então vejo o botão "Editar Stack"
-    expect(screen.getByRole('button', { name: /Editar Stack/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Editar Plano/i })).toBeInTheDocument()
 
     // E vejo o botão "Aprovar e Continuar" (para Technical Plan)
     expect(screen.getByRole('button', { name: /Aprovar/i })).toBeInTheDocument()
+  })
+})
+
+/**
+ * =============================================================================
+ * CENÁRIOS: TECHNICAL PLAN - EDIÇÃO
+ * =============================================================================
+ */
+describe('Planning: Technical Plan - Edição', () => {
+  /**
+   * @technical-plan @edicao
+   * Cenário: Editar plano técnico
+   */
+  it('Entra em modo de edição ao clicar em "Editar Plano"', async () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+      />
+    )
+
+    // Quando clico em "Editar Plano"
+    const editButton = screen.getByRole('button', { name: /Editar Plano/i })
+    await userEvent.click(editButton)
+
+    // Então vejo o título de edição
+    await waitFor(() => {
+      expect(screen.getByText(/Editando Plano Técnico/i)).toBeInTheDocument()
+    })
+
+    // E vejo opções para selecionar tecnologias
+    expect(screen.getByText(/Frontend Framework/i)).toBeInTheDocument()
+    expect(screen.getByText(/Banco de Dados/i)).toBeInTheDocument()
+
+    // E posso trocar o database
+    expect(screen.getByText(/PostgreSQL \(Supabase\)/)).toBeInTheDocument()
+    expect(screen.getByText(/MongoDB \(Atlas\)/)).toBeInTheDocument()
+
+    // E vejo o botão "Salvar Alterações"
+    expect(screen.getByRole('button', { name: /Salvar Alterações/i })).toBeInTheDocument()
+
+    // E vejo o botão "Cancelar"
+    expect(screen.getByRole('button', { name: /Cancelar/i })).toBeInTheDocument()
+  })
+
+  /**
+   * @technical-plan @edicao
+   * Cenário: Cancelar edição do Technical Plan
+   */
+  it('Cancelar volta para modo visualização', async () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+      />
+    )
+
+    // Entra em modo de edição
+    await userEvent.click(screen.getByRole('button', { name: /Editar Plano/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Editando Plano Técnico/i)).toBeInTheDocument()
+    })
+
+    // Quando clico em "Cancelar"
+    await userEvent.click(screen.getByRole('button', { name: /Cancelar/i }))
+
+    // Então volto para o modo de visualização
+    await waitFor(() => {
+      expect(screen.getByText(/Arquitetura Técnica/i)).toBeInTheDocument()
+    })
+
+    // E vejo o botão "Editar Plano" novamente
+    expect(screen.getByRole('button', { name: /Editar Plano/i })).toBeInTheDocument()
+  })
+
+  /**
+   * @technical-plan @edicao
+   * Cenário: Salvar alterações chama onSaveTechnicalPlan
+   */
+  it('Salvar chama onSaveTechnicalPlan com seleções', async () => {
+    const onSaveTechnicalPlan = vi.fn()
+
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+        onSaveTechnicalPlan={onSaveTechnicalPlan}
+      />
+    )
+
+    // Entra em modo de edição
+    await userEvent.click(screen.getByRole('button', { name: /Editar Plano/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Salvar Alterações/i })).toBeInTheDocument()
+    })
+
+    // Quando clico em "Salvar Alterações"
+    await userEvent.click(screen.getByRole('button', { name: /Salvar Alterações/i }))
+
+    // Então onSaveTechnicalPlan é chamado
+    await waitFor(() => {
+      expect(onSaveTechnicalPlan).toHaveBeenCalledTimes(1)
+    })
+
+    // E volta para modo visualização
+    await waitFor(() => {
+      expect(screen.getByText(/Arquitetura Técnica/i)).toBeInTheDocument()
+    })
   })
 })
 
@@ -481,10 +638,10 @@ describe('Planning: Technical Plan - Aprovação', () => {
     )
 
     // Technical Plan não está mais visível como conteúdo principal
-    expect(screen.queryByRole('button', { name: /Editar Stack/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Editar Plano/i })).not.toBeInTheDocument()
 
     // UX Plan agora é o ativo
-    expect(screen.getByText(/Personas & Design/i)).toBeInTheDocument()
+    expect(screen.getByText(/Design de Experiência/i)).toBeInTheDocument()
 
     // Breadcrumb mostra 2 planos como completed
     const checkmarks = screen.getAllByText('✓')
@@ -521,27 +678,76 @@ describe('Planning: Technical Plan - Aprovação', () => {
   })
 })
 
-// Sample UX Plan for tests
+// Sample UX Plan for tests - nova estrutura baseada no mockup 07-ux-plan.html
 const sampleUxPlan = JSON.stringify({
   personas: [
     {
-      name: 'João Restaurante',
-      age: 35,
-      role: 'Dono de restaurante',
-      goals: ['Aumentar vendas', 'Reduzir custos'],
-      painPoints: ['Taxas altas', 'Falta de controle'],
+      name: 'Maria Clara - Dona de Restaurante',
+      initials: 'MC',
+      age: 42,
+      location: 'São Paulo, SP',
+      bio: 'Dona de uma pizzaria de bairro com 8 funcionários.',
+      painPoints: ['Comissão de 25% do iFood', 'Sem acesso aos dados dos clientes'],
+      goals: ['Reduzir custos em 50%', 'Ter controle total sobre entregas'],
+      jobsToBeDone: ['Gerenciar cardápio facilmente', 'Acompanhar entregas em tempo real'],
+      triggers: 'Horário de pico de pedidos',
     },
   ],
+  informationArchitecture: {
+    sitemap: '📁 Dashboard\\n├─ 📊 Visão Geral\\n├─ 📦 Pedidos\\n└─ ⚙️ Configurações',
+    navigation: [
+      { name: 'Sidebar Fixa (Desktop)', description: 'Sempre visível, colapsável' },
+    ],
+  },
   journeys: [
     {
-      name: 'Primeiro pedido',
-      steps: ['Acessa app', 'Escolhe restaurante', 'Faz pedido', 'Paga'],
+      name: 'Cadastro e Primeiro Pedido',
+      persona: 'Maria Clara',
+      steps: [
+        { title: 'Descoberta', description: 'Vê anúncio e acessa landing page', emotion: '😊 Empolgada' },
+        { title: 'Cadastro', description: 'Cria conta com Google OAuth', emotion: '🙂 Rápido e simples' },
+      ],
     },
   ],
-  wireframes: ['Tela inicial', 'Cardápio', 'Checkout'],
+  wireframes: [
+    { name: 'Dashboard', description: 'Visão geral com métricas e pedidos ativos', layout: 'Sidebar + cards' },
+  ],
+  componentLibrary: [
+    {
+      name: 'Buttons',
+      variants: [
+        { name: 'Primary', description: 'Ações principais' },
+        { name: 'Secondary', description: 'Ações secundárias' },
+      ],
+    },
+  ],
+  accessibility: {
+    colorContrast: ['Texto normal: contraste mínimo 4.5:1'],
+    keyboard: ['Tab: Avançar entre elementos'],
+    semantics: ['Tags semânticas: nav, main, aside'],
+    aria: ['aria-label em botões de ícone'],
+    screenReaders: ['Texto alternativo em todas as imagens'],
+  },
+  uiStates: {
+    loading: ['Skeleton screens para listas'],
+    error: ['Toast para erros leves'],
+    empty: ['Ilustração + CTA para estados vazios'],
+  },
   designTokens: {
-    colors: { primary: '#7C3AED', secondary: '#22C55E' },
-    typography: { fontFamily: 'Inter', fontSize: { base: '16px' } },
+    colors: {
+      primary: '#2563eb',
+      secondary: '#6366f1',
+      success: '#22c55e',
+      error: '#ef4444',
+    },
+    typography: [
+      { name: 'Display', font: 'Inter 700, 32px' },
+      { name: 'Body', font: 'Inter 400, 16px' },
+    ],
+    spacing: [
+      { name: 'space-1', value: '4px' },
+      { name: 'space-4', value: '16px' },
+    ],
   },
 })
 
@@ -569,14 +775,26 @@ describe('Planning: UX Plan - Visualização', () => {
       />
     )
 
-    // "Plano de UX" aparece no breadcrumb e no heading
+    // "Plano de UX" aparece no breadcrumb
     const uxLabels = screen.getAllByText(/Plano de UX/i)
     expect(uxLabels.length).toBeGreaterThanOrEqual(1)
 
-    // E vejo informações do UX Plan (personas, design tokens)
-    expect(screen.getByText('João Restaurante')).toBeInTheDocument()
-    const personaLabels = screen.getAllByText(/Personas/i)
-    expect(personaLabels.length).toBeGreaterThanOrEqual(1)
+    // Seção Personas com dados detalhados
+    expect(screen.getByText('Maria Clara - Dona de Restaurante')).toBeInTheDocument()
+    expect(screen.getByText('MC')).toBeInTheDocument() // iniciais
+    expect(screen.getByText(/42 anos/)).toBeInTheDocument()
+    expect(screen.getByText(/Dona de uma pizzaria/)).toBeInTheDocument()
+    expect(screen.getByText(/Comissão de 25%/)).toBeInTheDocument()
+    expect(screen.getByText(/Reduzir custos em 50%/)).toBeInTheDocument()
+
+    // Seção Jornadas com steps (nome inclui persona entre parênteses)
+    expect(screen.getByText(/Cadastro e Primeiro Pedido/)).toBeInTheDocument()
+    expect(screen.getByText('Descoberta')).toBeInTheDocument()
+    expect(screen.getByText(/Vê anúncio/)).toBeInTheDocument()
+
+    // Seção Design Tokens com paleta
+    expect(screen.getByText('Paleta de Cores')).toBeInTheDocument()
+    expect(screen.getByText('#2563eb')).toBeInTheDocument()
   })
 
   /**

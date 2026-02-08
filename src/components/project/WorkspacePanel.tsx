@@ -51,6 +51,7 @@ interface WorkspacePanelProps {
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
+  onSaveTechnicalPlan?: (selections: Record<string, string>) => void
   onApproveUxPlan?: () => void
   isApproving?: boolean
   // Connection phase
@@ -75,6 +76,7 @@ export function WorkspacePanel({
   onApprove,
   onSavePlan,
   onApproveTechnicalPlan,
+  onSaveTechnicalPlan,
   onApproveUxPlan,
   isApproving,
   hasGitHubToken = false,
@@ -88,7 +90,7 @@ export function WorkspacePanel({
     case 'IDEATION':
       return <IdeationWorkspace projectName={projectName} discoveryProgress={discoveryProgress} onStartChat={() => setChatOpen(true)} />
     case 'PLANNING':
-      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} uxPlan={uxPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} uxPlanApproved={uxPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} onApproveUxPlan={onApproveUxPlan} isApproving={isApproving} />
+      return <PlanningWorkspace businessPlan={businessPlan} technicalPlan={technicalPlan} uxPlan={uxPlan} businessPlanApproved={businessPlanApproved} technicalPlanApproved={technicalPlanApproved} uxPlanApproved={uxPlanApproved} onApprove={onApprove} onSavePlan={onSavePlan} onApproveTechnicalPlan={onApproveTechnicalPlan} onSaveTechnicalPlan={onSaveTechnicalPlan} onApproveUxPlan={onApproveUxPlan} isApproving={isApproving} />
     case 'CONNECTING':
       return (
         <ConnectionPhase
@@ -173,17 +175,70 @@ function IdeationWorkspace({
   )
 }
 
-// Parse technical plan from JSON string
+// Parse technical plan from JSON string - nova estrutura baseada no mockup
 interface ParsedTechnicalPlan {
   stack?: {
-    frontend?: { name: string; version?: string; description?: string }
-    backend?: { name: string; description?: string }
-    database?: { name: string; provider?: string; description?: string }
-    deploy?: { name: string; description?: string }
+    categories?: Array<{
+      name: string
+      technologies: string[]
+    }>
   }
-  architecture?: { type?: string; pattern?: string; description?: string }
-  folderStructure?: string[]
-  dataModel?: { entities?: string[]; description?: string }
+  architecture?: {
+    pattern?: string
+    organization?: string
+    stateManagement?: string
+    fileStructure?: string
+  }
+  database?: {
+    description?: string
+    prismaSchema?: string
+    summary?: string
+  }
+  apiEndpoints?: Array<{
+    category: string
+    endpoints: Array<{
+      method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+      path: string
+      description: string
+    }>
+  }>
+  realtime?: {
+    provider?: string
+    description?: string
+    channels?: Array<{
+      name: string
+      events: Array<{
+        name: string
+        description: string
+      }>
+    }>
+    scalability?: string
+  }
+  security?: {
+    authentication?: string[]
+    apiProtection?: string[]
+    sensitiveData?: string[]
+    compliance?: string[]
+  }
+  performance?: {
+    caching?: Array<{
+      name: string
+      description: string
+    }>
+    database?: string[]
+    frontend?: string[]
+    goals?: {
+      fcp?: string
+      lcp?: string
+      tti?: string
+      cls?: string
+    }
+  }
+  integrations?: Array<{
+    name: string
+    description: string
+    details?: string
+  }>
 }
 
 function parseTechnicalPlan(planStr: string): ParsedTechnicalPlan | null {
@@ -194,23 +249,69 @@ function parseTechnicalPlan(planStr: string): ParsedTechnicalPlan | null {
   }
 }
 
-// Parse UX plan from JSON string
+// Parse UX plan from JSON string - nova estrutura baseada no mockup 07-ux-plan.html
 interface ParsedUxPlan {
   personas?: Array<{
     name: string
+    initials?: string
     age?: number
-    role?: string
-    goals?: string[]
+    location?: string
+    bio?: string
     painPoints?: string[]
+    goals?: string[]
+    jobsToBeDone?: string[]
+    triggers?: string
   }>
+  informationArchitecture?: {
+    sitemap?: string
+    navigation?: Array<{
+      name: string
+      description: string
+    }>
+  }
   journeys?: Array<{
     name: string
-    steps?: string[]
+    persona?: string
+    steps: Array<{
+      title: string
+      description: string
+      emotion?: string
+    }>
   }>
-  wireframes?: string[]
+  wireframes?: Array<{
+    name: string
+    description: string
+    layout?: string
+  }>
+  componentLibrary?: Array<{
+    name: string
+    variants: Array<{
+      name: string
+      description: string
+    }>
+  }>
+  accessibility?: {
+    colorContrast?: string[]
+    keyboard?: string[]
+    semantics?: string[]
+    aria?: string[]
+    screenReaders?: string[]
+  }
+  uiStates?: {
+    loading?: string[]
+    error?: string[]
+    empty?: string[]
+  }
   designTokens?: {
-    colors?: { primary?: string; secondary?: string }
-    typography?: { fontFamily?: string; fontSize?: { base?: string } }
+    colors?: Record<string, string>
+    typography?: Array<{
+      name: string
+      font: string
+    }>
+    spacing?: Array<{
+      name: string
+      value: string
+    }>
   }
 }
 
@@ -246,6 +347,7 @@ function PlanningWorkspace({
   onApprove,
   onSavePlan,
   onApproveTechnicalPlan,
+  onSaveTechnicalPlan,
   onApproveUxPlan,
   isApproving = false,
 }: {
@@ -258,6 +360,7 @@ function PlanningWorkspace({
   onApprove?: () => void
   onSavePlan?: (plan: ParsedPlan) => void
   onApproveTechnicalPlan?: () => void
+  onSaveTechnicalPlan?: (selections: Record<string, string>) => void
   onApproveUxPlan?: () => void
   isApproving?: boolean
 }) {
@@ -310,6 +413,7 @@ function PlanningWorkspace({
             technicalPlan={technicalPlan}
             technicalPlanApproved={technicalPlanApproved}
             onApprove={onApproveTechnicalPlan}
+            onSaveTechnicalPlan={onSaveTechnicalPlan}
             isApproving={isApproving}
           />
         )}
@@ -466,95 +570,398 @@ function BusinessPlanView({
   )
 }
 
-// Sub-component: Technical Plan
+// Helper: Badge de método HTTP com cor
+function MethodBadge({ method }: { method: string }) {
+  const colors: Record<string, string> = {
+    GET: 'bg-blue-600',
+    POST: 'bg-green-600',
+    PATCH: 'bg-amber-500',
+    DELETE: 'bg-red-600',
+    PUT: 'bg-amber-500',
+  }
+  return (
+    <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold text-white ${colors[method] || 'bg-gray-500'}`}>
+      {method}
+    </span>
+  )
+}
+
+// Opções de edição do Technical Plan (baseado no mockup 05-technical-plan-edit.html)
+const TECH_OPTIONS: Record<string, Array<{ name: string; description: string }>> = {
+  'Frontend Framework': [
+    { name: 'Next.js 15 + React 19', description: 'Framework full-stack moderno com SSR, API routes e otimizações automáticas.' },
+    { name: 'Vite + React', description: 'Build tool ultrarrápido. Melhor para SPAs sem SSR. Requer backend separado.' },
+    { name: 'Vue.js + Nuxt', description: 'Alternativa ao React com sintaxe mais simples. Boa para equipes pequenas.' },
+  ],
+  'Banco de Dados': [
+    { name: 'PostgreSQL (Supabase)', description: 'Banco relacional robusto. Supabase oferece hosting gratuito + auth + real-time.' },
+    { name: 'MongoDB (Atlas)', description: 'NoSQL flexível. Bom para dados não estruturados. Mais fácil para prototipagem.' },
+    { name: 'MySQL (PlanetScale)', description: 'Relacional tradicional. PlanetScale oferece branching de schema.' },
+  ],
+  'Real-time': [
+    { name: 'Pusher', description: 'Serviço gerenciado. Setup simples, escalável. Plano gratuito generoso.' },
+    { name: 'Socket.io (self-hosted)', description: 'Controle total. Requer servidor Node.js dedicado. Mais complexo.' },
+  ],
+}
+
+// Sub-component: Technical Plan - Nova versão completa baseada no mockup
 function TechnicalPlanView({
   technicalPlan,
   technicalPlanApproved,
   onApprove,
+  onSaveTechnicalPlan,
   isApproving,
 }: {
   technicalPlan?: string | null
   technicalPlanApproved?: boolean
   onApprove?: () => void
+  onSaveTechnicalPlan?: (selections: Record<string, string>) => void
   isApproving?: boolean
 }) {
   const techPlan = technicalPlan ? parseTechnicalPlan(technicalPlan) : null
+  const [isEditing, setIsEditing] = useState(false)
+  const [selections, setSelections] = useState<Record<string, string>>({})
 
-  return (
-    <>
-      <div>
-        <h2 className="mb-1 text-xl font-bold">Plano Técnico</h2>
-        <p className="text-sm text-muted-foreground">Arquitetura e tecnologias do projeto.</p>
-      </div>
+  const handleEdit = () => {
+    // Initialize selections from current stack categories
+    const initial: Record<string, string> = {}
+    if (techPlan?.stack?.categories) {
+      for (const cat of techPlan.stack.categories) {
+        const catName = cat.name
+        // Match current tech to an option
+        for (const [optKey, options] of Object.entries(TECH_OPTIONS)) {
+          const match = options.find(opt => cat.technologies.some(t => opt.name.toLowerCase().includes(t.toLowerCase())))
+          if (match) initial[optKey] = match.name
+          else if (!initial[catName]) initial[optKey] = options[0].name
+        }
+      }
+    }
+    // Default all unset categories
+    for (const [key, options] of Object.entries(TECH_OPTIONS)) {
+      if (!initial[key]) initial[key] = options[0].name
+    }
+    setSelections(initial)
+    setIsEditing(true)
+  }
 
-      <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-            </div>
-            <h3 className="font-semibold">Stack de Tecnologia</h3>
-          </div>
-          {technicalPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
+  const handleCancel = () => { setIsEditing(false); setSelections({}) }
+  const handleSave = () => { if (onSaveTechnicalPlan) onSaveTechnicalPlan(selections); setIsEditing(false); setSelections({}) }
+
+  if (!techPlan) {
+    return (
+      <>
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Plano Técnico</h2>
+          <p className="text-sm text-muted-foreground">Arquitetura e tecnologias do projeto.</p>
+        </div>
+        <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
+        </div>
+      </>
+    )
+  }
+
+  // Edit mode
+  if (isEditing) {
+    return (
+      <>
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Editando Plano Técnico</h2>
+          <p className="text-sm text-muted-foreground">Ajuste a stack e arquitetura do projeto</p>
         </div>
 
-        {techPlan ? (
-          <>
-            {techPlan.architecture && (
-              <div className="mt-4 rounded-lg bg-muted/50 p-3">
-                <p className="text-xs font-semibold uppercase text-gray-500">Arquitetura</p>
-                <p className="font-medium">{techPlan.architecture.type}</p>
-                <p className="text-xs text-muted-foreground">{techPlan.architecture.description}</p>
-              </div>
-            )}
-            <div className="mt-4 space-y-3">
-              {techPlan.stack?.frontend && (
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="font-medium">{techPlan.stack.frontend.name}</p>
-                  <p className="text-xs text-muted-foreground">{techPlan.stack.frontend.description}</p>
-                </div>
-              )}
-              {techPlan.stack?.backend && (
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="font-medium">{techPlan.stack.backend.name}</p>
-                  <p className="text-xs text-muted-foreground">{techPlan.stack.backend.description}</p>
-                </div>
-              )}
-              {techPlan.stack?.database && (
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="font-medium">{techPlan.stack.database.name}</p>
-                  <p className="text-xs text-muted-foreground">{techPlan.stack.database.description}</p>
-                </div>
-              )}
-              {techPlan.stack?.deploy && (
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="font-medium">{techPlan.stack.deploy.name}</p>
-                  <p className="text-xs text-muted-foreground">{techPlan.stack.deploy.description}</p>
-                </div>
-              )}
-            </div>
+        <div className="rounded-lg border-l-4 border-blue-600 bg-blue-50 p-4 dark:bg-blue-950">
+          <p className="text-sm">
+            ✏️ <strong>Modo de Edição:</strong> Escolha as tecnologias ideais para seu projeto.
+          </p>
+        </div>
 
-            {!technicalPlanApproved && (
-              <div className="mt-4 flex justify-end gap-3">
-                <button className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Editar Stack</button>
-                <button onClick={onApprove} disabled={isApproving}
-                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
-                  Aprovar e Continuar
-                </button>
+        {Object.entries(TECH_OPTIONS).map(([category, options]) => (
+          <div key={category} className="rounded-xl border bg-card p-6">
+            <h3 className="mb-4 text-lg font-semibold">{category}</h3>
+            <div className="space-y-3">
+              {options.map((option) => {
+                const isSelected = selections[category] === option.name
+                return (
+                  <button
+                    key={option.name}
+                    type="button"
+                    onClick={() => setSelections(prev => ({ ...prev, [category]: option.name }))}
+                    className={`w-full rounded-lg border-2 p-4 text-left transition-colors ${
+                      isSelected ? 'border-blue-600 bg-blue-50 dark:bg-blue-950' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold">{option.name}</span>
+                      {isSelected && <span className="text-blue-600">✓</span>}
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{option.description}</p>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+
+        <div className="flex justify-end gap-3">
+          <button onClick={handleCancel} className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Cancelar</button>
+          <button onClick={handleSave} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            Salvar Alterações
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  // View mode
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Arquitetura Técnica</h2>
+          <p className="text-sm text-muted-foreground">Stack e estrutura do projeto</p>
+        </div>
+        {technicalPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
+      </div>
+
+      {/* 1. Stack de Tecnologia */}
+      {techPlan.stack?.categories && techPlan.stack.categories.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🛠️ Stack de Tecnologia</h3>
+          <div className="space-y-4">
+            {techPlan.stack.categories.map((cat, i) => (
+              <div key={i}>
+                <p className="mb-2 text-xs font-semibold uppercase text-gray-500">{cat.name}</p>
+                <div className="flex flex-wrap gap-2">
+                  {cat.technologies.map((tech, j) => (
+                    <span key={j} className="rounded-md bg-muted px-2 py-1 text-sm">{tech}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 2. Arquitetura */}
+      {techPlan.architecture && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🏗️ Arquitetura</h3>
+          <div className="mb-4 space-y-1 text-sm text-muted-foreground">
+            {techPlan.architecture.pattern && <p><strong>Padrão:</strong> {techPlan.architecture.pattern}</p>}
+            {techPlan.architecture.organization && <p><strong>Organização:</strong> {techPlan.architecture.organization}</p>}
+            {techPlan.architecture.stateManagement && <p><strong>Estado:</strong> {techPlan.architecture.stateManagement}</p>}
+          </div>
+          {techPlan.architecture.fileStructure && (
+            <pre className="overflow-x-auto rounded-lg bg-gray-100 p-4 font-mono text-xs leading-relaxed dark:bg-gray-800">
+              {techPlan.architecture.fileStructure.replace(/\\n/g, '\n')}
+            </pre>
+          )}
+        </div>
+      )}
+
+      {/* 3. Database Schema (Prisma) */}
+      {techPlan.database && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">💾 Schema do Banco de Dados (Prisma)</h3>
+          {techPlan.database.description && (
+            <p className="mb-3 text-sm text-muted-foreground">{techPlan.database.description}</p>
+          )}
+          {techPlan.database.prismaSchema && (
+            <pre className="max-h-96 overflow-auto rounded-lg bg-[#1e1e1e] p-4 font-mono text-xs leading-relaxed text-gray-300">
+              {techPlan.database.prismaSchema.replace(/\\n/g, '\n')}
+            </pre>
+          )}
+          {techPlan.database.summary && (
+            <div className="mt-4 rounded-lg bg-blue-50 p-3 text-sm dark:bg-blue-950">
+              <strong>Relacionamentos:</strong> {techPlan.database.summary}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 4. API Endpoints */}
+      {techPlan.apiEndpoints && techPlan.apiEndpoints.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🌐 API Endpoints</h3>
+          <p className="mb-4 text-sm text-muted-foreground">
+            <strong>Padrão REST</strong> com autenticação JWT (Clerk) e rate limiting
+          </p>
+          <div className="space-y-6">
+            {techPlan.apiEndpoints.map((group, i) => (
+              <div key={i}>
+                <p className="mb-2 text-xs font-semibold uppercase text-gray-500">{group.category}</p>
+                <div className="space-y-2">
+                  {group.endpoints.map((ep, j) => (
+                    <div key={j} className="rounded-lg bg-muted/50 p-3 font-mono text-xs">
+                      <div className="flex items-center gap-2">
+                        <MethodBadge method={ep.method} />
+                        <span className="font-medium">{ep.path}</span>
+                      </div>
+                      <p className="mt-1 font-sans text-muted-foreground">{ep.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. Real-time Architecture (opcional) */}
+      {techPlan.realtime && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">⚡ Arquitetura Real-time</h3>
+          {techPlan.realtime.description && (
+            <p className="mb-4 text-sm text-muted-foreground">{techPlan.realtime.description}</p>
+          )}
+          {techPlan.realtime.channels && techPlan.realtime.channels.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase text-gray-500">Canais e Eventos</p>
+              {techPlan.realtime.channels.map((channel, i) => (
+                <div key={i} className="rounded-lg bg-muted/50 p-3">
+                  <p className="mb-2 font-semibold"><code className="rounded bg-black/10 px-1 py-0.5">{channel.name}</code></p>
+                  <ul className="space-y-1 pl-4 text-xs text-muted-foreground">
+                    {channel.events.map((ev, j) => (
+                      <li key={j}><code>{ev.name}</code> - {ev.description}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+          {techPlan.realtime.scalability && (
+            <div className="mt-4 rounded-lg bg-blue-50 p-3 text-sm dark:bg-blue-950">
+              <strong>Escalabilidade:</strong> {techPlan.realtime.scalability}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 6. Segurança */}
+      {techPlan.security && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🔐 Segurança</h3>
+          <div className="space-y-4">
+            {techPlan.security.authentication && techPlan.security.authentication.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Autenticação e Autorização</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.security.authentication.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
               </div>
             )}
-          </>
-        ) : (
-          <div className="mt-4 rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
-        )}
-      </div>
+            {techPlan.security.apiProtection && techPlan.security.apiProtection.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Proteção de API</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.security.apiProtection.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {techPlan.security.sensitiveData && techPlan.security.sensitiveData.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Dados Sensíveis</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.security.sensitiveData.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {techPlan.security.compliance && techPlan.security.compliance.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Compliance</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.security.compliance.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 7. Performance */}
+      {techPlan.performance && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">⚡ Performance e Otimizações</h3>
+          <div className="space-y-4">
+            {techPlan.performance.caching && techPlan.performance.caching.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Caching Strategy</p>
+                <div className="space-y-2">
+                  {techPlan.performance.caching.map((item, i) => (
+                    <div key={i} className="rounded-lg bg-muted/50 p-2 text-sm">
+                      <strong>{item.name}:</strong> <span className="text-muted-foreground">{item.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {techPlan.performance.database && techPlan.performance.database.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Database Optimizations</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.performance.database.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {techPlan.performance.frontend && techPlan.performance.frontend.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Frontend Optimizations</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {techPlan.performance.frontend.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {techPlan.performance.goals && (
+              <div className="rounded-lg bg-green-50 p-3 text-sm dark:bg-green-950">
+                <strong>Metas de Performance:</strong>
+                <ul className="mt-2 space-y-1">
+                  {techPlan.performance.goals.fcp && <li>• First Contentful Paint (FCP) {techPlan.performance.goals.fcp}</li>}
+                  {techPlan.performance.goals.lcp && <li>• Largest Contentful Paint (LCP) {techPlan.performance.goals.lcp}</li>}
+                  {techPlan.performance.goals.tti && <li>• Time to Interactive (TTI) {techPlan.performance.goals.tti}</li>}
+                  {techPlan.performance.goals.cls && <li>• Cumulative Layout Shift (CLS) {techPlan.performance.goals.cls}</li>}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 8. Integrações Externas (opcional) */}
+      {techPlan.integrations && techPlan.integrations.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🔌 Integrações Externas</h3>
+          <div className="space-y-3">
+            {techPlan.integrations.map((integration, i) => (
+              <div key={i} className="rounded-lg bg-muted/50 p-3">
+                <p className="font-semibold">{integration.name}</p>
+                <p className="text-sm text-muted-foreground">{integration.description}</p>
+                {integration.details && <p className="mt-1 text-xs text-gray-500">{integration.details}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Botões de ação */}
+      {!technicalPlanApproved && (
+        <div className="flex justify-end gap-3">
+          <button onClick={handleEdit} className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Editar Plano</button>
+          <button onClick={onApprove} disabled={isApproving}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+            Aprovar e Continuar →
+          </button>
+        </div>
+      )}
     </>
   )
 }
 
-// Sub-component: UX Plan
+// Cores para avatar de personas (cicla entre elas)
+const PERSONA_COLORS = ['bg-blue-600', 'bg-green-600', 'bg-amber-500', 'bg-purple-600', 'bg-pink-600']
+const PERSONA_BORDER_COLORS = ['border-blue-600', 'border-green-600', 'border-amber-500', 'border-purple-600', 'border-pink-600']
+
+// Sub-component: UX Plan - Nova versão completa baseada no mockup 07-ux-plan.html
 function UxPlanView({
   uxPlan,
   uxPlanApproved,
@@ -568,78 +975,323 @@ function UxPlanView({
 }) {
   const uxPlanParsed = uxPlan ? parseUxPlan(uxPlan) : null
 
+  if (!uxPlanParsed) {
+    return (
+      <>
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Plano de UX</h2>
+          <p className="text-sm text-muted-foreground">Personas, jornadas e especificações UX.</p>
+        </div>
+        <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
-      <div>
-        <h2 className="mb-1 text-xl font-bold">Plano de UX</h2>
-        <p className="text-sm text-muted-foreground">Personas, jornadas e design tokens.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="mb-1 text-xl font-bold">Design de Experiência</h2>
+          <p className="text-sm text-muted-foreground">Personas, jornadas e especificações UX</p>
+        </div>
+        {uxPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
       </div>
 
-      <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100 text-pink-600">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </div>
-            <h3 className="font-semibold">Personas & Design</h3>
+      {/* 1. Personas */}
+      {uxPlanParsed.personas && uxPlanParsed.personas.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">👤 Personas</h3>
+          <div className="space-y-4">
+            {uxPlanParsed.personas.map((persona, i) => (
+              <div key={i} className={`rounded-lg border-l-4 bg-muted/50 p-4 ${PERSONA_BORDER_COLORS[i % PERSONA_BORDER_COLORS.length]}`}>
+                <div className="mb-3 flex items-center gap-3">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${PERSONA_COLORS[i % PERSONA_COLORS.length]}`}>
+                    {persona.initials || persona.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{persona.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {persona.age && `${persona.age} anos`}{persona.age && persona.location && ' • '}{persona.location}
+                    </p>
+                  </div>
+                </div>
+                {persona.bio && <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{persona.bio}</p>}
+                {persona.painPoints && persona.painPoints.length > 0 && (
+                  <div className="mb-2">
+                    <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Dores</p>
+                    <ul className="space-y-0.5 pl-4 text-sm">
+                      {persona.painPoints.map((pain, j) => <li key={j} className="list-disc">{pain}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {persona.goals && persona.goals.length > 0 && (
+                  <div className="mb-2">
+                    <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Objetivos</p>
+                    <ul className="space-y-0.5 pl-4 text-sm">
+                      {persona.goals.map((goal, j) => <li key={j} className="list-disc">{goal}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {persona.jobsToBeDone && persona.jobsToBeDone.length > 0 && (
+                  <div className="mb-2">
+                    <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Jobs-to-be-done</p>
+                    <ul className="space-y-0.5 pl-4 text-sm">
+                      {persona.jobsToBeDone.map((job, j) => <li key={j} className="list-disc">{job}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {persona.triggers && (
+                  <div>
+                    <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Triggers de Uso</p>
+                    <p className="text-sm">{persona.triggers}</p>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          {uxPlanApproved && <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Aprovado</span>}
         </div>
+      )}
 
-        {uxPlanParsed ? (
-          <>
-            {uxPlanParsed.personas && uxPlanParsed.personas.length > 0 && (
-              <div className="mt-4">
-                <h4 className="mb-3 font-medium">Personas</h4>
-                <div className="space-y-3">
-                  {uxPlanParsed.personas.map((persona, i) => (
-                    <div key={i} className="rounded-lg bg-muted/50 p-3">
-                      <p className="font-medium">{persona.name}</p>
-                      {persona.role && <p className="text-xs text-muted-foreground">{persona.role}</p>}
-                      {persona.goals && persona.goals.length > 0 && (
-                        <ul className="mt-2 space-y-1">
-                          {persona.goals.map((goal, j) => <li key={j} className="text-xs text-muted-foreground">• {goal}</li>)}
-                        </ul>
-                      )}
+      {/* 2. Arquitetura de Informação */}
+      {uxPlanParsed.informationArchitecture && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🗂️ Arquitetura de Informação</h3>
+          {uxPlanParsed.informationArchitecture.sitemap && (
+            <div className="mb-4">
+              <p className="mb-2 text-sm font-semibold">Sitemap</p>
+              <pre className="overflow-x-auto rounded-lg bg-muted/50 p-4 font-mono text-xs leading-relaxed">
+                {uxPlanParsed.informationArchitecture.sitemap.replace(/\\n/g, '\n')}
+              </pre>
+            </div>
+          )}
+          {uxPlanParsed.informationArchitecture.navigation && uxPlanParsed.informationArchitecture.navigation.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-semibold">Navegação Principal</p>
+              <div className="space-y-2">
+                {uxPlanParsed.informationArchitecture.navigation.map((nav, i) => (
+                  <div key={i} className="rounded-lg bg-muted/50 p-3">
+                    <p className="text-sm font-semibold">{nav.name}</p>
+                    <p className="text-xs text-muted-foreground">{nav.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 3. Jornadas do Usuário */}
+      {uxPlanParsed.journeys && uxPlanParsed.journeys.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🗺️ Jornadas do Usuário</h3>
+          <div className="space-y-6">
+            {uxPlanParsed.journeys.map((journey, i) => (
+              <div key={i}>
+                <div className="mb-3 rounded-lg bg-blue-50 p-3 text-sm font-semibold dark:bg-blue-950">
+                  {journey.name}{journey.persona && ` (${journey.persona})`}
+                </div>
+                <div className="space-y-2">
+                  {journey.steps.map((step, j) => (
+                    <div key={j} className="flex items-start gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                        {j + 1}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold">{step.title}</p>
+                        <p className="text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+                        {step.emotion && <p className="mt-1 text-xs text-green-600">{step.emotion}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Wireframes */}
+      {uxPlanParsed.wireframes && uxPlanParsed.wireframes.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">📐 Wireframes e Fluxos</h3>
+          <div className="space-y-3">
+            {uxPlanParsed.wireframes.map((wf, i) => (
+              <div key={i} className="rounded-lg bg-muted/50 p-3">
+                <p className="font-semibold">{wf.name}</p>
+                <p className="text-sm text-muted-foreground">{wf.description}</p>
+                {wf.layout && <p className="mt-1 text-xs text-gray-500">{wf.layout}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. Biblioteca de Componentes */}
+      {uxPlanParsed.componentLibrary && uxPlanParsed.componentLibrary.length > 0 && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🧩 Biblioteca de Componentes</h3>
+          <div className="space-y-4">
+            {uxPlanParsed.componentLibrary.map((group, i) => (
+              <div key={i}>
+                <p className="mb-2 text-sm font-semibold">{group.name}</p>
+                <div className="space-y-2 rounded-lg bg-muted/50 p-3">
+                  {group.variants.map((variant, j) => (
+                    <div key={j} className="flex items-center gap-3">
+                      <span className="rounded-md bg-background px-2 py-1 text-xs font-medium">{variant.name}</span>
+                      <span className="text-xs text-muted-foreground">{variant.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 6. Acessibilidade */}
+      {uxPlanParsed.accessibility && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">♿ Acessibilidade (WCAG 2.1 AA)</h3>
+          <div className="space-y-4">
+            {uxPlanParsed.accessibility.colorContrast && uxPlanParsed.accessibility.colorContrast.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Contraste de Cores</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.accessibility.colorContrast.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.accessibility.keyboard && uxPlanParsed.accessibility.keyboard.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Navegação por Teclado</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.accessibility.keyboard.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.accessibility.semantics && uxPlanParsed.accessibility.semantics.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Semântica HTML</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.accessibility.semantics.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.accessibility.aria && uxPlanParsed.accessibility.aria.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">ARIA Labels</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.accessibility.aria.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.accessibility.screenReaders && uxPlanParsed.accessibility.screenReaders.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Leitores de Tela</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.accessibility.screenReaders.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 7. Estados de UI */}
+      {uxPlanParsed.uiStates && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🎭 Estados de UI</h3>
+          <div className="space-y-4">
+            {uxPlanParsed.uiStates.loading && uxPlanParsed.uiStates.loading.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Loading States</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.uiStates.loading.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.uiStates.error && uxPlanParsed.uiStates.error.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Error States</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.uiStates.error.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+            {uxPlanParsed.uiStates.empty && uxPlanParsed.uiStates.empty.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Empty States</p>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {uxPlanParsed.uiStates.empty.map((item, i) => <li key={i}>• {item}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 8. Design Tokens */}
+      {uxPlanParsed.designTokens && (
+        <div className="rounded-xl border bg-card p-6">
+          <h3 className="mb-4 text-lg font-semibold">🎨 Design Tokens</h3>
+          <div className="space-y-4">
+            {uxPlanParsed.designTokens.colors && Object.keys(uxPlanParsed.designTokens.colors).length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Paleta de Cores</p>
+                <div className="flex flex-wrap gap-3">
+                  {Object.entries(uxPlanParsed.designTokens.colors).map(([name, value]) => (
+                    <div key={name} className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
+                      <div className="h-6 w-6 rounded-md border"
+                        style={{ backgroundColor: isValidHexColor(value) ? value : undefined }} />
+                      <div>
+                        <p className="text-xs font-semibold capitalize">{name}</p>
+                        <p className="text-xs text-muted-foreground">{value}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-
-            {uxPlanParsed.designTokens && (
-              <div className="mt-4">
-                <h4 className="mb-3 font-medium">Design Tokens</h4>
-                <div className="rounded-lg bg-muted/50 p-3">
-                  {uxPlanParsed.designTokens.colors?.primary && (
-                    <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 rounded"
-                        style={{ backgroundColor: isValidHexColor(uxPlanParsed.designTokens.colors.primary) ? uxPlanParsed.designTokens.colors.primary : undefined }} />
-                      <p className="text-xs text-muted-foreground">Primary: {uxPlanParsed.designTokens.colors.primary}</p>
+            {uxPlanParsed.designTokens.typography && uxPlanParsed.designTokens.typography.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Tipografia</p>
+                <div className="space-y-1">
+                  {uxPlanParsed.designTokens.typography.map((typo, i) => (
+                    <div key={i} className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2 text-sm">
+                      <span className="w-20 font-semibold">{typo.name}</span>
+                      <span className="text-muted-foreground">{typo.font}</span>
                     </div>
-                  )}
-                  {uxPlanParsed.designTokens.typography?.fontFamily && (
-                    <p className="text-xs text-muted-foreground">Font: {uxPlanParsed.designTokens.typography.fontFamily}</p>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
-
-            {!uxPlanApproved && (
-              <div className="mt-4 flex justify-end gap-3">
-                <button onClick={onApprove} disabled={isApproving}
-                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
-                  Aprovar e Continuar
-                </button>
+            {uxPlanParsed.designTokens.spacing && uxPlanParsed.designTokens.spacing.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Espaçamento</p>
+                <div className="flex flex-wrap gap-2">
+                  {uxPlanParsed.designTokens.spacing.map((sp, i) => (
+                    <div key={i} className="rounded-lg bg-muted/50 px-3 py-1 text-xs">
+                      <span className="font-semibold">{sp.name}:</span> <span className="text-muted-foreground">{sp.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-          </>
-        ) : (
-          <div className="mt-4 rounded-lg bg-muted/50 p-4 text-center text-sm text-muted-foreground">Aguardando geração do plano...</div>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
+
+      {/* Botões de ação */}
+      {!uxPlanApproved && (
+        <div className="flex justify-end gap-3">
+          <button onClick={onApprove} disabled={isApproving}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+            Aprovar e Continuar
+          </button>
+        </div>
+      )}
     </>
   )
 }

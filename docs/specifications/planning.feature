@@ -126,7 +126,7 @@ Funcionalidade: Fase de Planejamento
   Cenário: Botões de ação no Technical Plan (não aprovado)
     Dado que estou visualizando o Technical Plan
     E o Technical Plan ainda NÃO foi aprovado
-    Então vejo o botão "Editar Stack"
+    Então vejo o botão "Editar Plano"
     E vejo o botão "Aprovar e Continuar"
 
   # ==========================================================================
@@ -134,13 +134,14 @@ Funcionalidade: Fase de Planejamento
   # ==========================================================================
 
   @technical-plan @edicao
-  Cenário: Editar stack de tecnologia
+  Cenário: Editar plano técnico
     Dado que estou visualizando o Technical Plan
-    Quando clico em "Editar Stack"
+    Quando clico em "Editar Plano"
     Então vejo opções para selecionar tecnologias
     E posso trocar o database
     E posso adicionar ferramentas extras
     E vejo o botão "Salvar Alterações"
+    E vejo o botão "Cancelar"
 
   # ==========================================================================
   # TECHNICAL PLAN - Aprovação
@@ -161,7 +162,7 @@ Funcionalidade: Fase de Planejamento
     Dado que o Technical Plan foi aprovado
     Quando navego para "Plano Técnico" na sidebar
     Então vejo o badge "Aprovado" no cabeçalho
-    E NÃO vejo o botão "Editar Stack"
+    E NÃO vejo o botão "Editar Plano"
 
   # ==========================================================================
   # UX PLAN - Visualização
