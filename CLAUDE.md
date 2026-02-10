@@ -48,6 +48,9 @@ Se o Gherkin diz que o botao mostra `📱 App de gestão`, deve existir um teste
 **Regra 5 — Uma tarefa por vez.**
 Nao abrir PR B enquanto PR A nao esta mergado, a menos que sejam verdadeiramente independentes. Isso reduz branches ativos e evita merge conflicts e confusao de contexto.
 
+**Regra 6 — Todo texto visível ao utilizador deve estar em português brasileiro com acentuação correta.**
+Nunca gerar texto em português sem acentos (ex: "Nao" em vez de "Não", "voce" em vez de "você"). Isso inclui: conteúdo HTML, strings de UI, mensagens de chat, labels, placeholders, títulos e botões. Nomes de arquivos, classes CSS, variáveis JS e URLs podem permanecer sem acentos (ASCII-safe).
+
 ## Fluxo de PR (OBRIGATORIO)
 
 1. Criar branch e fazer commits

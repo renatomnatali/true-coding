@@ -13,20 +13,43 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
     E o projeto está no status "CONNECTING"
 
   # ==========================================================================
-  # SUB-ESTADO: github — OAuth não realizado
+  # SUB-ESTADO: github — Checkpoint (triagem pré-OAuth)
   # githubRepoUrl === null
   # ==========================================================================
 
-  @github @oauth @visualizacao
-  Cenário: Visualizar tela de conexão GitHub (estado inicial)
+  @github @checkpoint @visualizacao
+  Cenário: Exibir checkpoint "Você já tem GitHub?" (estado inicial)
     Dado que o projeto não tem githubRepoUrl
     Quando eu acesso a página do projeto
-    Então o workspace exibe a tela "Conectar com GitHub"
-    E vejo o icone do GitHub grande no centro
-    E vejo texto explicativo sobre as permissões necessárias
-    E vejo a lista de permissões: repositórios, usuário, email
+    Então o workspace exibe o checkpoint "Hora de guardar seu código"
+    E vejo texto "Você já tem uma conta no GitHub?"
+    E vejo botão "Sim, já tenho" com ícone GitHub
+    E vejo botão "Ainda não tenho" com ícone de criação
+    E vejo detalhes expansíveis "O que é GitHub?"
+
+  @github @checkpoint @caminho-sim
+  Cenário: Clicar "Sim, já tenho" avança para OAuth
+    Dado que estou no checkpoint de GitHub
+    Quando clico em "Sim, já tenho"
+    Então o workspace exibe a tela de OAuth "Conectar com GitHub"
+    E vejo a lista de permissões simplificada
     E vejo o botão "Conectar com GitHub"
-    E vejo o tip box com dica sobre OAuth
+
+  @github @checkpoint @caminho-nao
+  Cenário: Clicar "Ainda não tenho" mostra tutorial
+    Dado que estou no checkpoint de GitHub
+    Quando clico em "Ainda não tenho"
+    Então o workspace exibe a tela "Criar sua conta no GitHub"
+    E vejo 3 passos numerados para criar conta
+    E vejo o botão "Abrir GitHub (nova aba)"
+    E vejo o botão "Já criei minha conta, continuar"
+    E vejo dica sobre o plano gratuito
+
+  @github @checkpoint @tutorial-continuar
+  Cenário: Após criar conta, avançar para OAuth
+    Dado que estou na tela "Criar sua conta no GitHub"
+    Quando clico em "Já criei minha conta, continuar"
+    Então o workspace exibe a tela de OAuth "Conectar com GitHub"
 
   @github @oauth @navegacao
   Cenário: Sidebar mostra estado correto na fase Conexão
@@ -37,12 +60,20 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
     E vejo "Fase 3/6" no indicador de jornada
 
   # ==========================================================================
-  # SUB-ESTADO: github — Fluxo OAuth
+  # SUB-ESTADO: github — Fluxo OAuth (após checkpoint)
   # ==========================================================================
+
+  @github @oauth @visualizacao
+  Cenário: Visualizar tela de OAuth após checkpoint
+    Dado que passei pelo checkpoint clicando "Sim, já tenho"
+    Então o workspace exibe a tela "Conectar com GitHub"
+    E vejo a lista de permissões: criar repositório, ver perfil, verificar email
+    E vejo o botão "Conectar com GitHub"
+    E vejo nota "Você será redirecionado para github.com e voltará automaticamente."
 
   @github @oauth @fluxo
   Cenário: Iniciar fluxo OAuth do GitHub
-    Dado que estou na tela de conexão GitHub
+    Dado que estou na tela de OAuth "Conectar com GitHub"
     Quando clico em "Conectar com GitHub"
     Então o sistema salva o projectId em cookie "github_oauth_project_id"
     E redireciona para a URL de autorização do GitHub

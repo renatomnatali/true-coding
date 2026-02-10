@@ -733,7 +733,7 @@ function TechnicalPlanView({
               <div key={i}>
                 <p className="mb-2 text-xs font-semibold uppercase text-gray-500">{cat.name}</p>
                 <div className="flex flex-wrap gap-2">
-                  {cat.technologies.map((tech, j) => (
+                  {cat.technologies?.map((tech, j) => (
                     <span key={j} className="rounded-md bg-muted px-2 py-1 text-sm">{tech}</span>
                   ))}
                 </div>
@@ -792,7 +792,7 @@ function TechnicalPlanView({
               <div key={i}>
                 <p className="mb-2 text-xs font-semibold uppercase text-gray-500">{group.category}</p>
                 <div className="space-y-2">
-                  {group.endpoints.map((ep, j) => (
+                  {group.endpoints?.map((ep, j) => (
                     <div key={j} className="rounded-lg bg-muted/50 p-3 font-mono text-xs">
                       <div className="flex items-center gap-2">
                         <MethodBadge method={ep.method} />
@@ -822,7 +822,7 @@ function TechnicalPlanView({
                 <div key={i} className="rounded-lg bg-muted/50 p-3">
                   <p className="mb-2 font-semibold"><code className="rounded bg-black/10 px-1 py-0.5">{channel.name}</code></p>
                   <ul className="space-y-1 pl-4 text-xs text-muted-foreground">
-                    {channel.events.map((ev, j) => (
+                    {channel.events?.map((ev, j) => (
                       <li key={j}><code>{ev.name}</code> - {ev.description}</li>
                     ))}
                   </ul>
