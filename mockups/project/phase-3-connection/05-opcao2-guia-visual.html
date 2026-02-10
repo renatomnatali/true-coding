@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia Visual - Conexão GitHub | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <style>
+    /* Stepper */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-8);
+      padding: var(--space-4) 0;
+    }
+
+    .stepper-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100px;
+    }
+
+    .stepper-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--border-radius-full);
+      border: 2px solid var(--color-gray-300);
+      color: var(--color-gray-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      transition: all var(--transition-normal);
+    }
+
+    .stepper-item.active .stepper-circle {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .stepper-item.completed .stepper-circle {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: white;
+    }
+
+    .stepper-label {
+      font-size: 12px;
+      margin-top: 4px;
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-weight-medium);
+      transition: color var(--transition-normal);
+    }
+
+    .stepper-item.active .stepper-label {
+      color: var(--color-primary);
+    }
+
+    .stepper-item.completed .stepper-label {
+      color: var(--color-success);
+    }
+
+    .stepper-line {
+      flex: 1;
+      height: 2px;
+      background: var(--color-gray-300);
+      margin: 0 var(--space-2);
+      margin-bottom: 20px;
+      transition: background var(--transition-normal);
+    }
+
+    .stepper-line.completed {
+      background: var(--color-success);
+    }
+
+    /* Pipeline Diagram */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: var(--space-6) 0;
+      flex-wrap: wrap;
+    }
+
+    .pipeline-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-bg-primary);
+      border: 2px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      min-width: 120px;
+      transition: all var(--transition-fast);
+    }
+
+    .pipeline-node:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pipeline-node-icon {
+      font-size: 28px;
+    }
+
+    .pipeline-node-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .pipeline-arrow {
+      font-size: 24px;
+      color: var(--color-gray-400);
+      margin: 0 var(--space-2);
+    }
+
+    /* Step content area */
+    .step-content {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Info list */
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .info-list li + li {
+      border-top: 1px solid var(--color-gray-100);
+    }
+
+    .info-list-number {
+      width: 24px;
+      height: 24px;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border-radius: var(--border-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    /* Button group */
+    .btn-group {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+    }
+
+    .btn-group .btn {
+      flex: 1;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* Tutorial cards */
+    .tutorial-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-4);
+    }
+
+    .tutorial-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .tutorial-badge {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: var(--border-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .tutorial-card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .tutorial-card-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-3);
+    }
+
+    .tutorial-illustration {
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+      min-height: 80px;
+    }
+
+    /* GitHub homepage mockup */
+    .gh-mockup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-gray-800);
+      border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+    }
+
+    .gh-mockup-logo {
+      color: white;
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-sm);
+    }
+
+    .gh-mockup-signup {
+      background: var(--color-success);
+      color: white;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      border: 2px solid #fbbf24;
+      animation: pulseHighlight 2s infinite;
+    }
+
+    @keyframes pulseHighlight {
+      0%, 100% { border-color: #fbbf24; box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+      50% { border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1); }
+    }
+
+    .gh-mockup-body {
+      background: var(--color-gray-100);
+      padding: var(--space-6);
+      border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+      text-align: center;
+    }
+
+    .gh-mockup-body-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-400);
+    }
+
+    /* Form mockup */
+    .form-mockup {
+      background: white;
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+    }
+
+    .form-mockup-field {
+      background: var(--color-gray-100);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--border-radius-sm);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-400);
+    }
+
+    /* Email mockup */
+    .email-mockup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .email-icon {
+      font-size: 36px;
+    }
+
+    .email-mockup-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+
+    /* Divider */
+    .divider-text {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin: var(--space-4) 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+
+    .divider-text::before,
+    .divider-text::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* Tip box */
+    .tip-box {
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary-light);
+      border-radius: var(--border-radius-md);
+      border-left: 3px solid var(--color-primary);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-top: var(--space-4);
+    }
+
+    /* OAuth Preview */
+    .oauth-preview {
+      background: var(--color-gray-100);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-8) var(--space-6);
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-5);
+      position: relative;
+    }
+
+    .oauth-card {
+      background: white;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-6);
+      width: 340px;
+      text-align: center;
+    }
+
+    .oauth-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: var(--font-weight-bold);
+      font-size: var(--font-size-lg);
+      margin: 0 auto var(--space-4);
+    }
+
+    .oauth-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .oauth-perms {
+      text-align: left;
+      margin-bottom: var(--space-5);
+    }
+
+    .oauth-perm {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .oauth-perm-check {
+      color: var(--color-success);
+      font-weight: bold;
+    }
+
+    .oauth-authorize-btn {
+      display: block;
+      width: 100%;
+      padding: var(--space-3);
+      background: var(--color-success);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: default;
+    }
+
+    .oauth-annotation {
+      position: absolute;
+      right: var(--space-4);
+      bottom: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--color-error);
+      color: white;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--border-radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      white-space: nowrap;
+    }
+
+    .oauth-annotation::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--color-error);
+      flex-shrink: 0;
+    }
+
+    /* Permissions detail card */
+    .perm-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-4);
+    }
+
+    .perm-card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .perm-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .perm-item + .perm-item {
+      border-top: 1px solid var(--color-gray-100);
+    }
+
+    .perm-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Security card */
+    .security-card {
+      background: var(--color-success-light);
+      border: 1px solid var(--color-success);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-5);
+    }
+
+    .security-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .security-card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .security-card-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Note text */
+    .note-text {
+      text-align: center;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-3);
+    }
+
+    /* Checklist (step 4) */
+    .setup-checklist {
+      max-width: 480px;
+      margin: var(--space-8) auto 0;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-gray-100);
+      opacity: 0;
+      transform: translateY(8px);
+      animation: checklistFadeIn 0.4s ease forwards;
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-item:nth-child(1) { animation-delay: 0s; }
+    .checklist-item:nth-child(2) { animation-delay: 1s; }
+    .checklist-item:nth-child(3) { animation-delay: 2s; }
+    .checklist-item:nth-child(4) { animation-delay: 3s; }
+    .checklist-item:nth-child(5) { animation-delay: 3.5s; }
+
+    @keyframes checklistFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .checklist-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--border-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .checklist-icon.done {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .checklist-icon.loading {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      animation: spin 1s linear infinite;
+    }
+
+    .checklist-icon.pending {
+      background: var(--color-gray-100);
+      color: var(--color-gray-400);
+    }
+
+    .checklist-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+    }
+
+    .checklist-text.pending {
+      color: var(--color-text-tertiary);
+    }
+
+    /* Success icon (step 5) */
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--color-success-light);
+      color: var(--color-success);
+      border-radius: var(--border-radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto var(--space-4);
+    }
+
+    /* Repo details card */
+    .repo-card {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-4);
+    }
+
+    .repo-detail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-sm);
+    }
+
+    .repo-detail + .repo-detail {
+      border-top: 1px solid var(--color-gray-100);
+    }
+
+    .repo-detail-label {
+      color: var(--color-text-tertiary);
+    }
+
+    .repo-detail-value {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .copy-btn {
+      padding: var(--space-1) var(--space-2);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .copy-btn:hover {
+      background: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    /* Next step card */
+    .next-step-card {
+      background: var(--color-primary-light);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-5);
+    }
+
+    .next-step-card p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin: 0;
+    }
+
+    .next-step-card-header {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Chat message groups */
+    .chat-group {
+      display: none;
+    }
+
+    .chat-group.visible {
+      display: contents;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">&larr; Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 3/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Ideação</span></div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Planejamento</span></div>
+          <a href="#" class="nav-item in-progress"><span class="phase-icon"></span><span>Conexão</span></a>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Geração</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Deploy</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Online</span></div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <section class="workspace">
+
+        <!-- ============================================================ -->
+        <!-- STEP 1: Boas-vindas                                          -->
+        <!-- ============================================================ -->
+        <div class="step" id="step-1">
+          <div class="stepper" id="stepper-step-1">
+            <div class="stepper-item active">
+              <div class="stepper-circle">1</div>
+              <div class="stepper-label">Preparar</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item">
+              <div class="stepper-circle">2</div>
+              <div class="stepper-label">Conectar</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item">
+              <div class="stepper-circle">3</div>
+              <div class="stepper-label">Pronto</div>
+            </div>
+          </div>
+
+          <div class="step-content">
+            <div class="workspace-header" style="text-align: center;">
+              <h2 class="workspace-title">Vamos colocar seu projeto no ar</h2>
+              <p class="workspace-subtitle">São 3 passos rápidos para conectar tudo. Você vai precisar de uma conta no GitHub.</p>
+            </div>
+
+            <!-- Pipeline Diagram -->
+            <div class="pipeline">
+              <div class="pipeline-node">
+                <div class="pipeline-node-icon">TC</div>
+                <div class="pipeline-node-label">True Coding</div>
+              </div>
+              <div class="pipeline-arrow">&rarr;</div>
+              <div class="pipeline-node">
+                <div class="pipeline-node-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </div>
+                <div class="pipeline-node-label">GitHub</div>
+              </div>
+              <div class="pipeline-arrow">&rarr;</div>
+              <div class="pipeline-node">
+                <div class="pipeline-node-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M24 22.525H0l12-21.05 12 21.05z"/></svg>
+                </div>
+                <div class="pipeline-node-label">Vercel</div>
+              </div>
+              <div class="pipeline-arrow">&rarr;</div>
+              <div class="pipeline-node">
+                <div class="pipeline-node-icon">&#127760;</div>
+                <div class="pipeline-node-label">Seu App Online</div>
+              </div>
+            </div>
+
+            <!-- What will happen card -->
+            <div style="background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: var(--space-5); margin-bottom: var(--space-6);">
+              <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); color: var(--color-text-primary); margin-bottom: var(--space-3);">
+                O que vai acontecer?
+              </div>
+              <ul class="info-list">
+                <li>
+                  <span class="info-list-number">1</span>
+                  <span>Você conecta sua conta do GitHub (como um login)</span>
+                </li>
+                <li>
+                  <span class="info-list-number">2</span>
+                  <span>Criamos um repositório privado para guardar o código do <strong>Meu App Delivery</strong></span>
+                </li>
+                <li>
+                  <span class="info-list-number">3</span>
+                  <span>Conectamos ao Vercel para publicar seu app automaticamente</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Question -->
+            <div style="text-align: center; margin-bottom: var(--space-4);">
+              <p style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">
+                Você já tem uma conta no GitHub?
+              </p>
+            </div>
+
+            <div class="btn-group" style="max-width: 400px; margin: 0 auto;">
+              <button class="btn btn-primary btn-lg" onclick="showStep(3)">Sim, vamos lá</button>
+              <button class="btn btn-secondary btn-lg" onclick="showStep(2)">Não tenho, me ajude</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- STEP 2: Tutorial Criar Conta                                 -->
+        <!-- ============================================================ -->
+        <div class="step" id="step-2" style="display: none;">
+          <div class="stepper" id="stepper-step-2">
+            <div class="stepper-item active">
+              <div class="stepper-circle">1</div>
+              <div class="stepper-label">Preparar</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item">
+              <div class="stepper-circle">2</div>
+              <div class="stepper-label">Conectar</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item">
+              <div class="stepper-circle">3</div>
+              <div class="stepper-label">Pronto</div>
+            </div>
+          </div>
+
+          <div class="step-content">
+            <div class="workspace-header" style="text-align: center;">
+              <h2 class="workspace-title">Criar conta no GitHub</h2>
+              <p class="workspace-subtitle">Vamos te guiar passo a passo. Leva menos de 2 minutos.</p>
+            </div>
+
+            <!-- Tutorial Card 1 -->
+            <div class="tutorial-card">
+              <div class="tutorial-card-header">
+                <div class="tutorial-badge">1</div>
+                <div class="tutorial-card-title">Acesse github.com</div>
+              </div>
+              <div class="tutorial-card-desc">
+                Clique no botão verde <strong>Sign up</strong> no canto superior direito da página.
+              </div>
+              <div class="tutorial-illustration">
+                <div class="gh-mockup-header">
+                  <span class="gh-mockup-logo">GitHub</span>
+                  <span class="gh-mockup-signup">Sign up</span>
+                </div>
+                <div class="gh-mockup-body">
+                  <div class="gh-mockup-body-text">Build and ship software on a single, collaborative platform</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tutorial Card 2 -->
+            <div class="tutorial-card">
+              <div class="tutorial-card-header">
+                <div class="tutorial-badge">2</div>
+                <div class="tutorial-card-title">Preencha seus dados</div>
+              </div>
+              <div class="tutorial-card-desc">
+                Informe seu <strong>email</strong>, crie uma <strong>senha</strong> e escolha um <strong>nome de usuário</strong>. Na opção de plano, selecione <strong>Free</strong> (gratuito).
+              </div>
+              <div class="tutorial-illustration">
+                <div class="form-mockup">
+                  <div class="form-mockup-field">Enter your email</div>
+                  <div class="form-mockup-field">Create a password</div>
+                  <div class="form-mockup-field">Enter a username</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tutorial Card 3 -->
+            <div class="tutorial-card">
+              <div class="tutorial-card-header">
+                <div class="tutorial-badge">3</div>
+                <div class="tutorial-card-title">Confirme seu email</div>
+              </div>
+              <div class="tutorial-card-desc">
+                O GitHub vai enviar um <strong>código de verificação</strong> para o email que você informou. Abra seu email, copie o código e cole no GitHub.
+              </div>
+              <div class="tutorial-illustration">
+                <div class="email-mockup">
+                  <div class="email-icon">&#9993;&#65039;</div>
+                  <div>
+                    <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">Verifique sua caixa de entrada</div>
+                    <div class="email-mockup-text">Copie o código de 6 dígitos e cole no GitHub</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <a href="https://github.com/signup" target="_blank" class="btn btn-primary btn-lg btn-full" style="text-align: center;">
+              Abrir GitHub para criar conta
+            </a>
+
+            <div class="divider-text">ou</div>
+
+            <button class="btn btn-secondary btn-lg btn-full" onclick="showStep(3)">
+              Já criei minha conta
+            </button>
+
+            <div class="tip-box">
+              <strong>Dica:</strong> Use o mesmo email que você usa no True Coding. Fica mais fácil de gerenciar.
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- STEP 3: Preview OAuth                                        -->
+        <!-- ============================================================ -->
+        <div class="step" id="step-3" style="display: none;">
+          <div class="stepper" id="stepper-step-3">
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Preparar</div>
+            </div>
+            <div class="stepper-line completed"></div>
+            <div class="stepper-item active">
+              <div class="stepper-circle">2</div>
+              <div class="stepper-label">Conectar</div>
+            </div>
+            <div class="stepper-line"></div>
+            <div class="stepper-item">
+              <div class="stepper-circle">3</div>
+              <div class="stepper-label">Pronto</div>
+            </div>
+          </div>
+
+          <div class="step-content">
+            <div class="workspace-header" style="text-align: center;">
+              <h2 class="workspace-title">Autorizar acesso ao GitHub</h2>
+              <p class="workspace-subtitle">Quando você clicar no botão abaixo, verá uma tela parecida com esta:</p>
+            </div>
+
+            <!-- OAuth Preview Mockup -->
+            <div class="oauth-preview">
+              <div class="oauth-card">
+                <div class="oauth-logo">TC</div>
+                <div class="oauth-title">True Coding wants to access your<br><strong>renatomnatali</strong> account</div>
+                <div class="oauth-perms">
+                  <div class="oauth-perm"><span class="oauth-perm-check">&#10003;</span> Public and private repositories</div>
+                  <div class="oauth-perm"><span class="oauth-perm-check">&#10003;</span> Read user profile data</div>
+                  <div class="oauth-perm"><span class="oauth-perm-check">&#10003;</span> Read user email addresses</div>
+                </div>
+                <button class="oauth-authorize-btn">Authorize True Coding</button>
+              </div>
+              <div class="oauth-annotation">
+                Clique em 'Authorize' (botão verde) para autorizar
+              </div>
+            </div>
+
+            <!-- Permissions Card -->
+            <div class="perm-card">
+              <div class="perm-card-title">O que estamos pedindo:</div>
+              <div class="perm-item">
+                <span class="perm-icon">&#128230;</span>
+                <span><strong>Criar repositório</strong> &mdash; Vamos criar um repositório privado chamado <strong>meu-app-delivery</strong></span>
+              </div>
+              <div class="perm-item">
+                <span class="perm-icon">&#128100;</span>
+                <span><strong>Ver seu perfil</strong> &mdash; Apenas para identificar seu nome de usuário</span>
+              </div>
+              <div class="perm-item">
+                <span class="perm-icon">&#9993;</span>
+                <span><strong>Verificar email</strong> &mdash; Para configurar os commits com seu nome</span>
+              </div>
+            </div>
+
+            <!-- Security Card -->
+            <div class="security-card">
+              <div class="security-card-header">
+                <span>&#128272;</span>
+                <span class="security-card-title">Seus dados estão seguros</span>
+              </div>
+              <div class="security-card-text">
+                Não acessamos seus repositórios existentes. Não modificamos nada na sua conta. Você pode revogar o acesso a qualquer momento em github.com &gt; Settings &gt; Applications.
+              </div>
+            </div>
+
+            <!-- Connect Button -->
+            <button class="btn btn-primary btn-lg btn-full" onclick="showStep(4)">
+              Conectar com GitHub
+            </button>
+
+            <p class="note-text">
+              Você será redirecionado para github.com e voltará automaticamente após autorizar.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- STEP 4: Criando Repositório                                  -->
+        <!-- ============================================================ -->
+        <div class="step" id="step-4" style="display: none;">
+          <div class="stepper" id="stepper-step-4">
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Preparar</div>
+            </div>
+            <div class="stepper-line completed"></div>
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Conectar</div>
+            </div>
+            <div class="stepper-line completed"></div>
+            <div class="stepper-item active">
+              <div class="stepper-circle">3</div>
+              <div class="stepper-label">Pronto</div>
+            </div>
+          </div>
+
+          <div class="step-content" style="text-align: center;">
+            <div class="workspace-header">
+              <h2 class="workspace-title">Configurando seu repositório...</h2>
+            </div>
+
+            <div class="setup-checklist">
+              <div class="checklist-item">
+                <div class="checklist-icon done">&#10003;</div>
+                <div class="checklist-text">Conta GitHub verificada</div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-icon done">&#10003;</div>
+                <div class="checklist-text">Permissões confirmadas</div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-icon loading">&#8635;</div>
+                <div class="checklist-text">Criando repositório <strong>meu-app-delivery</strong>...</div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-icon pending">&#9675;</div>
+                <div class="checklist-text pending">Configurando branch principal</div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-icon pending">&#9675;</div>
+                <div class="checklist-text pending">Adicionando arquivos iniciais</div>
+              </div>
+            </div>
+
+            <p class="note-text" style="margin-top: var(--space-6);">
+              Isso leva alguns segundos. Não feche esta página.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- STEP 5: Repositório Criado                                   -->
+        <!-- ============================================================ -->
+        <div class="step" id="step-5" style="display: none;">
+          <div class="stepper" id="stepper-step-5">
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Preparar</div>
+            </div>
+            <div class="stepper-line completed"></div>
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Conectar</div>
+            </div>
+            <div class="stepper-line completed"></div>
+            <div class="stepper-item completed">
+              <div class="stepper-circle">&#10003;</div>
+              <div class="stepper-label">Pronto</div>
+            </div>
+          </div>
+
+          <div class="step-content" style="text-align: center;">
+            <div class="success-icon">&#10003;</div>
+
+            <div class="workspace-header">
+              <h2 class="workspace-title">Repositório criado com sucesso!</h2>
+              <p class="workspace-subtitle">Seu código já tem um lar. Agora vamos conectar o deploy.</p>
+            </div>
+
+            <!-- Repo details -->
+            <div class="repo-card" style="text-align: left;">
+              <div class="repo-detail">
+                <span class="repo-detail-label">URL</span>
+                <span class="repo-detail-value">
+                  github.com/renatomnatali/meu-app-delivery
+                  <button class="copy-btn" onclick="navigator.clipboard.writeText('https://github.com/renatomnatali/meu-app-delivery')">Copiar</button>
+                </span>
+              </div>
+              <div class="repo-detail">
+                <span class="repo-detail-label">Visibilidade</span>
+                <span class="repo-detail-value">Privado &#128274;</span>
+              </div>
+              <div class="repo-detail">
+                <span class="repo-detail-label">Branch</span>
+                <span class="repo-detail-value">main</span>
+              </div>
+              <div class="repo-detail">
+                <span class="repo-detail-label">Arquivos</span>
+                <span class="repo-detail-value">README.md, .gitignore, package.json</span>
+              </div>
+            </div>
+
+            <!-- Next step card -->
+            <div class="next-step-card" style="text-align: left;">
+              <div class="next-step-card-header">Próximo passo</div>
+              <p>Agora vamos conectar o <strong>Vercel</strong> para que seu app fique disponível na internet automaticamente.</p>
+            </div>
+
+            <div class="btn-group" style="max-width: 480px; margin: 0 auto;">
+              <a href="https://github.com/renatomnatali/meu-app-delivery" target="_blank" class="btn btn-secondary btn-lg">Ver no GitHub</a>
+              <button class="btn btn-primary btn-lg" style="flex: 1;">Conectar Vercel &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- CHAT PANEL -->
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-row">
+            <div class="chat-title">Assistente</div>
+            <button class="collapse-btn">&#9664;</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <!-- Group: Steps 1-2 -->
+          <div class="chat-group visible" id="chat-group-1">
+            <div class="message">
+              <div class="message-avatar">AI</div>
+              <div class="message-content">
+                <div class="message-author">True Coding</div>
+                <div class="message-text">
+                  Vamos conectar seu <strong>GitHub</strong>! &#128279;
+                  <br><br>
+                  São 3 passos rápidos. Estou aqui se precisar de ajuda.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group: Step 3 -->
+          <div class="chat-group" id="chat-group-3">
+            <div class="message">
+              <div class="message-avatar">AI</div>
+              <div class="message-content">
+                <div class="message-author">True Coding</div>
+                <div class="message-text">
+                  Quando clicar em 'Conectar', você será levado ao GitHub por alguns segundos. É só clicar no botão verde 'Authorize' e vai voltar automaticamente pra cá. &#128077;
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group: Steps 4-5 -->
+          <div class="chat-group" id="chat-group-4">
+            <div class="message">
+              <div class="message-avatar">AI</div>
+              <div class="message-content">
+                <div class="message-author">True Coding</div>
+                <div class="message-text">
+                  Repositório criado! &#9989;
+                  <br><br>
+                  Seu código já tem um lar seguro no GitHub. Agora falta só o Vercel para publicar.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-replies" id="quick-replies">
+          <div class="quick-replies-label">DÚVIDAS COMUNS</div>
+          <div class="quick-replies-buttons" id="quick-replies-buttons">
+            <button class="quick-reply-btn">O que é GitHub?</button>
+            <button class="quick-reply-btn">É seguro?</button>
+            <button class="quick-reply-btn">Posso usar outra plataforma?</button>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea class="chat-input" placeholder="Tire suas dúvidas..." rows="1"></textarea>
+            <button class="send-button">Enviar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Bottom Badge -->
+  <div style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 8px; align-items: center;">
+    <a href="04-opcao1-checkpoint.html" style="padding: 6px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 12px; color: #4b5563; text-decoration: none;">Opção 1</a>
+    <span style="padding: 8px 16px; background: #2563eb; color: white; border-radius: 20px; font-size: 13px; font-weight: 600;">Opção 2: Guia Visual</span>
+    <a href="../../index.html" style="padding: 6px 12px; background: white; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 12px; color: #4b5563; text-decoration: none;">&larr; Hub</a>
+  </div>
+
+  <script>
+    var autoAdvanceTimer = null;
+
+    function showStep(n) {
+      // Hide all steps
+      document.querySelectorAll('.step').forEach(function(el) {
+        el.style.display = 'none';
+      });
+
+      // Show target step
+      var target = document.getElementById('step-' + n);
+      if (target) {
+        target.style.display = 'block';
+      }
+
+      // Update chat
+      updateChat(n);
+
+      // Clear any existing auto-advance timer
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
+
+      // Auto-advance from step 4 to step 5
+      if (n === 4) {
+        autoAdvanceTimer = setTimeout(function() {
+          showStep(5);
+        }, 4000);
+      }
+    }
+
+    function updateChat(step) {
+      // Chat group visibility
+      var group1 = document.getElementById('chat-group-1');
+      var group3 = document.getElementById('chat-group-3');
+      var group4 = document.getElementById('chat-group-4');
+
+      // Groups 1 is always visible
+      group1.classList.add('visible');
+
+      // Group 3 visible from step 3 onward
+      if (step >= 3) {
+        group3.classList.add('visible');
+      } else {
+        group3.classList.remove('visible');
+      }
+
+      // Group 4 visible from step 4 onward
+      if (step >= 4) {
+        group4.classList.add('visible');
+      } else {
+        group4.classList.remove('visible');
+      }
+
+      // Update quick replies based on step
+      var qrButtons = document.getElementById('quick-replies-buttons');
+      if (step <= 2) {
+        qrButtons.innerHTML =
+          '<button class="quick-reply-btn">O que é GitHub?</button>' +
+          '<button class="quick-reply-btn">É seguro?</button>' +
+          '<button class="quick-reply-btn">Posso usar outra plataforma?</button>';
+      } else if (step === 3) {
+        qrButtons.innerHTML =
+          '<button class="quick-reply-btn">O que é Authorize?</button>' +
+          '<button class="quick-reply-btn">É seguro autorizar?</button>' +
+          '<button class="quick-reply-btn">Quais permissões?</button>';
+      } else {
+        qrButtons.innerHTML =
+          '<button class="quick-reply-btn">Como vejo meu repositório?</button>' +
+          '<button class="quick-reply-btn">O que é Vercel?</button>' +
+          '<button class="quick-reply-btn">Posso editar o código?</button>';
+      }
+
+      // Scroll chat to bottom
+      var chatMessages = document.getElementById('chat-messages');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Initialize
+    showStep(1);
+  </script>
+</body>
+</html>

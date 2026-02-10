@@ -45,6 +45,7 @@ export function ConnectionPhase({
   const [isCreatingRepo, setIsCreatingRepo] = useState(false)
   const [isConnectingVercel, setIsConnectingVercel] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [checkpointStep, setCheckpointStep] = useState<'checkpoint' | 'create-account' | 'oauth'>('checkpoint')
 
   const subState = deriveSubState(githubRepoUrl, productionUrl)
 
@@ -89,7 +90,15 @@ export function ConnectionPhase({
 
   switch (subState) {
     case 'github':
-      return <GitHubOAuthView projectId={projectId} isCreatingRepo={isCreatingRepo} />
+      return (
+        <GitHubCheckpointFlow
+          projectId={projectId}
+          projectName={projectName}
+          isCreatingRepo={isCreatingRepo}
+          step={checkpointStep}
+          onStepChange={setCheckpointStep}
+        />
+      )
     case 'repo-created':
       return (
         <RepoCreatedView
@@ -131,53 +140,206 @@ export function ConnectionPhase({
 }
 
 // ---------------------------------------------------------------------------
+// Checkpoint Flow: triagem pré-OAuth
+// ---------------------------------------------------------------------------
+type CheckpointStep = 'checkpoint' | 'create-account' | 'oauth'
+
+function GitHubCheckpointFlow({
+  projectId,
+  projectName,
+  isCreatingRepo,
+  step,
+  onStepChange,
+}: {
+  projectId: string
+  projectName: string
+  isCreatingRepo: boolean
+  step: CheckpointStep
+  onStepChange: (step: CheckpointStep) => void
+}) {
+  switch (step) {
+    case 'checkpoint':
+      return (
+        <CheckpointView
+          projectName={projectName}
+          onHasAccount={() => onStepChange('oauth')}
+          onNoAccount={() => onStepChange('create-account')}
+        />
+      )
+    case 'create-account':
+      return <CreateAccountView onContinue={() => onStepChange('oauth')} />
+    case 'oauth':
+      return <GitHubOAuthView projectId={projectId} projectName={projectName} isCreatingRepo={isCreatingRepo} />
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tela Checkpoint: "Você já tem GitHub?"
+// ---------------------------------------------------------------------------
+function CheckpointView({
+  projectName,
+  onHasAccount,
+  onNoAccount,
+}: {
+  projectName: string
+  onHasAccount: () => void
+  onNoAccount: () => void
+}) {
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 p-8">
+      <div className="mx-auto max-w-lg">
+        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › Preparação</div>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">Hora de guardar seu código</h2>
+        <p className="mb-6 text-sm text-gray-600">
+          Precisamos conectar sua conta do GitHub para criar o repositório do projeto <strong>{projectName}</strong>.
+        </p>
+
+        <p className="mb-2 text-sm leading-relaxed text-gray-600">
+          O GitHub é como um cofre digital para o código do seu aplicativo. É lá que seu projeto vai morar.
+        </p>
+
+        <h3 className="mb-6 mt-8 text-xl font-semibold text-gray-900">
+          Você já tem uma conta no GitHub?
+        </h3>
+
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={onHasAccount}
+            className="flex flex-col items-center gap-3 rounded-xl border-2 border-gray-200 bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:border-blue-600 hover:shadow-md"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gray-900 text-white">
+              <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+            </div>
+            <span className="text-lg font-semibold text-gray-900">Sim, já tenho</span>
+            <span className="text-sm text-gray-500">Vamos conectar sua conta existente</span>
+          </button>
+
+          <button
+            onClick={onNoAccount}
+            className="flex flex-col items-center gap-3 rounded-xl border-2 border-gray-200 bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:border-blue-600 hover:shadow-md"
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+            </div>
+            <span className="text-lg font-semibold text-gray-900">Ainda não tenho</span>
+            <span className="text-sm text-gray-500">Vou te ajudar a criar uma conta</span>
+          </button>
+        </div>
+
+        <details className="mt-6 overflow-hidden rounded-lg border border-gray-200">
+          <summary className="cursor-pointer bg-gray-50 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100">
+            O que é GitHub?
+          </summary>
+          <div className="border-t border-gray-200 px-4 py-3 text-sm leading-relaxed text-gray-600">
+            GitHub é a maior plataforma do mundo para armazenar código de forma segura. Empresas como Microsoft, Google e Netflix usam. É gratuito para projetos pessoais.
+          </div>
+        </details>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Tela Criar Conta: tutorial 3 passos
+// ---------------------------------------------------------------------------
+function CreateAccountView({ onContinue }: { onContinue: () => void }) {
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 p-8">
+      <div className="mx-auto max-w-lg">
+        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › Criar Conta</div>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">Criar sua conta no GitHub</h2>
+        <p className="mb-6 text-sm text-gray-600">É rápido, leva menos de 2 minutos</p>
+
+        <div className="space-y-4">
+          <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">1</div>
+            <p className="text-sm text-gray-900">Acesse github.com e clique em <strong>Sign up</strong></p>
+          </div>
+          <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">2</div>
+            <p className="text-sm text-gray-900">Preencha email, senha e nome de usuário</p>
+          </div>
+          <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">3</div>
+            <p className="text-sm text-gray-900">Confirme seu email e volte aqui</p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3">
+          <a
+            href="https://github.com/signup"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Abrir GitHub (nova aba)
+          </a>
+          <button
+            onClick={onContinue}
+            className="w-full rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Já criei minha conta, continuar
+          </button>
+        </div>
+
+        <div className="mt-6 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4">
+          <p className="text-sm text-gray-900">
+            💡 <strong>Dica:</strong> Escolha o plano <strong>gratuito</strong> (Free). É tudo que você precisa.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Tela 01: GitHub OAuth CTA
 // ---------------------------------------------------------------------------
-function GitHubOAuthView({ projectId, isCreatingRepo }: { projectId: string; isCreatingRepo: boolean }) {
+function GitHubOAuthView({ projectId, projectName, isCreatingRepo }: { projectId: string; projectName: string; isCreatingRepo: boolean }) {
   const oauthUrl = `/api/auth/github?projectId=${encodeURIComponent(projectId)}`
 
   return (
     <div className="h-full overflow-y-auto bg-gray-50 p-8">
       <div className="mx-auto max-w-lg">
-        {/* GitHub icon */}
-        <div className="mb-6 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700">
-            <svg className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Title + description */}
+        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › GitHub</div>
         <h2 className="mb-2 text-center text-2xl font-bold text-gray-900">Conectar com GitHub</h2>
         <p className="mb-6 text-center text-sm text-gray-600">
-          Conecte sua conta do GitHub para criar um repositório e armazenar o código gerado pelo True Coding.
+          Vamos criar o repositório <strong>{projectName}</strong> automaticamente após a conexão.
         </p>
 
+        {/* GitHub icon */}
+        <div className="mb-6 flex justify-center">
+          <svg className="h-20 w-20 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
+        </div>
+
         {/* Permissions card */}
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white p-5">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">Permissões solicitadas:</h3>
+        <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+          <h3 className="mb-3 text-sm font-semibold text-gray-900">🔐 Permissões Necessárias:</h3>
           <ul className="space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-700">✓</span>
-              <div>
-                <span className="text-sm font-medium text-gray-900">Repositórios</span>
-                <p className="text-xs text-gray-500">Criar e gerenciar repositórios em seu nome</p>
-              </div>
+            <li className="flex items-start gap-3 border-b border-gray-200 pb-2 text-sm text-gray-600">
+              <span className="font-medium text-gray-900">Criar repositório</span>
+              <span>— Um repositório privado será criado para seu projeto</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-700">✓</span>
-              <div>
-                <span className="text-sm font-medium text-gray-900">Usuário</span>
-                <p className="text-xs text-gray-500">Ler informações básicas do perfil</p>
-              </div>
+            <li className="flex items-start gap-3 border-b border-gray-200 pb-2 text-sm text-gray-600">
+              <span className="font-medium text-gray-900">Ver seu perfil</span>
+              <span>— Precisamos saber seu nome de usuário</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-700">✓</span>
-              <div>
-                <span className="text-sm font-medium text-gray-900">Email</span>
-                <p className="text-xs text-gray-500">Acessar endereços de email verificados</p>
-              </div>
+            <li className="flex items-start gap-3 text-sm text-gray-600">
+              <span className="font-medium text-gray-900">Verificar email</span>
+              <span>— Para vincular ao repositório</span>
             </li>
           </ul>
         </div>
@@ -200,13 +362,13 @@ function GitHubOAuthView({ projectId, isCreatingRepo }: { projectId: string; isC
           </div>
         )}
 
-        {/* Tip box */}
-        <div className="mt-6 rounded-md border-l-4 border-blue-600 bg-blue-50 p-4">
-          <p className="text-sm text-gray-900">
-            <strong>Dica:</strong> Você será redirecionado para o GitHub para autorizar o acesso.
-            Após autorizar, voltará automaticamente para esta página.
-          </p>
-        </div>
+        <p className="mt-4 text-center text-xs text-gray-400">
+          Você será redirecionado para github.com e voltará automaticamente.
+        </p>
+
+        <p className="mt-6 text-center text-xs text-gray-400">
+          Você pode revogar o acesso a qualquer momento nas configurações do GitHub.
+        </p>
       </div>
     </div>
   )

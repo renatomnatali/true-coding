@@ -38,42 +38,137 @@ function baseProps(overrides: Record<string, unknown> = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// Sub-estado: github (tela 01 — OAuth CTA)
+// Sub-estado: github — Checkpoint (triagem pré-OAuth)
 // ---------------------------------------------------------------------------
-describe('ConnectionPhase → sub-estado "github"', () => {
+describe('ConnectionPhase → checkpoint (triagem)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders GitHub OAuth CTA when githubRepoUrl is null', () => {
+  it('renders checkpoint when githubRepoUrl is null (estado default)', () => {
     render(<ConnectionPhase {...baseProps()} />)
 
-    // "Conectar com GitHub" appears in both heading and button
-    expect(screen.getAllByText('Conectar com GitHub').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Permissões solicitadas:')).toBeDefined()
+    expect(screen.getByText('Hora de guardar seu código')).toBeDefined()
   })
 
-  it('OAuth link points to /api/auth/github with projectId', () => {
+  it('shows "Você já tem uma conta no GitHub?"', () => {
     render(<ConnectionPhase {...baseProps()} />)
 
-    // The CTA button is an <a> tag with the OAuth URL
+    expect(screen.getByText('Você já tem uma conta no GitHub?')).toBeDefined()
+  })
+
+  it('shows buttons "Sim, já tenho" and "Ainda não tenho"', () => {
+    render(<ConnectionPhase {...baseProps()} />)
+
+    expect(screen.getByText('Sim, já tenho')).toBeDefined()
+    expect(screen.getByText('Ainda não tenho')).toBeDefined()
+  })
+
+  it('shows expandable "O que é GitHub?"', () => {
+    render(<ConnectionPhase {...baseProps()} />)
+
+    expect(screen.getByText('O que é GitHub?')).toBeDefined()
+  })
+
+  it('clicking "Sim, já tenho" shows OAuth view', () => {
+    render(<ConnectionPhase {...baseProps()} />)
+
+    fireEvent.click(screen.getByText('Sim, já tenho'))
+
+    // "Conectar com GitHub" appears as both heading and button text
+    expect(screen.getAllByText('Conectar com GitHub').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText(/Permissões Necessárias/)).toBeDefined()
+  })
+
+  it('clicking "Ainda não tenho" shows create account view', () => {
+    render(<ConnectionPhase {...baseProps()} />)
+
+    fireEvent.click(screen.getByText('Ainda não tenho'))
+
+    expect(screen.getByText('Criar sua conta no GitHub')).toBeDefined()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Sub-estado: github — Criar conta GitHub
+// ---------------------------------------------------------------------------
+describe('ConnectionPhase → criar conta GitHub', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  function renderAndGoToCreateAccount() {
+    render(<ConnectionPhase {...baseProps()} />)
+    fireEvent.click(screen.getByText('Ainda não tenho'))
+  }
+
+  it('shows "Criar sua conta no GitHub" title', () => {
+    renderAndGoToCreateAccount()
+
+    expect(screen.getByText('Criar sua conta no GitHub')).toBeDefined()
+  })
+
+  it('shows 3 numbered steps', () => {
+    renderAndGoToCreateAccount()
+
+    expect(screen.getByText(/Acesse github.com e clique em/)).toBeDefined()
+    expect(screen.getByText(/Preencha email, senha e nome de usuário/)).toBeDefined()
+    expect(screen.getByText(/Confirme seu email e volte aqui/)).toBeDefined()
+  })
+
+  it('"Abrir GitHub" link points to github.com/signup with target _blank', () => {
+    renderAndGoToCreateAccount()
+
+    const links = document.querySelectorAll('a')
+    const ghLink = Array.from(links).find((a) => a.textContent?.includes('Abrir GitHub'))
+    expect(ghLink).toBeDefined()
+    expect(ghLink?.getAttribute('href')).toBe('https://github.com/signup')
+    expect(ghLink?.getAttribute('target')).toBe('_blank')
+  })
+
+  it('clicking "Já criei minha conta, continuar" shows OAuth view', () => {
+    renderAndGoToCreateAccount()
+
+    fireEvent.click(screen.getByText('Já criei minha conta, continuar'))
+
+    // "Conectar com GitHub" appears as both heading and button text
+    expect(screen.getAllByText('Conectar com GitHub').length).toBeGreaterThanOrEqual(1)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Sub-estado: github — OAuth CTA (após checkpoint)
+// ---------------------------------------------------------------------------
+describe('ConnectionPhase → tela OAuth (após checkpoint)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  function renderAndGoToOAuth() {
+    render(<ConnectionPhase {...baseProps()} />)
+    fireEvent.click(screen.getByText('Sim, já tenho'))
+  }
+
+  it('OAuth link points to /api/auth/github with projectId', () => {
+    renderAndGoToOAuth()
+
     const links = document.querySelectorAll('a[href*="auth/github"]')
     expect(links.length).toBeGreaterThanOrEqual(1)
     expect(links[0].getAttribute('href')).toBe('/api/auth/github?projectId=proj-test-1')
   })
 
-  it('shows permissions list: repositórios, usuário, email', () => {
-    render(<ConnectionPhase {...baseProps()} />)
+  it('shows permissions list', () => {
+    renderAndGoToOAuth()
 
-    expect(screen.getByText('Repositórios')).toBeDefined()
-    expect(screen.getByText('Usuário')).toBeDefined()
-    expect(screen.getByText('Email')).toBeDefined()
+    expect(screen.getByText('Criar repositório')).toBeDefined()
+    expect(screen.getByText('Ver seu perfil')).toBeDefined()
+    expect(screen.getByText('Verificar email')).toBeDefined()
   })
 
-  it('shows tip box', () => {
-    render(<ConnectionPhase {...baseProps()} />)
+  it('shows redirect note', () => {
+    renderAndGoToOAuth()
 
-    expect(screen.getByText(/Você será redirecionado para o GitHub/)).toBeDefined()
+    expect(screen.getByText(/Você será redirecionado para github.com/)).toBeDefined()
   })
 })
 
