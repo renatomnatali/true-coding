@@ -195,14 +195,15 @@ export function ChatPanel({
                 console.log('[CHAT] Plan ready detected! Plan:', parsed.plan)
                 setIsGeneratingPlan(false)
                 setPlanReady(true)
-                // Replace message with confirmation instead of showing JSON
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantMessage.id
-                      ? { ...m, content: 'Plano gerado com sucesso! Veja o resumo ao lado e me diga se quer ajustar algo.' }
-                      : m
-                  )
-                )
+                // Add a separate confirmation message (don't replace the streamed content — stripJsonFromDisplay handles display)
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: crypto.randomUUID(),
+                    role: 'assistant' as const,
+                    content: 'Plano gerado com sucesso! Veja o resumo ao lado e me diga se quer ajustar algo.',
+                  },
+                ])
                 onPlanReady?.(parsed.plan)
               }
               // 'done' and 'error' events are handled implicitly

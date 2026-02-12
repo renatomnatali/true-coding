@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProjectLayout } from './ProjectLayout'
 import { ConnectionPhase } from './phases/ConnectionPhase'
 
@@ -432,19 +432,58 @@ function PlanningWorkspace({
 
         {/* Loading overlay while generating next plan */}
         {isApproving && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <div className="rounded-lg border bg-white p-6 shadow-lg">
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-                <p className="text-sm font-medium text-gray-700">
-                  {activePlan === 'business' ? 'Gerando Plano Técnico...' :
-                   activePlan === 'technical' ? 'Gerando Plano de UX...' :
-                   'Aprovando...'}
-                </p>
-              </div>
-            </div>
-          </div>
+          <PlanGenerationOverlay activePlan={activePlan} />
         )}
+      </div>
+    </div>
+  )
+}
+
+// Progressive loading overlay for plan generation
+const UX_PLAN_STEPS = [
+  'Analisando requisitos...',
+  'Criando Personas...',
+  'Definindo Arquitetura de Informação...',
+  'Planejando Jornadas de Usuário...',
+  'Criando Wireframes...',
+  'Montando Biblioteca de Componentes...',
+  'Definindo Acessibilidade...',
+  'Gerando Design Tokens...',
+  'Finalizando Plano de UX...',
+]
+
+function PlanGenerationOverlay({ activePlan }: { activePlan: string }) {
+  const isUxGeneration = activePlan === 'technical'
+  const staticMessage = activePlan === 'business' ? 'Gerando Plano Técnico...' : 'Aprovando...'
+  const [stepIndex, setStepIndex] = useState(0)
+
+  useEffect(() => {
+    if (!isUxGeneration) return
+    const interval = setInterval(() => {
+      setStepIndex((prev) => (prev < UX_PLAN_STEPS.length - 1 ? prev + 1 : prev))
+    }, 15000)
+    return () => clearInterval(interval)
+  }, [isUxGeneration])
+
+  const message = isUxGeneration ? UX_PLAN_STEPS[stepIndex] : staticMessage
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="rounded-lg border bg-white p-8 shadow-lg">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <p className="text-sm font-medium text-gray-700">{message}</p>
+          {isUxGeneration && (
+            <div className="flex gap-1">
+              {UX_PLAN_STEPS.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${i <= stepIndex ? 'bg-blue-600' : 'bg-gray-200'}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -1282,12 +1321,23 @@ function UxPlanView({
               <div>
                 <p className="mb-2 text-sm font-semibold">Tipografia</p>
                 <div className="space-y-1">
-                  {uxPlanParsed.designTokens.typography.map((typo, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2 text-sm">
-                      <span className="w-20 font-semibold">{typo.name}</span>
-                      <span className="text-muted-foreground">{typo.font}</span>
-                    </div>
-                  ))}
+                  {uxPlanParsed.designTokens.typography.map((typo, i) => {
+                    const sizeMatch = typo.font.match(/(\d+)px/)
+                    const weightMatch = typo.font.match(/\b(\d{3})\b/)
+                    const fontSize = sizeMatch ? Math.min(parseInt(sizeMatch[1]), 36) : undefined
+                    const fontWeight = weightMatch ? parseInt(weightMatch[1]) : undefined
+                    return (
+                      <div key={i} className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2">
+                        <span
+                          className="min-w-[5rem] font-semibold"
+                          style={{ fontSize: fontSize ? `${fontSize}px` : undefined, fontWeight, lineHeight: 1.3 }}
+                        >
+                          {typo.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{typo.font}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
