@@ -25,9 +25,8 @@ model User {
   githubTokenExpiry  DateTime?
   githubUsername     String?
 
-  vercelAccessToken  String?
-  vercelRefreshToken String?
-  vercelTokenExpiry  DateTime?
+  // Netlify OAuth (long-lived token, no refresh needed)
+  netlifyAccessToken String?
 
   // Relations
   projects Project[]
@@ -67,9 +66,8 @@ model Project {
   githubRepoName  String?
 
   // Deploy Phase
-  vercelProjectId String?
-  vercelTeamId    String?
-  productionUrl   String?
+  netlifySiteId String?
+  productionUrl String?
   lastDeployAt    DateTime?
 
   // Relations

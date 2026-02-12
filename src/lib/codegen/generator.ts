@@ -104,23 +104,28 @@ export interface ProjectData {
 function buildTemplateContext(project: ProjectData): TemplateContext {
   const { technicalPlan } = project
 
+  // Handle both new and legacy TechnicalPlan formats
+  const pages = technicalPlan.pages || []
+  const entities = technicalPlan.dataModel?.entities || []
+  const components = technicalPlan.components || []
+
   return {
     projectName: project.name,
     projectSlug: kebabCase(project.name),
     description: project.description,
-    features: technicalPlan.pages.map((p) => p.name),
+    features: pages.map((p) => p.name),
     hasDatabase: project.hasDatabase,
     hasAuth: project.hasAuth,
-    entities: technicalPlan.dataModel.entities.map((e) => ({
+    entities: entities.map((e) => ({
       name: e.name,
       fields: e.fields,
     })),
-    pages: technicalPlan.pages.map((p) => ({
+    pages: pages.map((p) => ({
       path: p.path,
       name: p.name,
       components: p.components,
     })),
-    components: technicalPlan.components,
+    components: components,
   }
 }
 
@@ -152,7 +157,7 @@ async function generateFileWithAI(
 
 async function generatePageWithAI(
   client: Anthropic,
-  page: TechnicalPlan['pages'][0],
+  page: NonNullable<TechnicalPlan['pages']>[0],
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
   const prompt = CODEGEN_PROMPTS.pageComponent
@@ -169,7 +174,7 @@ async function generatePageWithAI(
 
 async function generateComponentWithAI(
   client: Anthropic,
-  component: TechnicalPlan['components'][0],
+  component: NonNullable<TechnicalPlan['components']>[0],
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
   const prompt = CODEGEN_PROMPTS.uiComponent
@@ -182,17 +187,37 @@ async function generateComponentWithAI(
   return generateFileWithAI(client, prompt, contextStr)
 }
 
+// Helper type for flat endpoint (extracted from grouped structure)
+interface FlatEndpoint {
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  path: string
+  description: string
+}
+
+// Extract flat endpoints from grouped structure
+function flattenApiEndpoints(
+  apiEndpoints: TechnicalPlan['apiEndpoints']
+): FlatEndpoint[] {
+  return apiEndpoints.flatMap((group) =>
+    group.endpoints.map((ep) => ({
+      method: ep.method,
+      path: ep.path,
+      description: ep.description,
+    }))
+  )
+}
+
 async function generateAPIRouteWithAI(
   client: Anthropic,
-  endpoint: TechnicalPlan['apiEndpoints'][0],
+  endpoint: FlatEndpoint,
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
   const prompt = CODEGEN_PROMPTS.apiRoute
     .replace('{method}', endpoint.method)
     .replace('{path}', endpoint.path)
-    .replace('{requestBody}', JSON.stringify(endpoint.requestBody ?? {}))
-    .replace('{responseBody}', JSON.stringify(endpoint.responseBody ?? {}))
-    .replace('{authentication}', endpoint.authentication ? 'Sim' : 'Nao')
+    .replace('{requestBody}', '{}')
+    .replace('{responseBody}', '{}')
+    .replace('{authentication}', 'Sim')
 
   const contextStr = `Projeto: ${context.projectName}\nDescricao: ${context.description}`
 
@@ -220,7 +245,7 @@ export async function* generateProject(
     yield { type: 'stage', stage: 'generating_files' }
 
     // Generate pages (skip root page as it's in templates)
-    for (const page of project.technicalPlan.pages) {
+    for (const page of project.technicalPlan.pages ?? []) {
       if (page.path === '/') continue // Already generated from template
 
       const pageFiles = await generatePageWithAI(client, page, context)
@@ -231,7 +256,7 @@ export async function* generateProject(
     }
 
     // Generate components
-    for (const component of project.technicalPlan.components) {
+    for (const component of project.technicalPlan.components ?? []) {
       const componentFiles = await generateComponentWithAI(
         client,
         component,
@@ -243,8 +268,9 @@ export async function* generateProject(
       }
     }
 
-    // Generate API routes
-    for (const endpoint of project.technicalPlan.apiEndpoints) {
+    // Generate API routes (flatten grouped endpoints)
+    const flatEndpoints = flattenApiEndpoints(project.technicalPlan.apiEndpoints)
+    for (const endpoint of flatEndpoints) {
       const routeFiles = await generateAPIRouteWithAI(client, endpoint, context)
       for (const file of routeFiles) {
         allFiles.push(file)

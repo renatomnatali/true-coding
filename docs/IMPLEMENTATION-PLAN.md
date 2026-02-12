@@ -4,6 +4,12 @@
 
 ---
 
+## Documentos Complementares
+
+- Financeiro (creditos): `docs/FINANCIAL-CREDITS-MODEL.md`
+
+---
+
 ## Fases do Projeto (baseado nos mockups)
 
 | Fase | Nome | Mockups | Gherkin | Status |

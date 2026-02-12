@@ -217,44 +217,14 @@ describe('ConnectionPhase → sub-estado "repo-created"', () => {
     expect(ghLink?.getAttribute('href')).toBe('https://github.com/testuser/test-app')
   })
 
-  it('shows "Conectar Vercel" button', () => {
+  it('shows "Conectar Netlify" link pointing to Netlify OAuth', () => {
     render(<ConnectionPhase {...repoProps} />)
 
-    expect(screen.getByText('Conectar Vercel →')).toBeDefined()
-  })
+    expect(screen.getByText('Conectar Netlify →')).toBeDefined()
 
-  it('calls POST /connect with service: vercel on Vercel button click', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ productionUrl: 'https://test-app.vercel.app' }),
-    })
-
-    render(<ConnectionPhase {...repoProps} />)
-
-    fireEvent.click(screen.getByText('Conectar Vercel →'))
-
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/projects/proj-test-1/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ service: 'vercel' }),
-      })
-    })
-  })
-
-  it('transitions to "connected" sub-state after successful Vercel connection', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ productionUrl: 'https://test-app.vercel.app' }),
-    })
-
-    render(<ConnectionPhase {...repoProps} />)
-
-    fireEvent.click(screen.getByText('Conectar Vercel →'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Tudo Conectado!')).toBeDefined()
-    })
+    const links = document.querySelectorAll('a[href*="auth/netlify"]')
+    expect(links.length).toBeGreaterThanOrEqual(1)
+    expect(links[0].getAttribute('href')).toBe('/api/auth/netlify?projectId=proj-test-1')
   })
 })
 
@@ -268,7 +238,7 @@ describe('ConnectionPhase → sub-estado "connected"', () => {
 
   const connectedProps = baseProps({
     githubRepoUrl: 'https://github.com/testuser/test-app',
-    productionUrl: 'https://test-app.vercel.app',
+    productionUrl: 'https://test-app.netlify.app',
   })
 
   it('renders "Tudo Conectado!" alert', () => {
@@ -277,11 +247,11 @@ describe('ConnectionPhase → sub-estado "connected"', () => {
     expect(screen.getByText('Tudo Conectado!')).toBeDefined()
   })
 
-  it('shows GitHub and Vercel cards with check marks', () => {
+  it('shows GitHub and Netlify cards with check marks', () => {
     render(<ConnectionPhase {...connectedProps} />)
 
     expect(screen.getByText('GitHub')).toBeDefined()
-    expect(screen.getByText('Vercel')).toBeDefined()
+    expect(screen.getByText('Netlify')).toBeDefined()
     expect(screen.getByText('Repositório conectado')).toBeDefined()
     expect(screen.getByText('Deploy configurado')).toBeDefined()
   })
@@ -291,7 +261,7 @@ describe('ConnectionPhase → sub-estado "connected"', () => {
 
     expect(screen.getByText('Geração de Código')).toBeDefined()
     expect(screen.getByText('Commit no GitHub')).toBeDefined()
-    expect(screen.getByText('Deploy na Vercel')).toBeDefined()
+    expect(screen.getByText('Deploy na Netlify')).toBeDefined()
   })
 
   it('shows tip about next step', () => {
@@ -355,6 +325,50 @@ describe('ConnectionPhase → estado de erro', () => {
 })
 
 // ---------------------------------------------------------------------------
+// Loading state: githubJustConnected → mostra "Criando seu repositório..."
+// ---------------------------------------------------------------------------
+describe('ConnectionPhase → loading durante criação do repositório', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('shows "Criando seu repositório..." when githubJustConnected and no repo', () => {
+    // Never resolve the fetch so we stay in loading state
+    mockFetch.mockReturnValue(new Promise(() => {}))
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    expect(screen.getByText('Criando seu repositório...')).toBeDefined()
+  })
+
+  it('shows success message about GitHub connection', () => {
+    mockFetch.mockReturnValue(new Promise(() => {}))
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    expect(screen.getByText(/Conectamos seu GitHub com sucesso/)).toBeDefined()
+  })
+
+  it('does NOT show checkpoint "Você já tem uma conta no GitHub?"', () => {
+    mockFetch.mockReturnValue(new Promise(() => {}))
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    expect(screen.queryByText('Você já tem uma conta no GitHub?')).toBeNull()
+  })
+
+  it('shows a spinner (animated element)', () => {
+    mockFetch.mockReturnValue(new Promise(() => {}))
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    const spinner = document.querySelector('.animate-spin')
+    expect(spinner).toBeDefined()
+    expect(spinner).not.toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Auto-trigger: githubJustConnected → cria repo
 // ---------------------------------------------------------------------------
 describe('ConnectionPhase → auto-trigger repo creation', () => {
@@ -410,6 +424,62 @@ describe('ConnectionPhase → auto-trigger repo creation', () => {
 })
 
 // ---------------------------------------------------------------------------
+// Auto-trigger: netlifyJustConnected → cria site Netlify
+// ---------------------------------------------------------------------------
+describe('ConnectionPhase → auto-trigger Netlify site creation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  const netlifyTriggerProps = baseProps({
+    githubRepoUrl: 'https://github.com/testuser/test-app',
+    netlifyJustConnected: true,
+  })
+
+  it('calls POST /connect netlify when netlifyJustConnected is true', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ productionUrl: 'https://test-app.netlify.app', netlifySiteId: 'site_123' }),
+    })
+
+    render(<ConnectionPhase {...netlifyTriggerProps} />)
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith('/api/projects/proj-test-1/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service: 'netlify' }),
+      })
+    })
+  })
+
+  it('transitions to "connected" after successful Netlify site creation', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ productionUrl: 'https://test-app.netlify.app', netlifySiteId: 'site_123' }),
+    })
+
+    render(<ConnectionPhase {...netlifyTriggerProps} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Tudo Conectado!')).toBeDefined()
+    })
+  })
+
+  it('does NOT call /connect when productionUrl already exists', async () => {
+    render(<ConnectionPhase {...baseProps({
+      githubRepoUrl: 'https://github.com/testuser/test-app',
+      productionUrl: 'https://test-app.netlify.app',
+      netlifyJustConnected: true,
+    })} />)
+
+    await waitFor(() => {
+      expect(mockFetch).not.toHaveBeenCalled()
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Erro na criação do repositório — COMPORTAMENTO
 // ---------------------------------------------------------------------------
 describe('ConnectionPhase → erro na criação do repositório', () => {
@@ -434,9 +504,9 @@ describe('ConnectionPhase → erro na criação do repositório', () => {
       expect(screen.getByText('Erro na Conexão com GitHub')).toBeDefined()
     })
 
-    // Verifica que a tela de erro genérica é exibida com steps de resolução
-    expect(screen.getByText(/autorização foi negada/)).toBeDefined()
-    // "Reconectar GitHub" aparece múltiplas vezes (steps + botão)
+    // Verifica que a mensagem de erro específica é exibida
+    expect(screen.getByText('Failed to create repository')).toBeDefined()
+    // "Reconectar GitHub" no botão
     const reconnectElements = screen.getAllByText(/Reconectar GitHub/)
     expect(reconnectElements.length).toBeGreaterThanOrEqual(1)
   })
@@ -477,5 +547,29 @@ describe('ConnectionPhase → erro na criação do repositório', () => {
     const reconnectLink = Array.from(links).find((a) => a.textContent?.includes('Reconectar GitHub'))
     expect(reconnectLink).toBeDefined()
     expect(reconnectLink?.getAttribute('href')).toBe('/api/auth/github?projectId=proj-test-1')
+  })
+
+  /**
+   * @erro @rate-limit
+   * Cenário: Rate limit do GitHub mostra botão "Tentar Novamente"
+   */
+  it('Exibe "Tentar Novamente" quando erro é rate limit', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ error: 'RATE_LIMITED', message: 'O GitHub bloqueou temporariamente a criação de repositórios. Aguarde alguns minutos e tente novamente.' }),
+    })
+
+    render(<ConnectionPhase {...baseProps({ githubJustConnected: true })} />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Erro na Conexão com GitHub')).toBeDefined()
+    })
+
+    // Mostra mensagem de rate limit
+    expect(screen.getByText(/bloqueou temporariamente/)).toBeDefined()
+    // Mostra botão "Tentar Novamente" em vez de "Reconectar GitHub"
+    expect(screen.getByText('Tentar Novamente')).toBeDefined()
+    // Mostra instruções de aguardar
+    expect(screen.getByText(/Aguarde 5 a 10 minutos/)).toBeDefined()
   })
 })

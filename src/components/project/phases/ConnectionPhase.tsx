@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // ---------------------------------------------------------------------------
 // Sub-state derivation
@@ -26,7 +26,9 @@ interface ConnectionPhaseProps {
   hasGitHubToken: boolean
   /** Set to true when URL contains ?github=connected (triggers repo creation) */
   githubJustConnected: boolean
-  /** Set to true when URL contains ?error=github_auth_failed */
+  /** Set to true when URL contains ?netlify=connected (triggers Netlify site creation) */
+  netlifyJustConnected?: boolean
+  /** Set to true when URL contains ?error=github_auth_failed or ?error=netlify_auth_failed */
   hasOAuthError?: boolean
 }
 
@@ -37,19 +39,24 @@ export function ConnectionPhase({
   productionUrl: initialProductionUrl,
   hasGitHubToken: _hasGitHubToken,
   githubJustConnected,
+  netlifyJustConnected = false,
   hasOAuthError = false,
 }: ConnectionPhaseProps) {
   const [githubRepoUrl, setGithubRepoUrl] = useState(initialRepoUrl)
   const [productionUrl, setProductionUrl] = useState(initialProductionUrl)
-  const [error, setError] = useState<string | null>(hasOAuthError ? 'github_auth_failed' : null)
+  const [error, setError] = useState<string | null>(hasOAuthError ? 'oauth_error' : null)
   const [isCreatingRepo, setIsCreatingRepo] = useState(false)
-  const [isConnectingVercel, setIsConnectingVercel] = useState(false)
+  const [isConnectingNetlify, setIsConnectingNetlify] = useState(false)
   const [copied, setCopied] = useState(false)
   const [checkpointStep, setCheckpointStep] = useState<'checkpoint' | 'create-account' | 'oauth'>('checkpoint')
 
   const subState = deriveSubState(githubRepoUrl, productionUrl)
 
-  // Auto-trigger repo creation when returning from OAuth
+  // Refs to prevent retry loops — each auto-trigger runs exactly once
+  const repoAttemptedRef = useRef(false)
+  const netlifyAttemptedRef = useRef(false)
+
+  // Auto-trigger repo creation when returning from GitHub OAuth
   const createRepo = useCallback(async () => {
     if (isCreatingRepo || githubRepoUrl) return
     setIsCreatingRepo(true)
@@ -75,17 +82,60 @@ export function ConnectionPhase({
     } finally {
       setIsCreatingRepo(false)
     }
-  }, [projectId, githubRepoUrl, isCreatingRepo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId])
+
+  // Auto-trigger Netlify site creation when returning from Netlify OAuth
+  const createNetlifySite = useCallback(async () => {
+    if (isConnectingNetlify || productionUrl) return
+    setIsConnectingNetlify(true)
+    setError(null)
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}/connect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service: 'netlify' }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.message || 'Erro ao criar site na Netlify')
+        return
+      }
+
+      const data = await res.json()
+      setProductionUrl(data.productionUrl)
+    } catch {
+      setError('Erro de rede ao conectar Netlify. Tente novamente.')
+    } finally {
+      setIsConnectingNetlify(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId])
 
   useEffect(() => {
-    if (githubJustConnected && !githubRepoUrl) {
+    if (githubJustConnected && !githubRepoUrl && !repoAttemptedRef.current) {
+      repoAttemptedRef.current = true
       createRepo()
     }
   }, [githubJustConnected, githubRepoUrl, createRepo])
 
-  // Error state — shown when ?error=github_auth_failed
+  useEffect(() => {
+    if (netlifyJustConnected && githubRepoUrl && !productionUrl && !netlifyAttemptedRef.current) {
+      netlifyAttemptedRef.current = true
+      createNetlifySite()
+    }
+  }, [netlifyJustConnected, githubRepoUrl, productionUrl, createNetlifySite])
+
+  // Error state — shown when OAuth failed and no repo yet
   if (error && !githubRepoUrl) {
-    return <ErrorView projectId={projectId} onRetry={createRepo} />
+    return <ErrorView projectId={projectId} errorMessage={error !== 'oauth_error' ? error : undefined} onRetry={() => { repoAttemptedRef.current = false; createRepo() }} />
+  }
+
+  // Loading state — repo creation in progress after OAuth return
+  if ((githubJustConnected || isCreatingRepo) && !githubRepoUrl) {
+    return <CreatingRepoView />
   }
 
   switch (subState) {
@@ -102,35 +152,16 @@ export function ConnectionPhase({
     case 'repo-created':
       return (
         <RepoCreatedView
+          projectId={projectId}
           githubRepoUrl={githubRepoUrl!}
-          isConnectingVercel={isConnectingVercel}
+          isConnectingNetlify={isConnectingNetlify}
+          netlifyError={error}
+          onRetryNetlify={() => { netlifyAttemptedRef.current = false; createNetlifySite() }}
           copied={copied}
           onCopy={() => {
             navigator.clipboard.writeText(githubRepoUrl!)
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
-          }}
-          onConnectVercel={async () => {
-            setIsConnectingVercel(true)
-            setError(null)
-            try {
-              const res = await fetch(`/api/projects/${projectId}/connect`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ service: 'vercel' }),
-              })
-              if (!res.ok) {
-                const data = await res.json()
-                setError(data.message || 'Erro ao conectar Vercel')
-                return
-              }
-              const data = await res.json()
-              setProductionUrl(data.productionUrl)
-            } catch {
-              setError('Erro de rede ao conectar Vercel. Tente novamente.')
-            } finally {
-              setIsConnectingVercel(false)
-            }
           }}
         />
       )
@@ -375,20 +406,62 @@ function GitHubOAuthView({ projectId, projectName, isCreatingRepo }: { projectId
 }
 
 // ---------------------------------------------------------------------------
+// Tela de loading: criando repositório após OAuth
+// ---------------------------------------------------------------------------
+function CreatingRepoView() {
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 p-8">
+      <div className="mx-auto max-w-lg">
+        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › GitHub</div>
+
+        {/* Success badge */}
+        <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
+          <div className="flex items-center gap-2">
+            <span className="text-green-600">✓</span>
+            <p className="text-sm font-semibold text-green-800">GitHub conectado!</p>
+          </div>
+          <p className="mt-1 text-sm text-green-700">
+            Conectamos seu GitHub com sucesso. Agora estamos criando o repositório...
+          </p>
+        </div>
+
+        {/* Loading animation */}
+        <div className="flex flex-col items-center gap-4 py-12">
+          <div className="relative">
+            <svg className="h-16 w-16 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            <div className="absolute -bottom-1 -right-1 h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Criando seu repositório...</h2>
+          <p className="text-center text-sm text-gray-500">
+            Isso pode levar alguns segundos. Não feche esta página.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Tela 02: Repositório criado com sucesso
 // ---------------------------------------------------------------------------
 function RepoCreatedView({
+  projectId,
   githubRepoUrl,
-  isConnectingVercel,
+  isConnectingNetlify,
+  netlifyError,
+  onRetryNetlify,
   copied,
   onCopy,
-  onConnectVercel,
 }: {
+  projectId: string
   githubRepoUrl: string
-  isConnectingVercel: boolean
+  isConnectingNetlify: boolean
+  netlifyError: string | null
+  onRetryNetlify: () => void
   copied: boolean
   onCopy: () => void
-  onConnectVercel: () => void
 }) {
   // Derive owner/name from URL for display (https://github.com/owner/name)
   const urlParts = githubRepoUrl.replace('https://github.com/', '').split('/')
@@ -458,10 +531,21 @@ function RepoCreatedView({
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
           <h3 className="mb-1 text-sm font-semibold text-blue-900">Próximo Passo</h3>
           <p className="text-sm text-blue-800">
-            Conecte seu projeto ao Vercel para que o código gerado seja publicado automaticamente.
+            Conecte seu projeto ao Netlify para que o código gerado seja publicado automaticamente.
             O deploy acontecerá de forma contínua a partir do repositório no GitHub.
           </p>
         </div>
+
+        {/* Netlify error alert */}
+        {netlifyError && netlifyError !== 'oauth_error' && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <div className="flex items-center gap-2">
+              <span className="text-red-600">✗</span>
+              <p className="text-sm font-semibold text-red-900">Erro ao conectar Netlify</p>
+            </div>
+            <p className="mt-1 text-sm text-red-700">{netlifyError}</p>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="flex gap-3">
@@ -473,13 +557,26 @@ function RepoCreatedView({
           >
             Ver no GitHub →
           </a>
-          <button
-            onClick={onConnectVercel}
-            disabled={isConnectingVercel}
-            className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isConnectingVercel ? 'Conectando...' : 'Conectar Vercel →'}
-          </button>
+          {isConnectingNetlify ? (
+            <div className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-medium text-white opacity-60">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Conectando...
+            </div>
+          ) : netlifyError ? (
+            <button
+              onClick={onRetryNetlify}
+              className="flex-1 rounded-lg bg-teal-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-teal-700"
+            >
+              Tentar Novamente →
+            </button>
+          ) : (
+            <a
+              href={`/api/auth/netlify?projectId=${encodeURIComponent(projectId)}`}
+              className="flex-1 rounded-lg bg-teal-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-teal-700"
+            >
+              Conectar Netlify →
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -507,7 +604,7 @@ function ConnectedView({
             <span className="text-green-600">✓</span>
             <p className="text-sm font-semibold text-green-800">Tudo Conectado!</p>
           </div>
-          <p className="mt-1 text-sm text-green-700">GitHub e Vercel estão conectados e prontos para receber o código.</p>
+          <p className="mt-1 text-sm text-green-700">GitHub e Netlify estão conectados e prontos para receber o código.</p>
         </div>
 
         {/* Integration status cards */}
@@ -524,10 +621,10 @@ function ConnectedView({
           </div>
           <div className="rounded-lg border border-green-200 bg-white p-4">
             <div className="flex items-center gap-2">
-              <svg className="h-5 w-5 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 22.525H0l12-21.05 12 21.05z" />
+              <svg className="h-5 w-5 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.3 6.3L12 1 6.7 6.3 12 11.7 17.3 6.3zM6.3 6.7L1 12l5.3 5.3L11.7 12 6.3 6.7zM17.7 6.7L12.3 12l5.3 5.3L23 12l-5.3-5.3zM6.7 17.7L12 23l5.3-5.3L12 12.3 6.7 17.7z" />
               </svg>
-              <span className="text-sm font-semibold text-gray-900">Vercel</span>
+              <span className="text-sm font-semibold text-gray-900">Netlify</span>
               <span className="ml-auto text-green-600">✓</span>
             </div>
             <p className="mt-1 text-xs text-gray-500">Deploy configurado</p>
@@ -540,7 +637,7 @@ function ConnectedView({
           <div className="space-y-3">
             <PipelineStep step={1} title="Geração de Código" description="A IA gera o código do projeto" done={false} />
             <PipelineStep step={2} title="Commit no GitHub" description={`Push para ${githubRepoUrl}`} done={false} />
-            <PipelineStep step={3} title="Deploy na Vercel" description={`Publicação em ${productionUrl}`} done={false} />
+            <PipelineStep step={3} title="Deploy na Netlify" description={`Publicação em ${productionUrl}`} done={false} />
           </div>
         </div>
 
@@ -574,8 +671,9 @@ function ConnectedView({
 // ---------------------------------------------------------------------------
 // Tela de erro: falha na conexão GitHub
 // ---------------------------------------------------------------------------
-function ErrorView({ projectId, onRetry: _onRetry }: { projectId: string; onRetry: () => void }) {
+function ErrorView({ projectId, errorMessage, onRetry }: { projectId: string; errorMessage?: string; onRetry: () => void }) {
   const [showDetails, setShowDetails] = useState(false)
+  const isRateLimit = errorMessage?.includes('temporariamente') || errorMessage?.includes('rate limit')
 
   return (
     <div className="h-full overflow-y-auto bg-gray-50 p-8">
@@ -586,43 +684,62 @@ function ErrorView({ projectId, onRetry: _onRetry }: { projectId: string; onRetr
             <span className="text-red-600">✗</span>
             <h3 className="text-sm font-semibold text-red-900">Erro na Conexão com GitHub</h3>
           </div>
-          <p className="mt-1 text-sm text-red-700">
-            Não foi possível completar a autenticação com o GitHub. Isso pode acontecer por:
-          </p>
+          {errorMessage ? (
+            <p className="mt-1 text-sm text-red-700">{errorMessage}</p>
+          ) : (
+            <p className="mt-1 text-sm text-red-700">
+              Não foi possível completar a autenticação com o GitHub. Isso pode acontecer por:
+            </p>
+          )}
         </div>
 
-        {/* Causas card */}
-        <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900">Causas prováveis:</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li>• A autorização foi negada no GitHub</li>
-            <li>• A sessão OAuth expirou (mais de 10 minutos)</li>
-            <li>• Parâmetros de retorno inválidos</li>
-            <li>• Erro interno no servidor</li>
-          </ul>
-        </div>
+        {/* Causas card — only for generic errors */}
+        {!errorMessage && (
+          <div className="rounded-lg border border-gray-200 bg-white p-5">
+            <h3 className="mb-3 text-sm font-semibold text-gray-900">Causas prováveis:</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>• A autorização foi negada no GitHub</li>
+              <li>• A sessão OAuth expirou (mais de 10 minutos)</li>
+              <li>• Parâmetros de retorno inválidos</li>
+              <li>• Erro interno no servidor</li>
+            </ul>
+          </div>
+        )}
 
         {/* Como resolver */}
         <div className="rounded-lg border border-gray-200 bg-white p-5">
           <h3 className="mb-3 text-sm font-semibold text-gray-900">Como resolver:</h3>
-          <ol className="space-y-2 text-sm text-gray-600">
-            <li className="flex gap-2">
-              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">1</span>
-              Verifique se sua conta do GitHub está logada no navegador
-            </li>
-            <li className="flex gap-2">
-              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">2</span>
-              Clique no botão &ldquo;Reconectar GitHub&rdquo; abaixo
-            </li>
-            <li className="flex gap-2">
-              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">3</span>
-              No GitHub, autorize todas as permissões solicitadas
-            </li>
-            <li className="flex gap-2">
-              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">4</span>
-              Aguarde a redirecionamento de volta para esta página
-            </li>
-          </ol>
+          {isRateLimit ? (
+            <ol className="space-y-2 text-sm text-gray-600">
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">1</span>
+                Aguarde 5 a 10 minutos
+              </li>
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">2</span>
+                Clique em &ldquo;Tentar Novamente&rdquo; abaixo
+              </li>
+            </ol>
+          ) : (
+            <ol className="space-y-2 text-sm text-gray-600">
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">1</span>
+                Verifique se sua conta do GitHub está logada no navegador
+              </li>
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">2</span>
+                Clique no botão &ldquo;Reconectar GitHub&rdquo; abaixo
+              </li>
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">3</span>
+                No GitHub, autorize todas as permissões solicitadas
+              </li>
+              <li className="flex gap-2">
+                <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">4</span>
+                Aguarde o redirecionamento de volta para esta página
+              </li>
+            </ol>
+          )}
         </div>
 
         {/* Technical details (expandable) */}
@@ -636,7 +753,7 @@ function ErrorView({ projectId, onRetry: _onRetry }: { projectId: string; onRetr
           {showDetails && (
             <div className="border-t p-4">
               <code className="block whitespace-pre-wrap text-xs text-gray-600">
-                {`Projeto: ${projectId}\nEstado: error=github_auth_failed\nTimestamp: ${new Date().toISOString()}`}
+                {`Projeto: ${projectId}\nErro: ${errorMessage || 'oauth_error'}\nTimestamp: ${new Date().toISOString()}`}
               </code>
             </div>
           )}
@@ -650,12 +767,21 @@ function ErrorView({ projectId, onRetry: _onRetry }: { projectId: string; onRetr
           >
             ← Voltar
           </button>
-          <a
-            href={`/api/auth/github?projectId=${encodeURIComponent(projectId)}`}
-            className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-red-700"
-          >
-            Reconectar GitHub
-          </a>
+          {isRateLimit ? (
+            <button
+              onClick={onRetry}
+              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            >
+              Tentar Novamente
+            </button>
+          ) : (
+            <a
+              href={`/api/auth/github?projectId=${encodeURIComponent(projectId)}`}
+              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-red-700"
+            >
+              Reconectar GitHub
+            </a>
+          )}
         </div>
       </div>
     </div>
