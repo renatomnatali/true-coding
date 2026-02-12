@@ -62,13 +62,16 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
 
   const searchParams = useSearchParams()
   const githubJustConnected = searchParams.get('github') === 'connected'
+  const netlifyJustConnected = searchParams.get('netlify') === 'connected'
   const connectionError = searchParams.get('error') === 'github_auth_failed'
+    || searchParams.get('error') === 'netlify_auth_failed'
 
   // Clear URL params after reading (single-use flags)
   useEffect(() => {
-    if (searchParams.get('github') || searchParams.get('error')) {
+    if (searchParams.get('github') || searchParams.get('netlify') || searchParams.get('error')) {
       const url = new URL(window.location.href)
       url.searchParams.delete('github')
+      url.searchParams.delete('netlify')
       url.searchParams.delete('error')
       window.history.replaceState({}, '', url.toString())
     }
@@ -76,9 +79,10 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
 
   // If there's a connection error, show it; otherwise honour githubJustConnected
   const effectiveGithubConnected = connectionError ? false : githubJustConnected
+  const effectiveNetlifyConnected = connectionError ? false : netlifyJustConnected
 
   const hasGitHub = !!project.user.githubUsername
-  const hasVercel = !!project.productionUrl
+  const hasNetlify = !!project.productionUrl
 
   // STATE RESTORATION: Derive initial state from database (per docs/ux/STATES.md)
   const discoveryConversation = project.conversations?.[0] || null
@@ -175,7 +179,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
           projectName={project.name}
           status={status}
           hasGitHub={hasGitHub}
-          hasVercel={hasVercel}
+          hasNetlify={hasNetlify}
           repoUrl={project.githubRepoUrl}
           deployUrl={project.productionUrl}
         />
@@ -211,6 +215,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         isApproving={isApproving}
         hasGitHubToken={hasGitHub}
         githubJustConnected={effectiveGithubConnected}
+        netlifyJustConnected={effectiveNetlifyConnected}
         hasOAuthError={connectionError}
       />
     </ProjectLayout>

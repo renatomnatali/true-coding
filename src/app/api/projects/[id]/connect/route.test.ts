@@ -25,16 +25,23 @@ vi.mock('@/lib/github/client', () => ({
   createRepository: vi.fn(),
 }))
 
+// Mock Netlify client
+vi.mock('@/lib/netlify/client', () => ({
+  createNetlifySite: vi.fn(),
+}))
+
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/db/prisma'
 import { decrypt } from '@/lib/crypto'
 import { createGitHubClient, createRepository } from '@/lib/github/client'
+import { createNetlifySite } from '@/lib/netlify/client'
 
 const mockAuth = vi.mocked(auth)
 const mockPrisma = vi.mocked(prisma)
 const mockDecrypt = vi.mocked(decrypt)
 const mockCreateGitHubClient = vi.mocked(createGitHubClient)
 const mockCreateRepository = vi.mocked(createRepository)
+const mockCreateNetlifySite = vi.mocked(createNetlifySite)
 
 function createRequest(body: object): Request {
   return new Request('http://localhost/api/projects/proj-1/connect', {
@@ -201,37 +208,100 @@ describe('POST /api/projects/[id]/connect', () => {
 
     expect(response.status).toBe(500)
     expect(data.error).toBe('INTERNAL_ERROR')
+    expect(data.message).toBeDefined()
+  })
+
+  it('should return 429 when GitHub rate limit is hit', async () => {
+    setupProject()
+    mockCreateRepository.mockRejectedValue(new Error('You have exceeded a secondary rate limit'))
+
+    const response = await POST(createRequest({ service: 'github' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(429)
+    expect(data.error).toBe('RATE_LIMITED')
+    expect(data.message).toMatch(/temporariamente/)
   })
 
   // ========================================================================
-  // Vercel: stub connection
+  // Netlify: criar site
   // ========================================================================
 
-  it('should stub Vercel connection and set productionUrl', async () => {
-    setupProject({ githubRepoUrl: 'https://github.com/testuser/my-delivery-app' })
+  it('should create Netlify site and set productionUrl', async () => {
+    setupProject(
+      {
+        githubRepoUrl: 'https://github.com/testuser/my-delivery-app',
+        githubRepoOwner: 'testuser',
+        githubRepoName: 'my-delivery-app',
+      },
+      { netlifyAccessToken: 'encrypted-netlify-token' }
+    )
+    mockCreateNetlifySite.mockResolvedValue({ id: 'site_abc123', name: 'my-delivery-app', url: 'https://my-delivery-app.netlify.app' })
 
-    const response = await POST(createRequest({ service: 'vercel' }), createMockParams())
+    const response = await POST(createRequest({ service: 'netlify' }), createMockParams())
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.productionUrl).toBe('https://my-delivery-app.vercel.app')
+    expect(mockDecrypt).toHaveBeenCalledWith('encrypted-netlify-token')
+    expect(mockCreateNetlifySite).toHaveBeenCalledWith('decrypted-token', {
+      name: 'my-delivery-app',
+    })
     expect(mockPrisma.project.update).toHaveBeenCalledWith({
       where: { id: 'proj-1' },
       data: {
-        productionUrl: 'https://my-delivery-app.vercel.app',
+        netlifySiteId: 'site_abc123',
+        productionUrl: 'https://my-delivery-app.netlify.app',
         status: 'GENERATING',
       },
     })
+    expect(data.productionUrl).toBe('https://my-delivery-app.netlify.app')
+    expect(data.netlifySiteId).toBe('site_abc123')
   })
 
-  it('should return 409 when Vercel called without GitHub repo', async () => {
+  it('should return 409 when Netlify called without GitHub repo', async () => {
     setupProject({ githubRepoUrl: null })
 
-    const response = await POST(createRequest({ service: 'vercel' }), createMockParams())
+    const response = await POST(createRequest({ service: 'netlify' }), createMockParams())
     const data = await response.json()
 
     expect(response.status).toBe(409)
     expect(data.error).toBe('PREREQUISITE_NOT_MET')
     expect(mockPrisma.project.update).not.toHaveBeenCalled()
+  })
+
+  it('should return 409 when Netlify called without Netlify token', async () => {
+    setupProject(
+      {
+        githubRepoUrl: 'https://github.com/testuser/my-delivery-app',
+        githubRepoOwner: 'testuser',
+        githubRepoName: 'my-delivery-app',
+      },
+      { netlifyAccessToken: null }
+    )
+
+    const response = await POST(createRequest({ service: 'netlify' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(409)
+    expect(data.error).toBe('PREREQUISITE_NOT_MET')
+    expect(mockCreateNetlifySite).not.toHaveBeenCalled()
+  })
+
+  it('should return 500 when Netlify API fails', async () => {
+    setupProject(
+      {
+        githubRepoUrl: 'https://github.com/testuser/my-delivery-app',
+        githubRepoOwner: 'testuser',
+        githubRepoName: 'my-delivery-app',
+      },
+      { netlifyAccessToken: 'encrypted-netlify-token' }
+    )
+    mockCreateNetlifySite.mockRejectedValue(new Error('Netlify API error: 409'))
+
+    const response = await POST(createRequest({ service: 'netlify' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('INTERNAL_ERROR')
   })
 })

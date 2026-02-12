@@ -40,7 +40,7 @@ interface ProjectSidebarProps {
   projectName: string
   status: string
   hasGitHub: boolean
-  hasVercel: boolean
+  hasNetlify: boolean
   repoUrl?: string | null
   deployUrl?: string | null
 }
@@ -50,7 +50,7 @@ export function ProjectSidebar({
   projectName,
   status,
   hasGitHub: _hasGitHub,
-  hasVercel: _hasVercel,
+  hasNetlify: _hasNetlify,
   repoUrl: _repoUrl,
   deployUrl: _deployUrl,
 }: ProjectSidebarProps) {

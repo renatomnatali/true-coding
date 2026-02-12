@@ -57,6 +57,7 @@ interface WorkspacePanelProps {
   // Connection phase
   hasGitHubToken?: boolean
   githubJustConnected?: boolean
+  netlifyJustConnected?: boolean
   hasOAuthError?: boolean
 }
 
@@ -81,6 +82,7 @@ export function WorkspacePanel({
   isApproving,
   hasGitHubToken = false,
   githubJustConnected = false,
+  netlifyJustConnected = false,
   hasOAuthError = false,
 }: WorkspacePanelProps) {
   const { setChatOpen } = useProjectLayout()
@@ -100,6 +102,7 @@ export function WorkspacePanel({
           productionUrl={deployUrl ?? null}
           hasGitHubToken={hasGitHubToken}
           githubJustConnected={githubJustConnected}
+          netlifyJustConnected={netlifyJustConnected}
           hasOAuthError={hasOAuthError}
         />
       )
@@ -303,7 +306,7 @@ interface ParsedUxPlan {
     empty?: string[]
   }
   designTokens?: {
-    colors?: Record<string, string>
+    colors?: Record<string, string | Record<string, string>>
     typography?: Array<{
       name: string
       font: string
@@ -1241,16 +1244,37 @@ function UxPlanView({
               <div>
                 <p className="mb-2 text-sm font-semibold">Paleta de Cores</p>
                 <div className="flex flex-wrap gap-3">
-                  {Object.entries(uxPlanParsed.designTokens.colors).map(([name, value]) => (
-                    <div key={name} className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
-                      <div className="h-6 w-6 rounded-md border"
-                        style={{ backgroundColor: isValidHexColor(value) ? value : undefined }} />
-                      <div>
-                        <p className="text-xs font-semibold capitalize">{name}</p>
-                        <p className="text-xs text-muted-foreground">{value}</p>
+                  {Object.entries(uxPlanParsed.designTokens.colors).map(([name, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                      // Color scale (e.g. gray: {50: "#f8fafc", 100: "#f1f5f9", ...})
+                      const shades = Object.entries(value as Record<string, string>)
+                      return (
+                        <div key={name} className="w-full rounded-lg bg-muted/50 px-3 py-2">
+                          <p className="mb-2 text-xs font-semibold capitalize">{name}</p>
+                          <div className="flex flex-wrap gap-1">
+                            {shades.map(([shade, color]) => (
+                              <div key={shade} className="flex flex-col items-center">
+                                <div className="h-6 w-6 rounded-md border"
+                                  style={{ backgroundColor: typeof color === 'string' && isValidHexColor(color) ? color : undefined }} />
+                                <span className="mt-0.5 text-[9px] text-muted-foreground">{shade}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    }
+                    // Simple color (e.g. primary: "#2563eb")
+                    return (
+                      <div key={name} className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="h-6 w-6 rounded-md border"
+                          style={{ backgroundColor: typeof value === 'string' && isValidHexColor(value) ? value : undefined }} />
+                        <div>
+                          <p className="text-xs font-semibold capitalize">{name}</p>
+                          <p className="text-xs text-muted-foreground">{typeof value === 'string' ? value : ''}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -1336,15 +1360,15 @@ function DeployingWorkspace() {
     <div className="flex h-full items-center justify-center p-6">
       <div className="max-w-md text-center">
         <div className="mb-6 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-black to-gray-800">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-teal-700">
             <svg className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 22.525H0l12-21.05 12 21.05z" />
+              <path d="M17.3 6.3L12 1 6.7 6.3 12 11.7 17.3 6.3zM6.3 6.7L1 12l5.3 5.3L11.7 12 6.3 6.7zM17.7 6.7L12.3 12l5.3 5.3L23 12l-5.3-5.3zM6.7 17.7L12 23l5.3-5.3L12 12.3 6.7 17.7z" />
             </svg>
           </div>
         </div>
 
         <h2 className="mb-3 text-2xl font-bold tracking-tight">
-          Publicando na Vercel
+          Publicando na Netlify
         </h2>
 
         <p className="mb-6 text-muted-foreground">

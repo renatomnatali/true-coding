@@ -88,7 +88,7 @@ export async function POST(request: Request) {
             description: project.description || '',
             technicalPlan,
             hasAuth: true,
-            hasDatabase: technicalPlan.dataModel.entities.length > 0,
+            hasDatabase: !!technicalPlan.database?.prismaSchema,
           }
 
           let allFiles: Array<{ path: string; content: string }> = []

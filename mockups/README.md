@@ -40,6 +40,24 @@ mockups/
 
 ---
 
+## 💳 Novos mockups de créditos (Financeiro)
+
+### Admin (3 propostas)
+
+- `admin/credits/01-admin-credits-control-tower.html`
+- `admin/credits/02-admin-credits-pricing-lab.html`
+- `admin/credits/03-admin-credits-ops-ledger.html`
+
+### Usuário (3 propostas)
+
+- `project/credits/01-user-credits-usage-dock.html`
+- `project/credits/02-user-credits-wallet-timeline.html`
+- `project/credits/03-user-credits-context-bar.html`
+
+Todos seguem o design system atual e simulam padrões de consumo no estilo Claude (janela de uso, reset e alerta de upgrade) adaptados para a jornada True Coding.
+
+---
+
 ## 🚀 Como Visualizar
 
 ### Opção 1: Abrir Diretamente (Mais Simples)

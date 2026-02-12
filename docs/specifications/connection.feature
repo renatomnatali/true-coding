@@ -2,9 +2,9 @@
 # encoding: utf-8
 
 @connection @fase-3
-Funcionalidade: Fase de Conexão (GitHub + Vercel)
+Funcionalidade: Fase de Conexão (GitHub + Netlify)
   Como usuário do True Coding
-  Eu quero conectar meu projeto ao GitHub e Vercel
+  Eu quero conectar meu projeto ao GitHub e Netlify
   Para que o código gerado seja publicado automaticamente
 
   Contexto:
@@ -99,6 +99,16 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
   # githubRepoUrl !== null && productionUrl === null
   # ==========================================================================
 
+  @github @repo @loading
+  Cenário: Mostrar loading enquanto cria repositório após OAuth
+    Dado que o usuário retornou à página com "?github=connected"
+    E o projeto não tem githubRepoUrl ainda
+    Quando o sistema está criando o repositório
+    Então o workspace exibe "Criando seu repositório..."
+    E vejo um indicador de progresso (spinner)
+    E vejo texto "Conectamos seu GitHub com sucesso. Agora estamos criando o repositório..."
+    E NÃO vejo o checkpoint "Você já tem uma conta no GitHub?"
+
   @github @repo @criacao
   Cenário: Criar repositório após OAuth bem-sucedido
     Dado que o usuário retornou à página com "?github=connected"
@@ -119,38 +129,67 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
     E vejo visibilidade como "privado"
     E vejo branch principal como "main"
     E vejo lista de arquivos iniciais gerados pelo auto_init
-    E vejo card "Próximo Passo" explicando a conexão com Vercel
+    E vejo card "Próximo Passo" explicando a conexão com Netlify
     E vejo botão "Ver no GitHub →"
-    E vejo botão "Conectar Vercel →"
+    E vejo botão "Conectar Netlify →"
 
   @github @repo @sidebar
   Cenário: Sidebar mostra integrações após GitHub conectado
     Dado que o projeto tem githubRepoUrl
     Então a sidebar mostra seção "INTEGRAÇÕES"
     E GitHub exibe com marca de check (✓)
-    E Vercel exibe como pendente
+    E Netlify exibe como pendente
 
   # ==========================================================================
-  # SUB-ESTADO: connected — Vercel stub
+  # SUB-ESTADO: repo-created — Conectar Netlify (OAuth real)
+  # githubRepoUrl !== null && productionUrl === null
+  # ==========================================================================
+
+  @netlify @oauth @visualizacao
+  Cenário: Botão "Conectar Netlify" redireciona para OAuth da Netlify
+    Dado que o projeto tem githubRepoUrl
+    E o projeto não tem productionUrl
+    Quando o usuário clica "Conectar Netlify →"
+    Então o sistema salva o projectId em cookie "netlify_oauth_project_id"
+    E redireciona para a URL de autorização da Netlify
+
+  @netlify @oauth @callback
+  Cenário: Callback OAuth Netlify bem-sucedido salva token
+    Dado que a Netlify retornou com code e state válidos
+    E o cookie "netlify_oauth_project_id" contém o ID do projeto
+    Quando o callback processa a troca do code por token
+    Então o token é salvo no usuário (encrypted)
+    E o sistema redireciona para "/project/[id]?netlify=connected"
+
+  @netlify @oauth @callback
+  Cenário: Callback OAuth Netlify sem cookie redireciona para dashboard
+    Dado que a Netlify retornou com code e state válidos
+    E o cookie "netlify_oauth_project_id" NÃO existe
+    Quando o callback processa a troca do code por token
+    Então o sistema redireciona para "/dashboard?netlify=connected"
+
+  @netlify @connect @criacao
+  Cenário: Criar site Netlify após OAuth bem-sucedido
+    Dado que o usuário retornou à página com "?netlify=connected"
+    E o projeto tem githubRepoUrl mas não tem productionUrl
+    Quando o sistema chama POST /api/projects/[id]/connect com { service: "netlify" }
+    Então o sistema decriptografa o token do usuário
+    E cria um site na Netlify com nome derivado do projeto
+    E salva netlifySiteId e productionUrl no projeto
+    E atualiza o status do projeto para "GENERATING"
+    E retorna os dados do site criado
+
+  # ==========================================================================
+  # SUB-ESTADO: connected — Tudo conectado
   # productionUrl !== null
   # ==========================================================================
 
-  @vercel @stub @criacao
-  Cenário: Conectar Vercel (stub) após repositório criado
-    Dado que o projeto tem githubRepoUrl
-    E o projeto não tem productionUrl
-    Quando o usuário clica "Conectar Vercel →"
-    E o sistema chama POST /api/projects/[id]/connect com { service: "vercel" }
-    Então o sistema gera productionUrl como "https://<slug>.vercel.app"
-    E atualiza o status do projeto para "GENERATING"
-    E retorna a URL de produção
-
-  @vercel @visualizacao
+  @netlify @visualizacao
   Cenário: Visualizar tela de tudo conectado
     Dado que o projeto tem productionUrl
     Quando o workspace renderiza o sub-estado "connected"
     Então vejo alert verde "Tudo Conectado!"
-    E vejo cards GitHub ✓ e Vercel ✓
+    E vejo cards GitHub ✓ e Netlify ✓
     E vejo card "Pipeline de Deploy" com timeline de 3 passos
     E vejo tip "Tudo pronto para gerar código!"
     E vejo botão "← Voltar"
@@ -189,6 +228,20 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
   Cenário: Erro na criação do repositório
     Dado que o sistema tentou criar o repositório no GitHub
     E a API do GitHub retornou erro (ex: nome duplicado)
+    Quando o endpoint POST /connect retorna erro
+    Então o usuário vê a tela de erro com opção de tentar novamente
+
+  @erro @netlify @callback
+  Cenário: Callback OAuth Netlify com erro redireciona com parâmetro de erro
+    Dado que a Netlify retornou com error na URL
+    E o cookie "netlify_oauth_project_id" contém o ID do projeto
+    Quando o callback processa o erro
+    Então o sistema redireciona para "/project/[id]?error=netlify_auth_failed"
+
+  @erro @netlify @api
+  Cenário: Erro na criação do site Netlify
+    Dado que o sistema tentou criar o site na Netlify
+    E a API da Netlify retornou erro
     Quando o endpoint POST /connect retorna erro
     Então o usuário vê a tela de erro com opção de tentar novamente
 
@@ -246,7 +299,13 @@ Funcionalidade: Fase de Conexão (GitHub + Vercel)
     Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre conectar GitHub primeiro
 
   @guard @prerequisito
-  Cenário: Endpoint /connect Vercel rejeita quando GitHub não está conectado
+  Cenário: Endpoint /connect Netlify rejeita quando GitHub não está conectado
     Dado que o projeto não tem githubRepoUrl
-    Quando faço POST /api/projects/[id]/connect com { service: "vercel" }
+    Quando faço POST /api/projects/[id]/connect com { service: "netlify" }
     Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre criar repositório primeiro
+
+  @guard @prerequisito
+  Cenário: Endpoint /connect Netlify rejeita quando token Netlify não existe
+    Dado que o usuário não tem netlifyAccessToken
+    Quando faço POST /api/projects/[id]/connect com { service: "netlify" }
+    Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre conectar Netlify primeiro
