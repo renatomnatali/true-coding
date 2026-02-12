@@ -15,7 +15,7 @@ export async function createNetlifySite(
   options: CreateSiteOptions
 ): Promise<NetlifySite> {
   // Netlify site names are globally unique — add a random suffix to avoid collisions
-  const suffix = Math.random().toString(36).slice(2, 7)
+  const suffix = Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
   const siteName = `${options.name}-${suffix}`
 
   const response = await fetch(`${NETLIFY_API}/sites`, {

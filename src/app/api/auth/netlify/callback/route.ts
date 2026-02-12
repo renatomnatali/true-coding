@@ -28,29 +28,26 @@ export async function GET(request: Request) {
       ? `${process.env.NEXT_PUBLIC_APP_URL}/project/${projectId}`
       : `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
 
+    // Read and clear state cookie early to prevent reuse
+    const savedState = cookieStore.get('netlify_oauth_state')?.value
+    cookieStore.delete('netlify_oauth_state')
+    cookieStore.delete('netlify_oauth_project_id')
+
     // Check for OAuth error from Netlify
     if (error) {
       const errorDescription = url.searchParams.get('error_description')
       console.error('Netlify OAuth error:', error, errorDescription)
-      if (projectId) cookieStore.delete('netlify_oauth_project_id')
       return NextResponse.redirect(`${baseRedirect}?error=netlify_auth_failed`)
     }
 
     if (!code || !state) {
-      if (projectId) cookieStore.delete('netlify_oauth_project_id')
       return NextResponse.redirect(`${baseRedirect}?error=missing_params`)
     }
 
-    // Verify state matches cookie
-    const savedState = cookieStore.get('netlify_oauth_state')?.value
-
+    // Verify state matches saved cookie
     if (!savedState || savedState !== state) {
-      if (projectId) cookieStore.delete('netlify_oauth_project_id')
       return NextResponse.redirect(`${baseRedirect}?error=invalid_state`)
     }
-
-    // Clear state cookie
-    cookieStore.delete('netlify_oauth_state')
 
     // Exchange code for token (Netlify tokens are long-lived, no refresh needed)
     const tokenResponse = await exchangeCodeForToken(code)
@@ -63,8 +60,7 @@ export async function GET(request: Request) {
       },
     })
 
-    // Clear project cookie and redirect with success
-    if (projectId) cookieStore.delete('netlify_oauth_project_id')
+    // Redirect with success (cookies already cleaned up above)
     return NextResponse.redirect(`${baseRedirect}?netlify=connected`)
   } catch (error) {
     console.error('Netlify OAuth callback error:', error)
