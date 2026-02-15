@@ -1110,13 +1110,10 @@ function UxPlanView({
           )}
           {uxPlanParsed.informationArchitecture.navigation && uxPlanParsed.informationArchitecture.navigation.length > 0 && (
             <div>
-              <p className="mb-2 text-sm font-semibold">Navegação Principal</p>
-              <div className="space-y-2">
+              <p className="mb-3 text-sm font-semibold">Navegação Principal</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {uxPlanParsed.informationArchitecture.navigation.map((nav, i) => (
-                  <div key={i} className="rounded-lg bg-muted/50 p-3">
-                    <p className="text-sm font-semibold">{nav.name}</p>
-                    <p className="text-xs text-muted-foreground">{nav.description}</p>
-                  </div>
+                  <NavigationPatternCard key={i} name={nav.name} description={nav.description} />
                 ))}
               </div>
             </div>
@@ -1158,13 +1155,10 @@ function UxPlanView({
       {uxPlanParsed.wireframes && uxPlanParsed.wireframes.length > 0 && (
         <div className="rounded-xl border bg-card p-6">
           <h3 className="mb-4 text-lg font-semibold">📐 Wireframes e Fluxos</h3>
-          <div className="space-y-3">
+          <p className="mb-4 text-xs text-muted-foreground">Representação esquemática dos layouts principais</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {uxPlanParsed.wireframes.map((wf, i) => (
-              <div key={i} className="rounded-lg bg-muted/50 p-3">
-                <p className="font-semibold">{wf.name}</p>
-                <p className="text-sm text-muted-foreground">{wf.description}</p>
-                {wf.layout && <p className="mt-1 text-xs text-gray-500">{wf.layout}</p>}
-              </div>
+              <WireframeCard key={i} name={wf.name} description={wf.description} layout={wf.layout} />
             ))}
           </div>
         </div>
@@ -1174,19 +1168,10 @@ function UxPlanView({
       {uxPlanParsed.componentLibrary && uxPlanParsed.componentLibrary.length > 0 && (
         <div className="rounded-xl border bg-card p-6">
           <h3 className="mb-4 text-lg font-semibold">🧩 Biblioteca de Componentes</h3>
-          <div className="space-y-4">
+          <p className="mb-4 text-xs text-muted-foreground">Preview das variantes de UI definidas para o projeto</p>
+          <div className="space-y-5">
             {uxPlanParsed.componentLibrary.map((group, i) => (
-              <div key={i}>
-                <p className="mb-2 text-sm font-semibold">{group.name}</p>
-                <div className="space-y-2 rounded-lg bg-muted/50 p-3">
-                  {group.variants.map((variant, j) => (
-                    <div key={j} className="flex items-center gap-3">
-                      <span className="rounded-md bg-background px-2 py-1 text-xs font-medium">{variant.name}</span>
-                      <span className="text-xs text-muted-foreground">{variant.description}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ComponentGroupPreview key={i} name={group.name} variants={group.variants} />
             ))}
           </div>
         </div>
@@ -1514,6 +1499,359 @@ function FileProgress({ name, status }: { name: string; status: 'done' | 'genera
       )}
       {status === 'pending' && <div className="h-4 w-4 rounded-full border-2 border-muted" />}
       <span className={`text-sm ${status === 'pending' ? 'text-muted-foreground' : ''}`}>{name}</span>
+    </div>
+  )
+}
+
+// ============================================================
+// Visual Preview Components for UX Plan (Issue #39)
+// ============================================================
+
+// --- Navigation Pattern Card ---
+function NavigationPatternCard({ name, description }: { name: string; description: string }) {
+  const key = name.toLowerCase()
+  return (
+    <div className="group rounded-lg border bg-muted/30 p-3 transition-colors hover:border-blue-200">
+      <div className="mb-2 flex aspect-[16/10] items-center justify-center rounded bg-gray-50" aria-hidden="true">
+        {key.includes('sidebar') ? <SidebarWireframe /> :
+         key.includes('bottom') || key.includes('tab bar') ? <BottomBarWireframe /> :
+         key.includes('tab') ? <TopTabsWireframe /> :
+         key.includes('breadcrumb') ? <BreadcrumbWireframe /> :
+         <GenericNavWireframe />}
+      </div>
+      <p className="text-sm font-semibold">{name}</p>
+      <p className="text-xs text-muted-foreground">{description}</p>
+    </div>
+  )
+}
+
+function SidebarWireframe() {
+  return (
+    <svg viewBox="0 0 200 140" className="h-full w-full max-h-[100px]" role="img" aria-label="Wireframe de navegação sidebar">
+      <rect x="2" y="2" width="50" height="136" rx="4" fill="#e5e7eb" stroke="#d1d5db" strokeWidth="1" />
+      {[20, 38, 56, 74, 92].map((y) => (
+        <rect key={y} x="10" y={y} width="34" height="8" rx="2" fill={y === 20 ? '#93c5fd' : '#d1d5db'} />
+      ))}
+      <rect x="60" y="2" width="138" height="136" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="70" y="14" width="80" height="8" rx="2" fill="#d1d5db" />
+      <rect x="70" y="32" width="118" height="40" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="70" y="82" width="56" height="40" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="132" y="82" width="56" height="40" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function BottomBarWireframe() {
+  return (
+    <svg viewBox="0 0 200 140" className="h-full w-full max-h-[100px]" role="img" aria-label="Wireframe de navegação bottom bar">
+      <rect x="2" y="2" width="196" height="108" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="12" y="14" width="80" height="8" rx="2" fill="#d1d5db" />
+      <rect x="12" y="32" width="176" height="30" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="12" y="70" width="84" height="30" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="104" y="70" width="84" height="30" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="2" y="114" width="196" height="24" rx="4" fill="#e5e7eb" stroke="#d1d5db" strokeWidth="1" />
+      {[30, 70, 110, 150].map((x) => (
+        <circle key={x} cx={x} cy="126" r="6" fill="#d1d5db" />
+      ))}
+      <circle cx="70" cy="126" r="6" fill="#93c5fd" />
+    </svg>
+  )
+}
+
+function TopTabsWireframe() {
+  return (
+    <svg viewBox="0 0 200 140" className="h-full w-full max-h-[100px]" role="img" aria-label="Wireframe de navegação por tabs">
+      <rect x="2" y="2" width="196" height="136" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="2" y="2" width="196" height="28" rx="4" fill="#e5e7eb" />
+      <rect x="10" y="8" width="40" height="16" rx="3" fill="#93c5fd" />
+      <rect x="56" y="8" width="40" height="16" rx="3" fill="#d1d5db" />
+      <rect x="102" y="8" width="40" height="16" rx="3" fill="#d1d5db" />
+      <rect x="12" y="42" width="176" height="40" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="12" y="92" width="176" height="36" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function BreadcrumbWireframe() {
+  return (
+    <svg viewBox="0 0 200 140" className="h-full w-full max-h-[100px]" role="img" aria-label="Wireframe de navegação breadcrumb">
+      <rect x="2" y="2" width="196" height="136" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="10" y="10" width="30" height="10" rx="2" fill="#93c5fd" />
+      <text x="46" y="18" fontSize="10" fill="#9ca3af">&gt;</text>
+      <rect x="56" y="10" width="40" height="10" rx="2" fill="#93c5fd" />
+      <text x="102" y="18" fontSize="10" fill="#9ca3af">&gt;</text>
+      <rect x="112" y="10" width="50" height="10" rx="2" fill="#6b7280" />
+      <rect x="10" y="30" width="180" height="100" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function GenericNavWireframe() {
+  return (
+    <svg viewBox="0 0 200 140" className="h-full w-full max-h-[100px]" role="img" aria-label="Wireframe de navegação genérica">
+      <rect x="2" y="2" width="196" height="136" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="10" y="10" width="20" height="12" rx="2" fill="#d1d5db" />
+      <rect x="10" y="30" width="180" height="100" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+    </svg>
+  )
+}
+
+// --- Wireframe Card ---
+function WireframeCard({ name, description, layout }: { name: string; description: string; layout?: string }) {
+  const key = (layout || '').toLowerCase()
+  return (
+    <div className="group rounded-lg border bg-card p-3 transition-colors hover:border-blue-200 hover:shadow-sm">
+      <p className="mb-2 text-sm font-semibold">{name}</p>
+      <div className="mb-2 flex aspect-[16/10] items-center justify-center rounded bg-gray-50" aria-hidden="true">
+        {key.includes('sidebar') ? <SidebarLayoutWireframe /> :
+         key.includes('card') || key.includes('grid') ? <GridLayoutWireframe /> :
+         key.includes('list') || key.includes('table') || key.includes('lista') ? <ListLayoutWireframe /> :
+         key.includes('form') || key.includes('formulário') || key.includes('formulario') ? <FormLayoutWireframe /> :
+         key.includes('mobile') || key.includes('app') ? <MobileLayoutWireframe /> :
+         <GenericLayoutWireframe />}
+      </div>
+      <p className="line-clamp-2 text-xs text-muted-foreground">{description}</p>
+      {layout && <p className="mt-1 text-xs text-gray-400">Layout: {layout}</p>}
+    </div>
+  )
+}
+
+function SidebarLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe com sidebar">
+      <rect x="2" y="2" width="45" height="121" rx="3" fill="#e5e7eb" />
+      {[14, 30, 46, 62].map((y) => (
+        <rect key={y} x="8" y={y} width="33" height="8" rx="2" fill="#d1d5db" />
+      ))}
+      <rect x="55" y="2" width="143" height="121" rx="3" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="63" y="12" width="60" height="6" rx="2" fill="#d1d5db" />
+      <rect x="63" y="26" width="127" height="35" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="63" y="69" width="60" height="45" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="130" y="69" width="60" height="45" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+    </svg>
+  )
+}
+
+function GridLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe com grid de cards">
+      <rect x="2" y="2" width="196" height="20" rx="3" fill="#e5e7eb" />
+      <rect x="8" y="7" width="50" height="10" rx="2" fill="#d1d5db" />
+      {[[8, 30], [104, 30], [8, 78], [104, 78]].map(([x, y], i) => (
+        <rect key={i} x={x} y={y} width="88" height="40" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      ))}
+    </svg>
+  )
+}
+
+function ListLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe com layout de lista">
+      <rect x="2" y="2" width="196" height="20" rx="3" fill="#e5e7eb" />
+      <rect x="8" y="7" width="50" height="10" rx="2" fill="#d1d5db" />
+      {[30, 52, 74, 96].map((y) => (
+        <g key={y}>
+          <rect x="8" y={y} width="184" height="16" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+          <rect x="14" y={y + 4} width="60" height="8" rx="2" fill="#d1d5db" />
+          <rect x="80" y={y + 4} width="40" height="8" rx="2" fill="#e5e7eb" />
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+function FormLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe com layout de formulário">
+      <rect x="30" y="2" width="140" height="121" rx="4" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="40" y="10" width="60" height="6" rx="2" fill="#d1d5db" />
+      {[24, 50, 76].map((y) => (
+        <g key={y}>
+          <rect x="40" y={y} width="30" height="5" rx="1" fill="#9ca3af" />
+          <rect x="40" y={y + 8} width="120" height="14" rx="3" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" />
+        </g>
+      ))}
+      <rect x="110" y="104" width="50" height="14" rx="3" fill="#93c5fd" />
+    </svg>
+  )
+}
+
+function MobileLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe de layout mobile">
+      <rect x="65" y="2" width="70" height="121" rx="10" fill="#f9fafb" stroke="#d1d5db" strokeWidth="1.5" />
+      <rect x="85" y="6" width="30" height="4" rx="2" fill="#e5e7eb" />
+      <rect x="72" y="16" width="56" height="10" rx="2" fill="#e5e7eb" />
+      <rect x="72" y="32" width="56" height="30" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="72" y="68" width="56" height="20" rx="3" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="72" y="94" width="56" height="10" rx="2" fill="#93c5fd" />
+      <rect x="72" y="110" width="56" height="8" rx="2" fill="#e5e7eb" />
+    </svg>
+  )
+}
+
+function GenericLayoutWireframe() {
+  return (
+    <svg viewBox="0 0 200 125" className="h-full w-full max-h-[90px]" role="img" aria-label="Wireframe de layout genérico">
+      <rect x="2" y="2" width="196" height="20" rx="3" fill="#e5e7eb" />
+      <rect x="8" y="7" width="50" height="10" rx="2" fill="#d1d5db" />
+      <rect x="8" y="30" width="184" height="60" rx="4" fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
+      <rect x="8" y="98" width="184" height="20" rx="3" fill="#e5e7eb" />
+    </svg>
+  )
+}
+
+// --- Component Group Preview ---
+function ComponentGroupPreview({ name, variants }: { name: string; variants: Array<{ name: string; description: string }> }) {
+  const key = name.toLowerCase()
+  const isButton = key.includes('button') || key.includes('botão') || key.includes('botao') || key.includes('botões') || key.includes('botoes')
+  const isBadge = key.includes('badge') || key.includes('status') || key.includes('tag')
+  const isCard = key.includes('card')
+  const isInput = key.includes('input') || key.includes('form') || key.includes('campo')
+
+  return (
+    <div>
+      <p className="mb-2 text-sm font-semibold">{name}</p>
+      <div className="rounded-lg bg-muted/30 p-4">
+        {isButton ? <ButtonVariantsPreview variants={variants} /> :
+         isBadge ? <BadgeVariantsPreview variants={variants} /> :
+         isCard ? <CardVariantsPreview variants={variants} /> :
+         isInput ? <InputVariantsPreview variants={variants} /> :
+         <DefaultVariantsPreview variants={variants} />}
+      </div>
+    </div>
+  )
+}
+
+function ButtonVariantsPreview({ variants }: { variants: Array<{ name: string; description: string }> }) {
+  const buttonStyles: Record<string, string> = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700',
+    secondary: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
+    destructive: 'bg-red-500 text-white hover:bg-red-600',
+    ghost: 'text-gray-600 hover:bg-gray-100',
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
+    disabled: 'bg-gray-200 text-gray-400 cursor-not-allowed',
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {variants.map((v, i) => {
+          const vKey = v.name.toLowerCase()
+          const style = Object.entries(buttonStyles).find(([k]) => vKey.includes(k))?.[1] || buttonStyles.secondary
+          return (
+            <button key={i} className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${style}`} disabled={vKey.includes('disabled')}>
+              {v.name}
+            </button>
+          )
+        })}
+      </div>
+      <div className="space-y-1">
+        {variants.map((v, i) => (
+          <p key={i} className="text-xs text-muted-foreground"><span className="font-medium text-foreground">{v.name}</span> — {v.description}</p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function BadgeVariantsPreview({ variants }: { variants: Array<{ name: string; description: string }> }) {
+  const badgeColors: Record<string, string> = {
+    pend: 'bg-amber-100 text-amber-800',
+    prepar: 'bg-blue-100 text-blue-800',
+    process: 'bg-blue-100 text-blue-800',
+    ready: 'bg-amber-100 text-amber-800',
+    pronto: 'bg-amber-100 text-amber-800',
+    deliver: 'bg-purple-100 text-purple-800',
+    entreg: 'bg-green-100 text-green-800',
+    done: 'bg-green-100 text-green-800',
+    success: 'bg-green-100 text-green-800',
+    cancel: 'bg-red-100 text-red-800',
+    error: 'bg-red-100 text-red-800',
+    warning: 'bg-amber-100 text-amber-800',
+    info: 'bg-blue-100 text-blue-800',
+    active: 'bg-green-100 text-green-800',
+    inactive: 'bg-gray-100 text-gray-800',
+  }
+
+  function getBadgeColor(variantName: string) {
+    const k = variantName.toLowerCase()
+    for (const [pattern, color] of Object.entries(badgeColors)) {
+      if (k.includes(pattern)) return color
+    }
+    return 'bg-gray-100 text-gray-800'
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {variants.map((v, i) => (
+          <span key={i} className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${getBadgeColor(v.name)}`}>
+            {v.name}
+          </span>
+        ))}
+      </div>
+      <div className="space-y-1">
+        {variants.map((v, i) => (
+          <p key={i} className="text-xs text-muted-foreground"><span className="font-medium text-foreground">{v.name}</span> — {v.description}</p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CardVariantsPreview({ variants }: { variants: Array<{ name: string; description: string }> }) {
+  return (
+    <div className="space-y-3">
+      {variants.map((v, i) => {
+        const vKey = v.name.toLowerCase()
+        const borderClass = vKey.includes('highlight') ? 'border-blue-300 shadow-blue-100' : vKey.includes('elevat') ? 'shadow-md' : ''
+        return (
+          <div key={i} className={`rounded-lg border bg-white p-3 ${borderClass}`}>
+            <p className="text-xs font-semibold text-gray-700">{v.name}</p>
+            <p className="text-xs text-gray-400">{v.description}</p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function InputVariantsPreview({ variants }: { variants: Array<{ name: string; description: string }> }) {
+  return (
+    <div className="space-y-3">
+      {variants.map((v, i) => {
+        const vKey = v.name.toLowerCase()
+        const isError = vKey.includes('error') || vKey.includes('erro')
+        const isDisabled = vKey.includes('disabled') || vKey.includes('desab')
+        const isFocused = vKey.includes('focus') || vKey.includes('foco')
+        const borderClass = isError ? 'border-red-400 bg-red-50' : isFocused ? 'border-blue-500 ring-2 ring-blue-100' : isDisabled ? 'border-gray-200 bg-gray-100 text-gray-400' : 'border-gray-300'
+        return (
+          <div key={i}>
+            <label className={`mb-1 block text-xs font-medium ${isError ? 'text-red-600' : 'text-gray-600'}`}>{v.name}</label>
+            <input
+              type="text"
+              readOnly
+              disabled={isDisabled}
+              placeholder={v.description}
+              className={`w-full rounded-md border px-3 py-1.5 text-xs ${borderClass}`}
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function DefaultVariantsPreview({ variants }: { variants: Array<{ name: string; description: string }> }) {
+  return (
+    <div className="space-y-2">
+      {variants.map((v, i) => (
+        <div key={i} className="flex items-center gap-3">
+          <span className="rounded-md bg-background px-2 py-1 text-xs font-medium">{v.name}</span>
+          <span className="text-xs text-muted-foreground">{v.description}</span>
+        </div>
+      ))}
     </div>
   )
 }

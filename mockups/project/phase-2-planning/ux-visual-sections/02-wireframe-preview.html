@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframes e Fluxos - Visual Preview | True Coding</title>
+  <link rel="stylesheet" href="../../../css/tokens.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+      padding: var(--space-6);
+    }
+    .container {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .back-link:hover { color: var(--color-primary); }
+
+    .plan-card {
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    .plan-card h3 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+    .plan-card .subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Wireframe grid */
+    .wf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    @media (max-width: 640px) {
+      .wf-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Individual wireframe card */
+    .wf-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .wf-card:hover {
+      border-color: var(--color-primary-light);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+    }
+
+    /* Wireframe header */
+    .wf-card-header {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-secondary);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .wf-persona-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--border-radius-full);
+      font-size: 10px;
+      font-weight: var(--font-weight-medium);
+    }
+    .wf-persona-badge.restaurant {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    .wf-persona-badge.customer {
+      background: var(--color-warning-light);
+      color: #92400e;
+    }
+    .wf-persona-badge.driver {
+      background: var(--color-success-light);
+      color: #065f46;
+    }
+    .wf-card-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* Wireframe drawing area */
+    .wf-drawing {
+      background: var(--color-bg-secondary);
+      padding: var(--space-3);
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Wireframe footer */
+    .wf-card-footer {
+      padding: var(--space-3);
+      border-top: 1px solid var(--color-border);
+    }
+    .wf-card-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: var(--space-2);
+    }
+    .wf-card-layout {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-family: monospace;
+      background: var(--color-bg-secondary);
+      padding: 4px 8px;
+      border-radius: var(--border-radius-sm);
+      display: inline-block;
+    }
+
+    /* ============ WIREFRAME DRAWINGS ============ */
+
+    /* Dashboard: sidebar + grid cards */
+    .wf-dashboard {
+      width: 100%;
+      max-width: 280px;
+      height: 140px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: var(--border-radius-md);
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      overflow: hidden;
+      background: white;
+    }
+    .wf-dash-sidebar {
+      background: var(--color-gray-200);
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .wf-dash-sidebar .logo {
+      width: 20px;
+      height: 20px;
+      background: var(--color-primary);
+      border-radius: 3px;
+      margin: 0 auto 4px;
+    }
+    .wf-dash-sidebar .item {
+      height: 4px;
+      background: var(--color-gray-400);
+      border-radius: 2px;
+      margin: 0 2px;
+    }
+    .wf-dash-sidebar .item.active {
+      background: var(--color-primary);
+    }
+    .wf-dash-main {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .wf-dash-header {
+      height: 6px;
+      width: 50%;
+      background: var(--color-gray-300);
+      border-radius: 3px;
+    }
+    .wf-dash-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+    .wf-dash-metric {
+      background: var(--color-gray-100);
+      border-radius: 3px;
+      padding: 4px;
+      text-align: center;
+    }
+    .wf-dash-metric .number {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-gray-500);
+    }
+    .wf-dash-metric .label {
+      font-size: 6px;
+      color: var(--color-gray-400);
+    }
+    .wf-dash-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .wf-dash-list-item {
+      height: 14px;
+      background: var(--color-gray-100);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+      gap: 4px;
+    }
+    .wf-dash-list-item .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+    .wf-dash-list-item .dot.warning { background: var(--color-warning); }
+    .wf-dash-list-item .dot.success { background: var(--color-success); }
+    .wf-dash-list-item .dot.error { background: var(--color-error); }
+    .wf-dash-list-item .line {
+      height: 3px;
+      flex: 1;
+      background: var(--color-gray-300);
+      border-radius: 2px;
+    }
+
+    /* Order Detail: sidebar-less, 2 col */
+    .wf-order-detail {
+      width: 100%;
+      max-width: 280px;
+      height: 140px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .wf-order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+    .wf-order-id {
+      font-size: 9px;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+    .wf-order-status {
+      font-size: 8px;
+      padding: 2px 8px;
+      border-radius: var(--border-radius-full);
+      font-weight: var(--font-weight-medium);
+    }
+    .wf-order-status.preparing {
+      background: var(--color-warning-light);
+      color: #92400e;
+    }
+    .wf-order-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 6px;
+      padding: 8px 10px;
+    }
+    .wf-order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .wf-order-items .line {
+      height: 4px;
+      background: var(--color-gray-200);
+      border-radius: 2px;
+    }
+    .wf-order-items .line.bold {
+      background: var(--color-gray-400);
+      height: 5px;
+      margin-top: 4px;
+      width: 60%;
+    }
+    .wf-order-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .wf-order-btn {
+      height: 14px;
+      border-radius: 3px;
+      border: none;
+    }
+    .wf-order-btn.accept { background: var(--color-success); }
+    .wf-order-btn.reject { background: var(--color-error); }
+    .wf-order-btn.contact {
+      background: white;
+      border: 1px solid var(--color-gray-300);
+    }
+    .wf-order-btn.assign { background: var(--color-primary); }
+
+    /* Menu Editor: list layout */
+    .wf-menu-editor {
+      width: 100%;
+      max-width: 280px;
+      height: 140px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .wf-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+    .wf-menu-title {
+      font-size: 9px;
+      font-weight: var(--font-weight-bold);
+    }
+    .wf-menu-add-btn {
+      font-size: 8px;
+      padding: 2px 8px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 3px;
+      border: none;
+    }
+    .wf-menu-category {
+      font-size: 7px;
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      padding: 4px 10px 2px;
+      font-weight: var(--font-weight-semibold);
+    }
+    .wf-menu-list {
+      flex: 1;
+      padding: 0 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .wf-menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      background: var(--color-gray-100);
+      border-radius: 3px;
+    }
+    .wf-menu-item .name {
+      font-size: 8px;
+      font-weight: var(--font-weight-semibold);
+    }
+    .wf-menu-item .price {
+      font-size: 7px;
+      color: var(--color-success);
+    }
+    .wf-menu-item.unavailable {
+      opacity: 0.4;
+    }
+    .wf-menu-item .actions {
+      display: flex;
+      gap: 2px;
+    }
+    .wf-menu-item .action-btn {
+      width: 16px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid var(--color-gray-300);
+      background: white;
+    }
+
+    /* Mobile Public Menu */
+    .wf-public-menu {
+      width: 140px;
+      height: 140px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .wf-pub-header {
+      background: var(--color-primary);
+      padding: 6px;
+      text-align: center;
+    }
+    .wf-pub-header .name {
+      font-size: 8px;
+      font-weight: var(--font-weight-bold);
+      color: white;
+    }
+    .wf-pub-header .status {
+      font-size: 6px;
+      color: rgba(255,255,255,0.7);
+    }
+    .wf-pub-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+    .wf-pub-tab {
+      font-size: 7px;
+      padding: 2px 6px;
+      border-radius: var(--border-radius-full);
+    }
+    .wf-pub-tab.active {
+      background: var(--color-primary);
+      color: white;
+    }
+    .wf-pub-tab.inactive {
+      background: var(--color-gray-100);
+      color: var(--color-gray-500);
+    }
+    .wf-pub-items {
+      flex: 1;
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .wf-pub-item {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .wf-pub-item .thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--color-gray-100);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    .wf-pub-item .info {
+      flex: 1;
+    }
+    .wf-pub-item .info .name {
+      font-size: 7px;
+      font-weight: var(--font-weight-semibold);
+    }
+    .wf-pub-item .info .price {
+      font-size: 6px;
+      color: var(--color-success);
+    }
+    .wf-pub-item .add-btn {
+      width: 14px;
+      height: 14px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+    }
+    .wf-pub-cart {
+      background: var(--color-primary);
+      padding: 4px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wf-pub-cart .total {
+      font-size: 7px;
+      color: white;
+      font-weight: var(--font-weight-bold);
+    }
+    .wf-pub-cart .cart-btn {
+      font-size: 6px;
+      padding: 2px 6px;
+      background: white;
+      color: var(--color-primary);
+      border-radius: 3px;
+      border: none;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* Delivery Offer (Mobile) */
+    .wf-delivery-offer {
+      width: 140px;
+      height: 140px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .wf-del-header {
+      background: var(--color-success);
+      padding: 6px;
+      text-align: center;
+    }
+    .wf-del-header .label {
+      font-size: 6px;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+    }
+    .wf-del-header .amount {
+      font-size: 14px;
+      font-weight: var(--font-weight-bold);
+      color: white;
+    }
+    .wf-del-header .timer {
+      font-size: 6px;
+      color: rgba(255,255,255,0.7);
+    }
+    .wf-del-body {
+      flex: 1;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .wf-del-info {
+      display: flex;
+      justify-content: space-between;
+    }
+    .wf-del-info .item-label {
+      font-size: 6px;
+      color: var(--color-text-tertiary);
+    }
+    .wf-del-info .item-value {
+      font-size: 7px;
+      font-weight: var(--font-weight-semibold);
+    }
+    .wf-del-address {
+      padding: 4px;
+      background: var(--color-gray-100);
+      border-radius: 3px;
+      font-size: 6px;
+      color: var(--color-text-secondary);
+    }
+    .wf-del-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-top: auto;
+    }
+    .wf-del-accept {
+      padding: 5px;
+      background: var(--color-success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: var(--font-weight-bold);
+      text-align: center;
+    }
+    .wf-del-reject {
+      padding: 3px;
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-gray-300);
+      border-radius: 4px;
+      font-size: 7px;
+      text-align: center;
+    }
+
+    /* Comparison */
+    .comparison {
+      margin-top: var(--space-8);
+    }
+    .comparison h3 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    @media (max-width: 640px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    .comparison-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      background: white;
+    }
+    .comparison-card.before {
+      border-color: var(--color-error);
+      border-style: dashed;
+    }
+    .comparison-card.after {
+      border-color: var(--color-success);
+    }
+    .comparison-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+    }
+    .comparison-card.before .comparison-label { color: var(--color-error); }
+    .comparison-card.after .comparison-label { color: var(--color-success); }
+
+    .text-only-wf {
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-sm);
+      margin-bottom: var(--space-2);
+    }
+    .text-only-wf strong {
+      font-size: var(--font-size-sm);
+      display: block;
+      margin-bottom: var(--space-1);
+    }
+    .text-only-wf .desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-1);
+    }
+    .text-only-wf .layout {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-style: italic;
+    }
+
+    /* Implementation hint */
+    .impl-hint {
+      margin-top: var(--space-6);
+      padding: var(--space-4);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+      border-left: 4px solid var(--color-primary);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+    .impl-hint strong {
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+    .impl-hint code {
+      background: var(--color-bg-tertiary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: var(--font-size-xs);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">&#8592; Voltar ao indice</a>
+
+    <!-- ============================================ -->
+    <!-- ANTES vs DEPOIS -->
+    <!-- ============================================ -->
+    <div class="comparison">
+      <h3>Antes vs Depois</h3>
+      <div class="comparison-grid">
+        <div class="comparison-card before">
+          <div class="comparison-label">Antes (somente texto)</div>
+          <div class="text-only-wf">
+            <strong>Dashboard</strong>
+            <div class="desc">Visao geral com metricas e pedidos ativos</div>
+            <div class="layout">Sidebar fixa + area principal com cards de metricas e lista de pedidos</div>
+          </div>
+          <div class="text-only-wf">
+            <strong>Detalhes do Pedido</strong>
+            <div class="desc">Itens, cliente, endereco, acoes</div>
+            <div class="layout">Sidebar fixa + layout de 2 colunas</div>
+          </div>
+        </div>
+
+        <div class="comparison-card after">
+          <div class="comparison-label">Depois (com wireframe visual)</div>
+          <div style="display: flex; gap: 8px; justify-content: center;">
+            <!-- Mini dashboard wireframe -->
+            <div style="width: 80px; height: 50px; border: 1px solid var(--color-gray-300); border-radius: 3px; display: grid; grid-template-columns: 14px 1fr; overflow: hidden;">
+              <div style="background: var(--color-gray-200); padding: 3px 2px;">
+                <div style="width: 8px; height: 6px; background: var(--color-primary); border-radius: 1px; margin-bottom: 2px;"></div>
+                <div style="width: 8px; height: 2px; background: var(--color-gray-400); border-radius: 1px; margin-bottom: 1px;"></div>
+                <div style="width: 8px; height: 2px; background: var(--color-primary); border-radius: 1px;"></div>
+              </div>
+              <div style="padding: 3px; display: flex; flex-direction: column; gap: 2px;">
+                <div style="display: flex; gap: 2px;">
+                  <div style="flex: 1; height: 8px; background: var(--color-gray-100); border-radius: 1px;"></div>
+                  <div style="flex: 1; height: 8px; background: var(--color-gray-100); border-radius: 1px;"></div>
+                </div>
+                <div style="flex: 1; background: var(--color-gray-100); border-radius: 1px;"></div>
+              </div>
+            </div>
+            <!-- Mini order detail wireframe -->
+            <div style="width: 80px; height: 50px; border: 1px solid var(--color-gray-300); border-radius: 3px; display: flex; flex-direction: column; overflow: hidden;">
+              <div style="display: flex; justify-content: space-between; padding: 2px 4px; border-bottom: 1px solid var(--color-gray-200);">
+                <div style="width: 20px; height: 3px; background: var(--color-gray-400); border-radius: 1px;"></div>
+                <div style="width: 16px; height: 8px; background: var(--color-warning-light); border-radius: 4px;"></div>
+              </div>
+              <div style="flex: 1; display: grid; grid-template-columns: 1.5fr 1fr; gap: 2px; padding: 3px;">
+                <div style="display: flex; flex-direction: column; gap: 1px;">
+                  <div style="height: 2px; background: var(--color-gray-200); border-radius: 1px;"></div>
+                  <div style="height: 2px; background: var(--color-gray-200); border-radius: 1px;"></div>
+                  <div style="height: 2px; background: var(--color-gray-200); border-radius: 1px;"></div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1px;">
+                  <div style="height: 6px; background: var(--color-success); border-radius: 1px;"></div>
+                  <div style="height: 6px; background: var(--color-error); border-radius: 1px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 8px; font-size: 9px; color: var(--color-text-tertiary);">
+            Wireframes esquematicos + texto descritivo
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- COMO FICARIA NO UX PLAN -->
+    <!-- ============================================ -->
+    <div style="margin-top: var(--space-8);">
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+        Como ficaria no UX Plan
+      </h3>
+      <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+        Cada wireframe do array <code>wireframes[]</code> gera um card com representacao
+        visual esquematica. O layout e inferido a partir do campo <code>layout</code>.
+      </p>
+    </div>
+
+    <!-- Card no estilo do WorkspacePanel -->
+    <div class="plan-card">
+      <h3>Wireframes e Fluxos</h3>
+      <p class="subtitle">Representacao esquematica dos layouts principais</p>
+
+      <div class="wf-grid">
+        <!-- Wireframe 1: Dashboard -->
+        <div class="wf-card">
+          <div class="wf-card-header">
+            <span class="wf-persona-badge restaurant">Restaurante</span>
+            <span class="wf-card-name">Dashboard</span>
+          </div>
+          <div class="wf-drawing" aria-hidden="true">
+            <div class="wf-dashboard">
+              <div class="wf-dash-sidebar">
+                <div class="logo"></div>
+                <div class="item active"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+              </div>
+              <div class="wf-dash-main">
+                <div class="wf-dash-header"></div>
+                <div class="wf-dash-metrics">
+                  <div class="wf-dash-metric">
+                    <div class="number">47</div>
+                    <div class="label">Pedidos</div>
+                  </div>
+                  <div class="wf-dash-metric">
+                    <div class="number">1.8k</div>
+                    <div class="label">Receita</div>
+                  </div>
+                  <div class="wf-dash-metric">
+                    <div class="number">32m</div>
+                    <div class="label">Tempo</div>
+                  </div>
+                </div>
+                <div class="wf-dash-list">
+                  <div class="wf-dash-list-item">
+                    <div class="dot warning"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="wf-dash-list-item">
+                    <div class="dot success"></div>
+                    <div class="line"></div>
+                  </div>
+                  <div class="wf-dash-list-item">
+                    <div class="dot error"></div>
+                    <div class="line"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wf-card-footer">
+            <div class="wf-card-desc">Visao geral com metricas do dia, pedidos ativos e grafico de vendas</div>
+            <span class="wf-card-layout">Layout: Sidebar + cards + lista</span>
+          </div>
+        </div>
+
+        <!-- Wireframe 2: Order Detail -->
+        <div class="wf-card">
+          <div class="wf-card-header">
+            <span class="wf-persona-badge restaurant">Restaurante</span>
+            <span class="wf-card-name">Detalhes do Pedido</span>
+          </div>
+          <div class="wf-drawing" aria-hidden="true">
+            <div class="wf-order-detail">
+              <div class="wf-order-header">
+                <span class="wf-order-id">PEDIDO #1234</span>
+                <span class="wf-order-status preparing">Preparando</span>
+              </div>
+              <div class="wf-order-body">
+                <div class="wf-order-items">
+                  <div class="line" style="width: 90%;"></div>
+                  <div class="line" style="width: 70%;"></div>
+                  <div class="line" style="width: 55%;"></div>
+                  <div class="line bold"></div>
+                  <div style="margin-top: auto;">
+                    <div class="line" style="width: 60%; margin-bottom: 2px;"></div>
+                    <div class="line" style="width: 80%; margin-bottom: 2px;"></div>
+                    <div class="line" style="width: 50%;"></div>
+                  </div>
+                </div>
+                <div class="wf-order-actions">
+                  <div class="wf-order-btn accept"></div>
+                  <div class="wf-order-btn reject"></div>
+                  <div class="wf-order-btn contact"></div>
+                  <div class="wf-order-btn assign"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wf-card-footer">
+            <div class="wf-card-desc">Itens, cliente, endereco, timeline de status, acoes do pedido</div>
+            <span class="wf-card-layout">Layout: Header + 2 colunas</span>
+          </div>
+        </div>
+
+        <!-- Wireframe 3: Menu Editor -->
+        <div class="wf-card">
+          <div class="wf-card-header">
+            <span class="wf-persona-badge restaurant">Restaurante</span>
+            <span class="wf-card-name">Editor de Cardapio</span>
+          </div>
+          <div class="wf-drawing" aria-hidden="true">
+            <div class="wf-menu-editor">
+              <div class="wf-menu-header">
+                <span class="wf-menu-title">CARDAPIO</span>
+                <button class="wf-menu-add-btn">+ Novo</button>
+              </div>
+              <div class="wf-menu-category">PIZZAS</div>
+              <div class="wf-menu-list">
+                <div class="wf-menu-item">
+                  <div>
+                    <div class="name">Margherita</div>
+                    <div class="price">R$ 40</div>
+                  </div>
+                  <div class="actions">
+                    <div class="action-btn"></div>
+                    <div class="action-btn"></div>
+                  </div>
+                </div>
+                <div class="wf-menu-item unavailable">
+                  <div>
+                    <div class="name">Calabresa</div>
+                    <div class="price">R$ 45</div>
+                  </div>
+                  <div class="actions">
+                    <div class="action-btn"></div>
+                    <div class="action-btn"></div>
+                  </div>
+                </div>
+                <div class="wf-menu-item">
+                  <div>
+                    <div class="name">4 Queijos</div>
+                    <div class="price">R$ 48</div>
+                  </div>
+                  <div class="actions">
+                    <div class="action-btn"></div>
+                    <div class="action-btn"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wf-card-footer">
+            <div class="wf-card-desc">Categorias e itens com foto, preco, disponibilidade e acoes de edicao</div>
+            <span class="wf-card-layout">Layout: Lista editavel</span>
+          </div>
+        </div>
+
+        <!-- Wireframe 4: Public Menu (Mobile) -->
+        <div class="wf-card">
+          <div class="wf-card-header">
+            <span class="wf-persona-badge customer">Cliente</span>
+            <span class="wf-card-name">Cardapio Publico (Mobile)</span>
+          </div>
+          <div class="wf-drawing" aria-hidden="true">
+            <div class="wf-public-menu">
+              <div class="wf-pub-header">
+                <div class="name">Pizzaria Bella</div>
+                <div class="status">Aberto - 30-45 min</div>
+              </div>
+              <div class="wf-pub-tabs">
+                <span class="wf-pub-tab active">Pizzas</span>
+                <span class="wf-pub-tab inactive">Bebidas</span>
+                <span class="wf-pub-tab inactive">Doces</span>
+              </div>
+              <div class="wf-pub-items">
+                <div class="wf-pub-item">
+                  <div class="thumb">&#127829;</div>
+                  <div class="info">
+                    <div class="name">Margherita</div>
+                    <div class="price">R$ 40</div>
+                  </div>
+                  <button class="add-btn">+</button>
+                </div>
+                <div class="wf-pub-item">
+                  <div class="thumb">&#127829;</div>
+                  <div class="info">
+                    <div class="name">Calabresa</div>
+                    <div class="price">R$ 45</div>
+                  </div>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+              <div class="wf-pub-cart">
+                <div class="total">R$ 50</div>
+                <button class="cart-btn">Carrinho</button>
+              </div>
+            </div>
+          </div>
+          <div class="wf-card-footer">
+            <div class="wf-card-desc">Categorias, itens com foto e preco, carrinho flutuante</div>
+            <span class="wf-card-layout">Layout: Mobile app + tabs + lista</span>
+          </div>
+        </div>
+
+        <!-- Wireframe 5: Delivery Offer (Mobile) -->
+        <div class="wf-card">
+          <div class="wf-card-header">
+            <span class="wf-persona-badge driver">Entregador</span>
+            <span class="wf-card-name">Oferta de Entrega (Mobile)</span>
+          </div>
+          <div class="wf-drawing" aria-hidden="true">
+            <div class="wf-delivery-offer">
+              <div class="wf-del-header">
+                <div class="label">NOVA ENTREGA</div>
+                <div class="amount">R$ 8</div>
+                <div class="timer">Aceite em 30s</div>
+              </div>
+              <div class="wf-del-body">
+                <div class="wf-del-info">
+                  <div>
+                    <div class="item-label">Restaurante</div>
+                    <div class="item-value">Pizzaria Bella</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div class="item-label">Distancia</div>
+                    <div class="item-value">3.2 km</div>
+                  </div>
+                </div>
+                <div class="wf-del-address">Rua das Flores, 123 - Centro</div>
+                <div class="wf-del-actions">
+                  <div class="wf-del-accept">ACEITAR</div>
+                  <div class="wf-del-reject">Recusar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wf-card-footer">
+            <div class="wf-card-desc">Card com restaurante, distancia, valor. Aceitar abre GPS, recusar volta ao home</div>
+            <span class="wf-card-layout">Layout: Mobile app + CTA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DICAS DE IMPLEMENTACAO -->
+    <!-- ============================================ -->
+    <div class="impl-hint">
+      <strong>Dicas de Implementacao em React/Tailwind</strong>
+      <p>
+        <strong>Componente:</strong> <code>WireframePreview</code><br>
+        <strong>Entrada:</strong> <code>wireframes: Array&lt;{"{"} name, description, layout {"}"}&gt;</code>
+      </p>
+      <p style="margin-top: var(--space-2);">
+        <strong>Logica de deteccao do layout:</strong> Fazer <code>layout.toLowerCase()</code> e testar keywords:
+      </p>
+      <ul style="font-size: var(--font-size-xs); margin-top: var(--space-2); padding-left: var(--space-5); line-height: 2;">
+        <li><code>sidebar</code> -> Grid 2 colunas com barra lateral estreita + area principal</li>
+        <li><code>card</code> ou <code>grid</code> -> Grid de retangulos (2x2 ou 3 colunas)</li>
+        <li><code>list</code> ou <code>table</code> -> Linhas empilhadas horizontais</li>
+        <li><code>form</code> -> Retangulos verticais (campos) + botao</li>
+        <li><code>map</code> ou <code>mapa</code> -> Area grande + sidebar/panel</li>
+        <li><code>mobile</code> ou <code>app</code> -> Viewport de telefone (140px wide, border-radius 16px)</li>
+        <li>Default -> Header + body generico</li>
+      </ul>
+      <p style="margin-top: var(--space-3);">
+        <strong>Persona badges:</strong> Se o campo <code>wireframes</code> nao tem persona,
+        inferir pela keyword no <code>name</code> ou omitir o badge.
+        Para adicionar persona, enriquecer o JSON adicionando campo <code>persona?: string</code> no prompt.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
