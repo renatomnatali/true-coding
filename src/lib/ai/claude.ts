@@ -46,6 +46,10 @@ export async function* streamChat(
 export interface ChatResult {
   text: string
   stopReason: string
+  usage?: {
+    inputTokens: number
+    outputTokens: number
+  }
 }
 
 export async function chat(options: StreamChatOptions): Promise<ChatResult> {
@@ -63,5 +67,9 @@ export async function chat(options: StreamChatOptions): Promise<ChatResult> {
   return {
     text: textBlock?.type === 'text' ? textBlock.text : '',
     stopReason: response.stop_reason ?? 'end_turn',
+    usage: {
+      inputTokens: response.usage?.input_tokens ?? 0,
+      outputTokens: response.usage?.output_tokens ?? 0,
+    },
   }
 }

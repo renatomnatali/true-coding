@@ -40,19 +40,36 @@ interface GenerationProgressProps {
   projectId: string
   onComplete?: (repoUrl: string) => void
   onError?: (error: string) => void
+  autoStart?: boolean
 }
 
 const STAGE_LABELS: Record<string, string> = {
   loading_templates: 'Carregando templates...',
   generating_files: 'Gerando codigo...',
   validating: 'Validando codigo...',
-  committing: 'Criando repositorio...',
+  committing: 'Gravando no repositorio...',
+}
+
+function mapGenerateErrorMessage(codeOrMessage: string): string {
+  const trimmed = codeOrMessage.trim()
+  const known: Record<string, string> = {
+    PROJECT_ID_REQUIRED: 'Projeto invalido para geracao.',
+    PROJECT_NOT_FOUND: 'Projeto nao encontrado.',
+    TECHNICAL_PLAN_REQUIRED: 'Plano tecnico ausente. Gere/aprove o plano antes da geracao.',
+    GITHUB_NOT_CONNECTED: 'GitHub nao conectado para este projeto.',
+    UNAUTHORIZED: 'Sessao expirada. Faca login novamente.',
+    FORBIDDEN: 'Voce nao tem permissao para gerar este projeto.',
+    INTERNAL_ERROR: 'Falha interna durante a geracao.',
+  }
+
+  return known[trimmed] ?? trimmed
 }
 
 export function GenerationProgress({
   projectId,
   onComplete,
   onError,
+  autoStart = true,
 }: GenerationProgressProps) {
   const [status, setStatus] = useState<
     'idle' | 'generating' | 'success' | 'error'
@@ -66,6 +83,8 @@ export function GenerationProgress({
     setStatus('generating')
     setFiles([])
     setError(null)
+    setRepoUrl(null)
+    setCurrentStage('loading_templates')
 
     try {
       const response = await fetch('/api/generate', {
@@ -75,61 +94,104 @@ export function GenerationProgress({
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Generation failed')
+        let errorCode = 'Generation failed'
+        try {
+          const data = await response.json()
+          errorCode = typeof data?.error === 'string' ? data.error : errorCode
+        } catch {
+          // ignore json parse errors
+        }
+        throw new Error(mapGenerateErrorMessage(errorCode))
       }
 
       const reader = response.body?.getReader()
       if (!reader) throw new Error('No response body')
 
       const decoder = new TextDecoder()
+      let finished = false
+      let failed = false
+      let buffer = ''
+
+      const processEvent = async (event: GenerationEvent) => {
+        switch (event.type) {
+          case 'stage':
+            setCurrentStage(event.stage || null)
+            break
+          case 'file_generated':
+            if (event.file) {
+              setFiles((prev) => [...prev, event.file!])
+            }
+            break
+          case 'error':
+            failed = true
+            setError(
+              mapGenerateErrorMessage(event.error || 'Unknown error')
+            )
+            setStatus('error')
+            onError?.(mapGenerateErrorMessage(event.error || 'Unknown error'))
+            break
+          case 'done': {
+            finished = true
+            setStatus('success')
+            const projectResponse = await fetch(`/api/projects/${projectId}`)
+            if (projectResponse.ok) {
+              const project = await projectResponse.json()
+              if (project.githubRepoUrl) {
+                setRepoUrl(project.githubRepoUrl)
+                onComplete?.(project.githubRepoUrl)
+              }
+            }
+            break
+          }
+        }
+      }
+
+      const parseSseBlock = async (block: string) => {
+        const payload = block
+          .split('\n')
+          .filter((line) => line.startsWith('data:'))
+          .map((line) => line.replace(/^data:\s?/, ''))
+          .join('\n')
+          .trim()
+
+        if (!payload) return
+
+        try {
+          const event: GenerationEvent = JSON.parse(payload)
+          await processEvent(event)
+        } catch {
+          // Ignore malformed chunks
+        }
+      }
 
       while (true) {
         const { done, value } = await reader.read()
-        if (done) break
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const event: GenerationEvent = JSON.parse(line.slice(6))
-
-              switch (event.type) {
-                case 'stage':
-                  setCurrentStage(event.stage || null)
-                  break
-                case 'file_generated':
-                  if (event.file) {
-                    setFiles((prev) => [...prev, event.file!])
-                  }
-                  break
-                case 'error':
-                  setError(event.error || 'Unknown error')
-                  setStatus('error')
-                  onError?.(event.error || 'Unknown error')
-                  return
-                case 'done':
-                  setStatus('success')
-                  // Fetch updated project to get repo URL
-                  const projectResponse = await fetch(
-                    `/api/projects/${projectId}`
-                  )
-                  if (projectResponse.ok) {
-                    const project = await projectResponse.json()
-                    if (project.githubRepoUrl) {
-                      setRepoUrl(project.githubRepoUrl)
-                      onComplete?.(project.githubRepoUrl)
-                    }
-                  }
-                  break
-              }
-            } catch {
-              // Ignore parse errors
-            }
-          }
+        if (done) {
+          buffer += decoder.decode()
+          break
         }
+
+        buffer += decoder.decode(value, { stream: true })
+        const chunks = buffer.split('\n\n')
+        buffer = chunks.pop() ?? ''
+
+        for (const chunk of chunks) {
+          await parseSseBlock(chunk)
+          if (failed) break
+        }
+
+        if (failed) break
+      }
+
+      if (!failed && buffer.trim().length > 0) {
+        await parseSseBlock(buffer)
+      }
+
+      if (!finished && !failed) {
+        throw new Error(
+          'A geracao foi interrompida antes da conclusao. Tente novamente.'
+        )
       }
     } catch (err) {
       const errorMessage =
@@ -141,8 +203,9 @@ export function GenerationProgress({
   }, [projectId, onComplete, onError])
 
   useEffect(() => {
-    startGeneration()
-  }, [startGeneration])
+    if (!autoStart) return
+    void startGeneration()
+  }, [startGeneration, autoStart])
 
   return (
     <div className="space-y-6 p-6 border rounded-lg">
@@ -158,6 +221,17 @@ export function GenerationProgress({
                   {STAGE_LABELS[currentStage] || currentStage}
                 </p>
               )}
+            </div>
+          </>
+        )}
+        {status === 'idle' && (
+          <>
+            <FileCode className="h-6 w-6 text-muted-foreground" />
+            <div>
+              <h3 className="font-semibold">Pronto para gerar</h3>
+              <p className="text-sm text-muted-foreground">
+                Inicie a geracao para criar os arquivos e commitar no repositorio.
+              </p>
             </div>
           </>
         )}
@@ -184,7 +258,7 @@ export function GenerationProgress({
       </div>
 
       {/* Progress Stages */}
-      <div className="space-y-2">
+      {status !== 'idle' && <div className="space-y-2">
         {[
           'loading_templates',
           'generating_files',
@@ -230,7 +304,7 @@ export function GenerationProgress({
             </div>
           )
         })}
-      </div>
+      </div>}
 
       {/* Generated Files */}
       {files.length > 0 && (
@@ -267,6 +341,11 @@ export function GenerationProgress({
       )}
 
       {/* Retry Button */}
+      {status === 'idle' && (
+        <Button onClick={startGeneration} className="w-full">
+          Iniciar geracao
+        </Button>
+      )}
       {status === 'error' && (
         <Button onClick={startGeneration} variant="outline" className="w-full">
           Tentar novamente

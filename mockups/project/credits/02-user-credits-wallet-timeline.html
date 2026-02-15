@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Credits - Proposta 2 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+</head>
+<body>
+  <div class="credits-app">
+    <aside class="credits-sidebar">
+      <div class="credits-logo"><span class="credits-logo-icon">TC</span>True Coding</div>
+      <div class="credits-nav-title">Conta</div>
+      <a class="credits-nav-item active" href="02-user-credits-wallet-timeline.html">Proposta 2 - Wallet Timeline</a>
+      <a class="credits-nav-item" href="01-user-credits-usage-dock.html">Proposta 1 - Usage Dock</a>
+      <a class="credits-nav-item" href="03-user-credits-context-bar.html">Proposta 3 - Context Bar</a>
+      <div class="credits-nav-title">Pagamentos</div>
+      <a class="credits-nav-item" href="#">Metodo de pagamento</a>
+      <a class="credits-nav-item" href="#">Historico fiscal</a>
+      <a class="credits-nav-item" href="#">Auto top-up</a>
+    </aside>
+
+    <main class="credits-main">
+      <header class="credits-topbar">
+        <div>
+          <h1>Wallet & Timeline</h1>
+          <div class="credits-subtitle">Visao detalhada de consumo por data, projeto e etapa, com previsao de saldo.</div>
+        </div>
+        <div class="credits-actions">
+          <span class="credits-badge">Plano Pro</span>
+          <button class="btn btn-secondary btn-sm">Baixar extrato</button>
+          <button class="btn btn-primary btn-sm">Comprar creditos</button>
+        </div>
+      </header>
+
+      <section class="credits-content">
+        <div class="credits-grid-3">
+          <div class="credits-card">
+            <div class="credits-kpi-label">Saldo atual</div>
+            <div class="credits-kpi-value">1.240 cr</div>
+            <div class="credits-kpi-delta">valor estimado: R$ 310,00</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">Consumo no ciclo</div>
+            <div class="credits-kpi-value">760 cr</div>
+            <div class="credits-kpi-delta">Inicio do ciclo: 01 Fev 2026</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">Proximo reset de janela</div>
+            <div class="credits-kpi-value">1h 42m</div>
+            <div class="credits-kpi-delta">janela atual: 780 / 1000 cr</div>
+          </div>
+        </div>
+
+        <div style="height: var(--space-4);"></div>
+
+        <div class="credits-grid-main">
+          <div class="credits-card">
+            <h2 class="credits-card-title">Linha do tempo de creditos</h2>
+            <p class="credits-card-subtitle">Formato de leitura rapida para entender onde o credito foi consumido.</p>
+
+            <div class="credits-list">
+              <div class="credits-list-item"><span>08 Fev 14:08 - Codegen inicial (Projeto Delivery)</span><strong>-120 cr</strong></div>
+              <div class="credits-list-item"><span>08 Fev 13:50 - UX Plan completo</span><strong>-60 cr</strong></div>
+              <div class="credits-list-item"><span>08 Fev 13:12 - Technical Plan completo</span><strong>-70 cr</strong></div>
+              <div class="credits-list-item"><span>08 Fev 12:57 - Business Plan padrao</span><strong>-45 cr</strong></div>
+              <div class="credits-list-item"><span>08 Fev 12:32 - Discovery</span><strong>-8 cr</strong></div>
+              <div class="credits-list-item"><span>07 Fev 22:14 - Compra top-up</span><strong>+500 cr</strong></div>
+              <div class="credits-list-item"><span>07 Fev 10:00 - Grant mensal (Pro)</span><strong>+1000 cr</strong></div>
+            </div>
+
+            <div style="height: var(--space-4);"></div>
+            <div class="credits-callout">
+              Filtro rapido: por projeto, por etapa e por tipo de evento (grant/hold/capture/refund/expire).
+            </div>
+          </div>
+
+          <div class="credits-list" style="gap: var(--space-4);">
+            <div class="credits-card">
+              <h3 class="credits-card-title">Consumo por etapa (30d)</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Codegen</span><strong>42%</strong></div>
+                <div class="credits-list-item"><span>Iteracoes</span><strong>24%</strong></div>
+                <div class="credits-list-item"><span>Technical Plan</span><strong>16%</strong></div>
+                <div class="credits-list-item"><span>UX Plan</span><strong>13%</strong></div>
+                <div class="credits-list-item"><span>Discovery/Business</span><strong>5%</strong></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Forecast</h3>
+              <div class="credits-window">
+                <div class="credits-window-row"><span>Ritmo atual</span><strong>95 cr/dia</strong></div>
+                <div class="credits-window-row"><span>Duracao do saldo</span><strong>13 dias</strong></div>
+                <div class="credits-window-row"><span>Proximo projeto completo</span><strong>sim</strong></div>
+                <div class="credits-window-row"><span>Risco de bloqueio</span><strong>medio</strong></div>
+              </div>
+              <div style="height: var(--space-3);"></div>
+              <div class="credits-callout warning">Sugestao: habilitar auto top-up de 500 cr em saldo abaixo de 250.</div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Acoes</h3>
+              <div class="credits-actions">
+                <button class="btn btn-secondary btn-sm">Configurar alerta</button>
+                <button class="btn btn-secondary btn-sm">Ativar auto top-up</button>
+                <button class="btn btn-primary btn-sm">Comprar agora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="01-user-credits-usage-dock.html">Anterior</a>
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="03-user-credits-context-bar.html">Proxima proposta</a>
+  </nav>
+</body>
+</html>

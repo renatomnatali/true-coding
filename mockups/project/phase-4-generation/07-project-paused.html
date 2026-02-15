@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projeto Pausado | True Coding</title>
+  <title>Execução Pendente | True Coding</title>
   <link rel="stylesheet" href="../../css/tokens.css">
   <link rel="stylesheet" href="../../css/layout.css">
   <link rel="stylesheet" href="../../css/components.css">
@@ -98,11 +98,25 @@
       <section class="workspace">
         <div class="paused-state">
           <div class="paused-icon">⏸</div>
-          <h2 class="paused-title">Projeto Pausado</h2>
+          <h2 class="paused-title">Execução Pendente</h2>
           <p class="paused-message">
-            Você pausou o desenvolvimento após a Iteração 2. Seu app atual está online e funcionando perfeitamente!
-            Continue quando quiser.
+            Detectamos uma run em andamento sem confirmação explícita. Nenhuma execução automática será iniciada.
+            Escolha como deseja prosseguir.
           </p>
+
+          <div class="card" style="margin-top: var(--space-5);">
+            <div class="card-header">
+              <h3 class="card-title">Diagnóstico da Run</h3>
+            </div>
+            <div class="card-body">
+              <div style="display: grid; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                <div><strong>Status:</strong> RUNNING (aguardando confirmação)</div>
+                <div><strong>Última atividade:</strong> 14:22:03</div>
+                <div><strong>Ação automática:</strong> desativada</div>
+                <div><strong>Próximo passo:</strong> retomar execução ou apenas monitorar timeline</div>
+              </div>
+            </div>
+          </div>
 
           <!-- Progress So Far -->
           <div class="progress-so-far">
@@ -214,12 +228,15 @@
           </div>
 
           <!-- Actions -->
-          <div style="margin-top: var(--space-8); display: flex; gap: var(--space-3); justify-content: center;">
+          <div style="margin-top: var(--space-8); display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
             <button class="btn btn-secondary btn-lg" onclick="location.href='../../dashboard/list.html'">
-              ← Voltar ao Dashboard
+              Agora não
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="location.href='05-iteration-progress.html'">
+              Somente monitorar
             </button>
             <button class="btn btn-success btn-lg" style="font-size: var(--font-size-lg); padding: var(--space-5) var(--space-8);" onclick="location.href='05-iteration-progress.html'">
-              Continuar Agora →
+              Retomar execução →
             </button>
           </div>
         </div>
@@ -238,27 +255,29 @@
             <div class="message-content">
               <div class="message-author">True Coding</div>
               <div class="message-text">
-                Projeto pausado!
+                Execução pendente!
                 <br><br>
-                <strong>O que você já tem:</strong>
+                <strong>Estado atual:</strong>
                 <br>
-                ✓ App funcional online
+                ✓ Run identificada
                 <br>
-                ✓ 2 iterações completas
+                ✓ Aguardando confirmação manual
                 <br>
-                ✓ Sistema de auth + pedidos
+                ✓ Timeline preservada para auditoria
                 <br><br>
-                <strong>Faltam 2 iterações:</strong>
+                <strong>Opções disponíveis:</strong>
                 <br>
-                • Iteração 3: Pagamentos (~15 min)
+                • Retomar execução
                 <br>
-                • Iteração 4: Tracking (~18 min)
+                • Monitorar sem retomar
+                <br>
+                • Cancelar a run
                 <br><br>
-                Seu app atual está em:
+                Última atividade registrada:
                 <br>
-                <strong>deliverypro-iter2.vercel.app</strong>
+                <strong>14:22:03</strong>
                 <br><br>
-                Continue quando quiser! Vou retomar exatamente de onde paramos.
+                Só avançamos após sua confirmação.
               </div>
             </div>
           </div>
@@ -267,10 +286,10 @@
           <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
           <div class="quick-replies-buttons">
             <button class="quick-reply-btn" onclick="location.href='05-iteration-progress.html'">
-              Continuar projeto
+              Retomar execução
             </button>
             <button class="quick-reply-btn">
-              Testar app no ar
+              Somente monitorar timeline
             </button>
           </div>
         </div>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Credits - Proposta 1 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+</head>
+<body>
+  <div class="credits-app">
+    <aside class="credits-sidebar">
+      <div class="credits-logo"><span class="credits-logo-icon">TC</span>True Coding</div>
+      <div class="credits-nav-title">Financeiro</div>
+      <a class="credits-nav-item active" href="01-admin-credits-control-tower.html">Proposta 1 - Control Tower</a>
+      <a class="credits-nav-item" href="02-admin-credits-pricing-lab.html">Proposta 2 - Pricing Lab</a>
+      <a class="credits-nav-item" href="03-admin-credits-ops-ledger.html">Proposta 3 - Ops Ledger</a>
+      <div class="credits-nav-title">Configuracoes</div>
+      <a class="credits-nav-item" href="#">Catalogo de creditos</a>
+      <a class="credits-nav-item" href="#">Journey pricing</a>
+      <a class="credits-nav-item" href="#">Trial policy</a>
+      <a class="credits-nav-item" href="#">Entitlements</a>
+    </aside>
+
+    <main class="credits-main">
+      <header class="credits-topbar">
+        <div>
+          <h1>Credits Control Tower</h1>
+          <div class="credits-subtitle">Visao executiva de receita, consumo e saude do modelo de creditos.</div>
+        </div>
+        <div class="credits-actions">
+          <span class="credits-badge success">Producao</span>
+          <button class="btn btn-secondary btn-sm">Exportar CSV</button>
+          <button class="btn btn-primary btn-sm">Publicar ajustes</button>
+        </div>
+      </header>
+
+      <section class="credits-content">
+        <div class="credits-grid-3">
+          <div class="credits-card">
+            <div class="credits-kpi-label">MRR de creditos</div>
+            <div class="credits-kpi-value">R$ 142.380</div>
+            <div class="credits-kpi-delta">+12,4% vs ultimos 30 dias</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">COGS total (30d)</div>
+            <div class="credits-kpi-value">R$ 34.910</div>
+            <div class="credits-kpi-delta">Margem consolidada: 75,5%</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">Conversao trial -> pago</div>
+            <div class="credits-kpi-value">18,2%</div>
+            <div class="credits-kpi-delta">meta atual: 20,0%</div>
+          </div>
+        </div>
+
+        <div style="height: var(--space-4);"></div>
+
+        <div class="credits-grid-main">
+          <div class="credits-card">
+            <h2 class="credits-card-title">Preco por jornada (fonte unica)</h2>
+            <p class="credits-card-subtitle">Tabela usada no produto para custo exibido ao usuario antes da execucao.</p>
+            <table class="credits-table">
+              <thead>
+                <tr>
+                  <th>Etapa</th>
+                  <th>Nivel</th>
+                  <th>Custo</th>
+                  <th>Consumo 30d</th>
+                  <th>Erro tecnico</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Discovery</td>
+                  <td>Padrao</td>
+                  <td>8 cr</td>
+                  <td>42.190 execucoes</td>
+                  <td>0,3%</td>
+                </tr>
+                <tr>
+                  <td>Business Plan</td>
+                  <td>Minimo / Padrao / Detalhado</td>
+                  <td>20 / 45 / 80 cr</td>
+                  <td>14.280 execucoes</td>
+                  <td>0,8%</td>
+                </tr>
+                <tr>
+                  <td>Technical Plan</td>
+                  <td>Sempre completo</td>
+                  <td>70 cr</td>
+                  <td>9.140 execucoes</td>
+                  <td>1,4%</td>
+                </tr>
+                <tr>
+                  <td>UX Plan</td>
+                  <td>Sempre completo</td>
+                  <td>60 cr</td>
+                  <td>8.970 execucoes</td>
+                  <td>1,1%</td>
+                </tr>
+                <tr>
+                  <td>Codegen inicial</td>
+                  <td>Sempre completo</td>
+                  <td>120 cr</td>
+                  <td>7.630 execucoes</td>
+                  <td>2,9%</td>
+                </tr>
+                <tr>
+                  <td>Iteracao via chat</td>
+                  <td>Unitario</td>
+                  <td>30 cr</td>
+                  <td>31.880 execucoes</td>
+                  <td>0,7%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="height: var(--space-4);"></div>
+            <div class="credits-callout success">
+              Regra ativa: debito em hold antes da execucao, captura so em sucesso, refund automatico em falha tecnica.
+            </div>
+          </div>
+
+          <div class="credits-list" style="gap: var(--space-4);">
+            <div class="credits-card">
+              <h3 class="credits-card-title">Distribuicao de pacotes</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Start (300 cr)</span><strong>48%</strong></div>
+                <div class="credits-list-item"><span>Pro (1000 cr)</span><strong>37%</strong></div>
+                <div class="credits-list-item"><span>Scale (3000 cr)</span><strong>15%</strong></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Trial health</h3>
+              <div class="credits-window">
+                <div class="credits-window-row"><span>Trials iniciados (30d)</span><strong>5.412</strong></div>
+                <div class="credits-window-row"><span>Trial concluido</span><strong>61%</strong></div>
+                <div class="credits-window-row"><span>Upgrade em 7 dias</span><strong>18,2%</strong></div>
+                <div class="credits-window-row"><span>Suspeita de abuso</span><strong>3,1%</strong></div>
+              </div>
+              <div style="height: var(--space-3);"></div>
+              <div class="credits-progress-track"><div class="credits-progress-fill" style="width: 82%;"></div></div>
+              <div class="credits-kpi-delta">Meta de conversao: 20% (faltam 1,8pp)</div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Alertas</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>COGS codegen acima do alvo</span><span class="credits-badge warning">alto</span></div>
+                <div class="credits-list-item"><span>Refunds do provedor A</span><span class="credits-badge">medio</span></div>
+                <div class="credits-list-item"><span>Rate limit no trial</span><span class="credits-badge success">ok</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="02-admin-credits-pricing-lab.html">Proxima proposta</a>
+  </nav>
+</body>
+</html>

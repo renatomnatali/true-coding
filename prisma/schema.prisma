@@ -74,6 +74,7 @@ model Project {
   conversations  Conversation[]
   generatedFiles GeneratedFile[]
   deployments    Deployment[]
+  developmentRuns DevelopmentRun[]
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -210,4 +211,174 @@ enum DeploymentStatus {
   READY
   ERROR
   CANCELED
+}
+
+// ============================================================================
+// AUTONOMOUS DEVELOPMENT RUN
+// ============================================================================
+
+model DevelopmentRun {
+  id        String               @id @default(cuid())
+  projectId String
+  project   Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  status           DevelopmentRunStatus @default(QUEUED)
+  currentIteration Int                  @default(0)
+  totalIterations  Int                  @default(0)
+  plansSnapshot    Json?
+  errorSummary     String?              @db.Text
+  workerSandboxPath String?             @db.VarChar(500)
+
+  startedAt  DateTime?
+  canceledAt DateTime?
+  finishedAt DateTime?
+
+  iterations   IterationRun[]
+  agentTasks   AgentTaskRun[]
+  events       RunEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@map("development_runs")
+}
+
+enum DevelopmentRunStatus {
+  QUEUED
+  RUNNING
+  WAITING_CHECKPOINT
+  FAILED
+  CANCELED
+  SUCCEEDED
+}
+
+model IterationRun {
+  id    String         @id @default(cuid())
+  runId String
+  run   DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  index       Int
+  name        String
+  branchName  String?
+  status      IterationStatus @default(PENDING)
+  attemptCount Int            @default(0)
+  scope       Json?
+  gherkinPath String?
+
+  startedAt  DateTime?
+  finishedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  agentTasks   AgentTaskRun[]
+  qualityGates QualityGateRun[]
+  events       RunEvent[]
+
+  @@unique([runId, index])
+  @@index([runId])
+  @@index([status])
+  @@map("iteration_runs")
+}
+
+enum IterationStatus {
+  PENDING
+  RUNNING
+  GATED
+  MERGED
+  DEPLOYED
+  FAILED
+}
+
+model AgentTaskRun {
+  id    String         @id @default(cuid())
+  runId String
+  run   DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  iterationId String?
+  iteration   IterationRun? @relation(fields: [iterationId], references: [id], onDelete: SetNull)
+
+  agentName  String
+  inputHash  String
+  output     Json?
+  status     AgentTaskStatus @default(PENDING)
+  durationMs Int?
+  tokenUsage Int?
+  cost       Decimal? @db.Decimal(10, 4)
+  errorMessage String? @db.Text
+
+  startedAt DateTime?
+  finishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([runId])
+  @@index([iterationId])
+  @@index([status])
+  @@map("agent_task_runs")
+}
+
+enum AgentTaskStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+model QualityGateRun {
+  id          String       @id @default(cuid())
+  iterationId String
+  iteration   IterationRun @relation(fields: [iterationId], references: [id], onDelete: Cascade)
+
+  gateType   QualityGateType
+  passed     Boolean
+  report     Json?
+  logsRef    String?
+  durationMs Int?
+
+  startedAt DateTime?
+  finishedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([iterationId, gateType])
+  @@index([iterationId])
+  @@map("quality_gate_runs")
+}
+
+enum QualityGateType {
+  BUILD
+  UNIT
+  BDD
+  REVIEW
+  SECURITY
+}
+
+model RunEvent {
+  id      String         @id @default(cuid())
+  runId   String
+  run     DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  iterationId String?
+  iteration   IterationRun? @relation(fields: [iterationId], references: [id], onDelete: SetNull)
+
+  sequence  Int         @default(autoincrement())
+  eventType RunEventType
+  message   String?
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  @@index([runId, sequence])
+  @@index([iterationId])
+  @@map("run_events")
+}
+
+enum RunEventType {
+  RUN_STATUS
+  ITERATION_STATUS
+  AGENT_TASK
+  QUALITY_GATE
+  DEPLOY_STATUS
+  ERROR
+  INFO
 }

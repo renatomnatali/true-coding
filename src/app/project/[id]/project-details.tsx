@@ -6,6 +6,7 @@ import { ProjectLayout } from '@/components/project/ProjectLayout'
 import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ChatPanel } from '@/components/project/ChatPanel'
 import { WorkspacePanel } from '@/components/project/WorkspacePanel'
+import { DevelopmentActivityPanel } from '@/components/project/DevelopmentActivityPanel'
 import type { JsonValue } from '@prisma/client/runtime/library'
 import { useToast } from '@/components/ui/toast'
 
@@ -48,8 +49,13 @@ interface ProjectDetailsProps {
   project: Project
 }
 
+type DevelopmentUiState = 'awaiting_confirmation' | 'monitoring'
+
 export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [status, setStatus] = useState(project.status)
+  const [developmentUiState, setDevelopmentUiState] = useState<DevelopmentUiState>(
+    project.status === 'GENERATING' ? 'awaiting_confirmation' : 'monitoring'
+  )
   const [businessPlan, setBusinessPlan] = useState(project.businessPlan)
   const [technicalPlan, setTechnicalPlan] = useState(project.technicalPlan)
   const [uxPlan, setUxPlan] = useState(project.uxPlan)
@@ -76,6 +82,12 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
       window.history.replaceState({}, '', url.toString())
     }
   }, [searchParams])
+
+  useEffect(() => {
+    if (status !== 'GENERATING') {
+      setDevelopmentUiState('monitoring')
+    }
+  }, [status])
 
   // If there's a connection error, show it; otherwise honour githubJustConnected
   const effectiveGithubConnected = connectionError ? false : githubJustConnected
@@ -196,28 +208,37 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         />
       }
     >
-      <WorkspacePanel
-        projectId={project.id}
-        projectName={project.name}
-        status={status}
-        businessPlan={businessPlanStr}
-        technicalPlan={technicalPlanStr}
-        uxPlan={uxPlanStr}
-        businessPlanApproved={businessPlanApproved}
-        technicalPlanApproved={technicalPlanApproved}
-        uxPlanApproved={uxPlanApproved}
-        repoUrl={project.githubRepoUrl}
-        deployUrl={project.productionUrl}
-        discoveryProgress={discoveryProgress}
-        onApprove={() => handleApprovePlan('business')}
-        onApproveTechnicalPlan={() => handleApprovePlan('technical')}
-        onApproveUxPlan={() => handleApprovePlan('ux')}
-        isApproving={isApproving}
-        hasGitHubToken={hasGitHub}
-        githubJustConnected={effectiveGithubConnected}
-        netlifyJustConnected={effectiveNetlifyConnected}
-        hasOAuthError={connectionError}
-      />
+      <>
+        <DevelopmentActivityPanel
+          projectId={project.id}
+          projectStatus={status}
+          onProjectStatusChange={setStatus}
+          onJourneyStateChange={setDevelopmentUiState}
+        />
+        <WorkspacePanel
+          projectId={project.id}
+          projectName={project.name}
+          status={status}
+          businessPlan={businessPlanStr}
+          technicalPlan={technicalPlanStr}
+          uxPlan={uxPlanStr}
+          businessPlanApproved={businessPlanApproved}
+          technicalPlanApproved={technicalPlanApproved}
+          uxPlanApproved={uxPlanApproved}
+          repoUrl={project.githubRepoUrl}
+          deployUrl={project.productionUrl}
+          discoveryProgress={discoveryProgress}
+          onApprove={() => handleApprovePlan('business')}
+          onApproveTechnicalPlan={() => handleApprovePlan('technical')}
+          onApproveUxPlan={() => handleApprovePlan('ux')}
+          isApproving={isApproving}
+          hasGitHubToken={hasGitHub}
+          githubJustConnected={effectiveGithubConnected}
+          netlifyJustConnected={effectiveNetlifyConnected}
+          hasOAuthError={connectionError}
+          developmentUiState={developmentUiState}
+        />
+      </>
     </ProjectLayout>
   )
 }

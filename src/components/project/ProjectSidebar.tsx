@@ -16,12 +16,19 @@ const PHASES = [
 
 type PhaseKey = (typeof PHASES)[number]['key']
 
+function normalizeJourneyStatus(status: string): PhaseKey {
+  if (status === 'FAILED') return 'GENERATING'
+  const match = PHASES.find((p) => p.key === status)
+  return match?.key ?? 'IDEATION'
+}
+
 // Get phase state based on current status
 function getPhaseState(
   phaseKey: PhaseKey,
   currentStatus: string
 ): 'completed' | 'in-progress' | 'blocked' {
-  const currentIndex = PHASES.findIndex((p) => p.key === currentStatus)
+  const normalizedStatus = normalizeJourneyStatus(currentStatus)
+  const currentIndex = PHASES.findIndex((p) => p.key === normalizedStatus)
   const phaseIndex = PHASES.findIndex((p) => p.key === phaseKey)
 
   if (phaseIndex < currentIndex) return 'completed'
@@ -31,7 +38,8 @@ function getPhaseState(
 
 // Get current phase number (1-6)
 function getCurrentPhaseNumber(status: string): number {
-  const phase = PHASES.find((p) => p.key === status)
+  const normalizedStatus = normalizeJourneyStatus(status)
+  const phase = PHASES.find((p) => p.key === normalizedStatus)
   return phase?.number ?? 1
 }
 
