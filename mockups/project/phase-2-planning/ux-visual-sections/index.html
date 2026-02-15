@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UX Visual Sections - Mockups | True Coding</title>
+  <link rel="stylesheet" href="../../../css/tokens.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+      padding: var(--space-8);
+    }
+    .hub {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hub h1 {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+    }
+    .hub p {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: 1.6;
+    }
+    .hub-grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+    .hub-card {
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .hub-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+    .hub-card h2 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+    .hub-card p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+    .hub-card .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border-radius: var(--border-radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      margin-bottom: var(--space-3);
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: var(--space-6);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+    .context-box {
+      background: white;
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-6);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+    .context-box strong {
+      display: block;
+      margin-bottom: var(--space-1);
+    }
+  </style>
+</head>
+<body>
+  <div class="hub">
+    <a href="../07-ux-plan.html" class="back-link">&#8592; Voltar ao UX Plan completo</a>
+
+    <h1>Secoes Visuais do UX Plan</h1>
+    <p>
+      Mockups demonstrando como as 3 secoes visuais do UX Plan podem ser renderizadas
+      com HTML/CSS/SVG diretamente no React, sem geracao de imagens por IA.
+    </p>
+
+    <div class="context-box">
+      <strong>Contexto da Issue #39</strong>
+      Atualmente as secoes Navegacao Principal, Wireframes e Biblioteca de Componentes
+      mostram apenas texto descritivo. Estes mockups demonstram a representacao visual
+      esquematica proposta, usando dados do JSON gerado pela IA.
+    </div>
+
+    <div class="hub-grid">
+      <a href="01-navigation-preview.html" class="hub-card">
+        <span class="tag">Secao 2 - Arquitetura de Informacao</span>
+        <h2>01. Navegacao Principal</h2>
+        <p>
+          Wireframes esquematicos dos padroes de navegacao: Sidebar, Bottom Tab Bar,
+          Top Tabs, Breadcrumbs. Cada padrao renderizado como SVG/HTML baseado no campo
+          <code>navigation[].name</code>.
+        </p>
+      </a>
+
+      <a href="02-wireframe-preview.html" class="hub-card">
+        <span class="tag">Secao 4 - Wireframes</span>
+        <h2>02. Wireframes e Fluxos</h2>
+        <p>
+          Wireframes esquematicos das telas principais: Dashboard, Detalhes do Pedido,
+          Cardapio Publico. Layouts inferidos do campo <code>wireframes[].layout</code>,
+          renderizados como grid HTML/CSS.
+        </p>
+      </a>
+
+      <a href="03-component-library-preview.html" class="hub-card">
+        <span class="tag">Secao 5 - Componentes</span>
+        <h2>03. Biblioteca de Componentes</h2>
+        <p>
+          Preview visual de botoes, badges, cards e form inputs. Cada variante renderizada
+          como componente real com Tailwind CSS, baseado no campo
+          <code>componentLibrary[].variants</code>.
+        </p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
