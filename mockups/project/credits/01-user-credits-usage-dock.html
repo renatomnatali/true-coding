@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Credits - Proposta 1 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+</head>
+<body>
+  <div class="user-shell">
+    <aside class="user-sidebar">
+      <div class="credits-logo"><span class="credits-logo-icon">TC</span>True Coding</div>
+      <div class="credits-nav-title">Projeto</div>
+      <a class="credits-nav-item" href="#">Discovery</a>
+      <a class="credits-nav-item" href="#">Planning</a>
+      <a class="credits-nav-item active" href="#">Credits & Usage</a>
+      <a class="credits-nav-item" href="#">Iteracoes</a>
+      <a class="credits-nav-item" href="#">Deploy</a>
+      <div class="credits-nav-title">Conta</div>
+      <a class="credits-nav-item" href="#">Plano atual: Pro</a>
+      <a class="credits-nav-item" href="#">Faturamento</a>
+    </aside>
+
+    <main class="user-main">
+      <div class="credits-card">
+        <h1 class="credits-card-title">Discovery em andamento</h1>
+        <p class="credits-card-subtitle">Acompanhamento de consumo sempre visivel no lado direito, com previsao de saldo para o fim da jornada.</p>
+        <div class="credits-callout">
+          Esta proposta imita o padrao Claude: janela de uso, limite da janela e alerta antecipado sem interromper o fluxo.
+        </div>
+      </div>
+
+      <div style="height: var(--space-4);"></div>
+
+      <div class="credits-card">
+        <h2 class="credits-card-title">Proxima acao</h2>
+        <div class="credits-list">
+          <div class="credits-list-item"><span>Business Plan - nivel padrao</span><strong>45 creditos</strong></div>
+          <div class="credits-list-item"><span>Technical Plan - completo</span><strong>70 creditos</strong></div>
+          <div class="credits-list-item"><span>UX Plan - completo</span><strong>60 creditos</strong></div>
+        </div>
+        <div style="height: var(--space-3);"></div>
+        <button class="btn btn-primary">Gerar Business Plan</button>
+      </div>
+    </main>
+
+    <aside class="user-panel">
+      <div class="credits-card" style="padding: 0; border: none; box-shadow: none;">
+        <div class="credits-kpi-label">Janela de uso 5h</div>
+        <div class="credits-kpi-value">780 / 1000 cr</div>
+        <div class="credits-kpi-delta">Reseta em 1h 42min</div>
+        <div style="height: var(--space-2);"></div>
+        <div class="credits-progress-track"><div class="credits-progress-fill" style="width: 78%;"></div></div>
+      </div>
+
+      <div style="height: var(--space-4);"></div>
+
+      <div class="credits-meter">
+        <div class="credits-kpi-label">Saldo total</div>
+        <div class="credits-kpi-value">1.240 cr</div>
+        <div class="credits-kpi-delta">Plano Pro + top-up de 500</div>
+      </div>
+
+      <div style="height: var(--space-3);"></div>
+
+      <div class="credits-meter">
+        <div class="credits-kpi-label">Previsao para este projeto</div>
+        <div class="credits-window">
+          <div class="credits-window-row"><span>Consumo estimado</span><strong>303 cr</strong></div>
+          <div class="credits-window-row"><span>Saldo apos projeto</span><strong>937 cr</strong></div>
+          <div class="credits-window-row"><span>Risco de falta</span><strong>baixo</strong></div>
+        </div>
+      </div>
+
+      <div style="height: var(--space-3);"></div>
+
+      <div class="credits-meter">
+        <div class="credits-kpi-label">Ultimas acoes</div>
+        <div class="credits-list" style="margin-top: var(--space-2);">
+          <div class="credits-list-item"><span>Discovery</span><strong>-8 cr</strong></div>
+          <div class="credits-list-item"><span>Iteracao de chat</span><strong>-30 cr</strong></div>
+          <div class="credits-list-item"><span>Top-up manual</span><strong>+500 cr</strong></div>
+        </div>
+      </div>
+
+      <div style="height: var(--space-3);"></div>
+
+      <div class="credits-callout warning">
+        Se voce continuar em modo detalhado em todas as etapas, o saldo cai para 410 cr hoje.
+      </div>
+
+      <div style="height: var(--space-3);"></div>
+
+      <div class="credits-actions">
+        <button class="btn btn-secondary btn-sm">Mudar para nivel padrao</button>
+        <button class="btn btn-primary btn-sm">Comprar 500 cr</button>
+      </div>
+    </aside>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="02-user-credits-wallet-timeline.html">Proxima proposta</a>
+  </nav>
+</body>
+</html>

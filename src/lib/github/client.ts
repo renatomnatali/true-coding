@@ -149,3 +149,60 @@ export async function createBranch(
 
   return newRef
 }
+
+export async function createPullRequest(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  title: string,
+  head: string,
+  base = 'main',
+  body?: string
+) {
+  const { data } = await octokit.pulls.create({
+    owner,
+    repo,
+    title,
+    head,
+    base,
+    body,
+  })
+
+  return data
+}
+
+export async function findOpenPullRequestByHeadBase(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  head: string,
+  base: string
+) {
+  const { data } = await octokit.pulls.list({
+    owner,
+    repo,
+    state: 'open',
+    head,
+    base,
+    per_page: 1,
+  })
+
+  return data[0] ?? null
+}
+
+export async function mergePullRequest(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  pullNumber: number,
+  mergeMethod: 'merge' | 'squash' | 'rebase' = 'squash'
+) {
+  const { data } = await octokit.pulls.merge({
+    owner,
+    repo,
+    pull_number: pullNumber,
+    merge_method: mergeMethod,
+  })
+
+  return data
+}

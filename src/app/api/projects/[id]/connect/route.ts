@@ -2,7 +2,12 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { decrypt } from '@/lib/crypto'
-import { createGitHubClient, createRepository } from '@/lib/github/client'
+import {
+  createGitHubClient,
+  createRepository,
+  getAuthenticatedUser,
+  getRepository,
+} from '@/lib/github/client'
 import { createNetlifySite } from '@/lib/netlify/client'
 
 interface ConnectParams {
@@ -15,6 +20,28 @@ function slugify(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
     .slice(0, 100)
+}
+
+function isRepositoryNameConflict(error: unknown): boolean {
+  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  return (
+    message.includes('name already exists') ||
+    message.includes('already exists on this account')
+  )
+}
+
+function buildFallbackRepoName(baseName: string, projectId: string, attempt: number): string {
+  const safeBase = baseName || 'true-coding-project'
+  const cleanedId = projectId.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const idSuffix = cleanedId.slice(-6) || 'proj'
+  const attemptSuffix = attempt === 0 ? '' : `-${attempt + 1}`
+  const raw = `${safeBase}-${idSuffix}${attemptSuffix}`
+  return raw.slice(0, 100).replace(/(^-|-$)/g, '')
+}
+
+function isRepositoryNotFound(error: unknown): boolean {
+  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  return message.includes('not found') || message.includes('404')
 }
 
 // POST /api/projects/[id]/connect
@@ -77,7 +104,7 @@ export async function POST(request: Request, { params }: ConnectParams) {
   }
 }
 
-async function connectGitHub(project: { id: string; name: string; githubRepoUrl: string | null; githubRepoOwner: string | null; githubRepoName: string | null; user: { githubAccessToken: string | null } }) {
+async function connectGitHub(project: { id: string; name: string; githubRepoUrl: string | null; githubRepoOwner: string | null; githubRepoName: string | null; user: { githubAccessToken: string | null; githubUsername?: string | null } }) {
   // Guard: token must exist
   if (!project.user.githubAccessToken) {
     return NextResponse.json(
@@ -100,13 +127,53 @@ async function connectGitHub(project: { id: string; name: string; githubRepoUrl:
 
   // Create repository
   const octokit = createGitHubClient(accessToken)
-  const repoName = slugify(project.name) || 'true-coding-project'
+  const baseRepoName = slugify(project.name) || 'true-coding-project'
+  let ownerLogin = project.user.githubUsername ?? null
 
-  const repo = await createRepository(octokit, {
-    name: repoName,
-    description: project.name,
-    isPrivate: true,
-  })
+  const resolveOwnerLogin = async () => {
+    if (ownerLogin) return ownerLogin
+    const me = await getAuthenticatedUser(octokit)
+    ownerLogin = me.login
+    return ownerLogin
+  }
+
+  let repo: Awaited<ReturnType<typeof createRepository>> | null = null
+  const candidateNames = [
+    baseRepoName,
+    buildFallbackRepoName(baseRepoName, project.id, 0),
+    buildFallbackRepoName(baseRepoName, project.id, 1),
+  ]
+
+  for (const candidateName of candidateNames) {
+    try {
+      repo = await createRepository(octokit, {
+        name: candidateName,
+        description: project.name,
+        isPrivate: true,
+      })
+      break
+    } catch (error) {
+      if (isRepositoryNameConflict(error)) {
+        // Repo may already exist from a previous partial attempt.
+        try {
+          const owner = await resolveOwnerLogin()
+          const existingRepo = await getRepository(octokit, owner, candidateName)
+          repo = existingRepo
+          break
+        } catch (lookupError) {
+          if (!isRepositoryNotFound(lookupError)) {
+            throw lookupError
+          }
+        }
+        continue
+      }
+      throw error
+    }
+  }
+
+  if (!repo) {
+    throw new Error('GitHub API 422: name already exists')
+  }
 
   // Persist repo info
   await prisma.project.update({
@@ -171,7 +238,6 @@ async function connectNetlify(
     data: {
       netlifySiteId: site.id,
       productionUrl: site.url,
-      status: 'GENERATING',
     },
   })
 

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Credits - Proposta 3 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+  <style>
+    .context-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-3) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .context-meter {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      min-width: 420px;
+    }
+
+    .context-meter .credits-progress-track {
+      width: 220px;
+    }
+
+    .context-info {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <header class="context-header">
+    <div class="credits-logo" style="margin: 0;"><span class="credits-logo-icon">TC</span>True Coding</div>
+    <div class="context-meter">
+      <span class="credits-badge">Janela 5h</span>
+      <div class="credits-progress-track"><div class="credits-progress-fill" style="width: 78%;"></div></div>
+      <div class="context-info">
+        <strong>780 / 1000 cr</strong><br>
+        reset em 1h 42min
+      </div>
+    </div>
+    <div class="credits-actions">
+      <button class="btn btn-secondary btn-sm">Ver detalhes</button>
+      <button class="btn btn-primary btn-sm">Comprar creditos</button>
+    </div>
+  </header>
+
+  <div class="credits-app" style="min-height: calc(100vh - 72px);">
+    <aside class="credits-sidebar">
+      <div class="credits-nav-title">Propostas do usuario</div>
+      <a class="credits-nav-item" href="01-user-credits-usage-dock.html">Proposta 1 - Usage Dock</a>
+      <a class="credits-nav-item" href="02-user-credits-wallet-timeline.html">Proposta 2 - Wallet Timeline</a>
+      <a class="credits-nav-item active" href="03-user-credits-context-bar.html">Proposta 3 - Context Bar</a>
+      <div class="credits-nav-title">Status do ciclo</div>
+      <div class="credits-callout" style="margin-top: var(--space-2);">
+        Plano: Pro<br>
+        Saldo: 1240 cr<br>
+        Forecast: 13 dias
+      </div>
+    </aside>
+
+    <main class="credits-main">
+      <section class="credits-content">
+        <div class="credits-grid-main">
+          <div class="credits-card">
+            <h1 class="credits-card-title">Context bar persistente</h1>
+            <p class="credits-card-subtitle">Experiencia para quem quer ver consumo sem sair da tela principal de trabalho.</p>
+
+            <div class="credits-grid-2">
+              <div class="credits-callout">
+                <strong>Padrao Claude adaptado:</strong>
+                barra persistente + janela de uso + caminho direto de upgrade.
+              </div>
+              <div class="credits-callout success">
+                O usuario recebe aviso preventivo antes de atingir bloqueio de janela.
+              </div>
+            </div>
+
+            <div style="height: var(--space-4);"></div>
+
+            <h2 class="credits-card-title" style="font-size: var(--font-size-base);">Custos da proxima sequencia</h2>
+            <table class="credits-table">
+              <thead>
+                <tr>
+                  <th>Acao</th>
+                  <th>Custo</th>
+                  <th>Saldo apos</th>
+                  <th>Impacto</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Business Plan (padrao)</td>
+                  <td>45 cr</td>
+                  <td>1195 cr</td>
+                  <td>baixo</td>
+                </tr>
+                <tr>
+                  <td>Technical Plan (completo)</td>
+                  <td>70 cr</td>
+                  <td>1125 cr</td>
+                  <td>medio</td>
+                </tr>
+                <tr>
+                  <td>UX Plan (completo)</td>
+                  <td>60 cr</td>
+                  <td>1065 cr</td>
+                  <td>medio</td>
+                </tr>
+                <tr>
+                  <td>Codegen inicial</td>
+                  <td>120 cr</td>
+                  <td>945 cr</td>
+                  <td>alto</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="height: var(--space-4);"></div>
+            <div class="credits-callout warning">
+              Aviso configuravel: ao atingir 85% da janela, reduzir automaticamente para nivel padrao nas proximas geracoes.
+            </div>
+          </div>
+
+          <div class="credits-list" style="gap: var(--space-4);">
+            <div class="credits-card">
+              <h3 class="credits-card-title">Atividade recente</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Discovery</span><strong>-8 cr</strong></div>
+                <div class="credits-list-item"><span>Business Plan detalhado</span><strong>-80 cr</strong></div>
+                <div class="credits-list-item"><span>Iteracao de chat</span><strong>-30 cr</strong></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Sugestoes inteligentes</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Trocar detalhado por padrao</span><span class="credits-chip">-35 cr</span></div>
+                <div class="credits-list-item"><span>Rodar codegen apos reset</span><span class="credits-chip">+janela livre</span></div>
+                <div class="credits-list-item"><span>Comprar top-up 500</span><span class="credits-chip">R$ 159</span></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Controle</h3>
+              <div class="credits-actions">
+                <button class="btn btn-secondary btn-sm">Pausar consumo alto</button>
+                <button class="btn btn-secondary btn-sm">Ajustar alertas</button>
+                <button class="btn btn-primary btn-sm">Continuar com padrao</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="02-user-credits-wallet-timeline.html">Anterior</a>
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="../../admin/credits/01-admin-credits-control-tower.html">Ver propostas admin</a>
+  </nav>
+</body>
+</html>

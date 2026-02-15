@@ -23,6 +23,8 @@ vi.mock('@/lib/crypto', () => ({
 vi.mock('@/lib/github/client', () => ({
   createGitHubClient: vi.fn(() => 'mock-octokit'),
   createRepository: vi.fn(),
+  getAuthenticatedUser: vi.fn(() => ({ login: 'testuser' })),
+  getRepository: vi.fn(),
 }))
 
 // Mock Netlify client
@@ -33,7 +35,12 @@ vi.mock('@/lib/netlify/client', () => ({
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/db/prisma'
 import { decrypt } from '@/lib/crypto'
-import { createGitHubClient, createRepository } from '@/lib/github/client'
+import {
+  createGitHubClient,
+  createRepository,
+  getAuthenticatedUser,
+  getRepository,
+} from '@/lib/github/client'
 import { createNetlifySite } from '@/lib/netlify/client'
 
 const mockAuth = vi.mocked(auth)
@@ -41,6 +48,8 @@ const mockPrisma = vi.mocked(prisma)
 const mockDecrypt = vi.mocked(decrypt)
 const mockCreateGitHubClient = vi.mocked(createGitHubClient)
 const mockCreateRepository = vi.mocked(createRepository)
+const mockGetAuthenticatedUser = vi.mocked(getAuthenticatedUser)
+const mockGetRepository = vi.mocked(getRepository)
 const mockCreateNetlifySite = vi.mocked(createNetlifySite)
 
 function createRequest(body: object): Request {
@@ -85,6 +94,8 @@ describe('POST /api/projects/[id]/connect', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockCreateRepository.mockResolvedValue(mockRepoResponse as unknown as Awaited<ReturnType<typeof createRepository>>)
+    mockGetAuthenticatedUser.mockResolvedValue({ login: 'testuser' } as Awaited<ReturnType<typeof getAuthenticatedUser>>)
+    mockGetRepository.mockRejectedValue(new Error('Not Found'))
   })
 
   // ========================================================================
@@ -188,6 +199,77 @@ describe('POST /api/projects/[id]/connect', () => {
     }))
   })
 
+  it('should retry with fallback repo name when base name already exists', async () => {
+    setupProject({ id: 'proj-1', name: 'My Delivery App' })
+
+    mockCreateRepository
+      .mockRejectedValueOnce(new Error('GitHub API 422: name already exists'))
+      .mockResolvedValueOnce({
+        html_url: 'https://github.com/testuser/my-delivery-app-proj1',
+        owner: { login: 'testuser' },
+        name: 'my-delivery-app-proj1',
+      } as unknown as Awaited<ReturnType<typeof createRepository>>)
+
+    const response = await POST(createRequest({ service: 'github' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(mockCreateRepository).toHaveBeenNthCalledWith(
+      1,
+      'mock-octokit',
+      expect.objectContaining({ name: 'my-delivery-app' })
+    )
+    expect(mockCreateRepository).toHaveBeenNthCalledWith(
+      2,
+      'mock-octokit',
+      expect.objectContaining({ name: 'my-delivery-app-proj1' })
+    )
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: 'proj-1' },
+      data: {
+        githubRepoUrl: 'https://github.com/testuser/my-delivery-app-proj1',
+        githubRepoOwner: 'testuser',
+        githubRepoName: 'my-delivery-app-proj1',
+      },
+    })
+    expect(data.githubRepoName).toBe('my-delivery-app-proj1')
+  })
+
+  it('should link existing repository when name conflict happens on same project', async () => {
+    setupProject(
+      { id: 'proj-1', name: 'My Delivery App' },
+      { githubUsername: 'testuser' }
+    )
+
+    mockCreateRepository.mockRejectedValueOnce(
+      new Error('GitHub API 422: name already exists')
+    )
+    mockGetRepository.mockResolvedValueOnce(
+      mockRepoResponse as unknown as Awaited<ReturnType<typeof getRepository>>
+    )
+
+    const response = await POST(createRequest({ service: 'github' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(mockCreateRepository).toHaveBeenCalledTimes(1)
+    expect(mockGetRepository).toHaveBeenCalledWith(
+      'mock-octokit',
+      'testuser',
+      'my-delivery-app'
+    )
+    expect(mockGetAuthenticatedUser).not.toHaveBeenCalled()
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: 'proj-1' },
+      data: {
+        githubRepoUrl: 'https://github.com/testuser/my-delivery-app',
+        githubRepoOwner: 'testuser',
+        githubRepoName: 'my-delivery-app',
+      },
+    })
+    expect(data.githubRepoName).toBe('my-delivery-app')
+  })
+
   it('should return 409 when user has no GitHub token', async () => {
     setupProject({}, { githubAccessToken: null })
 
@@ -251,7 +333,6 @@ describe('POST /api/projects/[id]/connect', () => {
       data: {
         netlifySiteId: 'site_abc123',
         productionUrl: 'https://my-delivery-app.netlify.app',
-        status: 'GENERATING',
       },
     })
     expect(data.productionUrl).toBe('https://my-delivery-app.netlify.app')

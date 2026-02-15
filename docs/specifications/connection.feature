@@ -119,6 +119,14 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     E salva githubRepoUrl, githubRepoOwner, githubRepoName no projeto
     E retorna os dados do repositório criado
 
+  @github @repo @idempotencia
+  Cenário: Vincular repositório existente do mesmo projeto
+    Dado que o projeto não tem githubRepoUrl salvo no banco
+    E o repositório com o nome esperado já existe no GitHub do usuário
+    Quando o sistema chama POST /api/projects/[id]/connect com { service: "github" }
+    Então o sistema não cria um novo repositório
+    E vincula o repositório existente ao projeto
+
   @github @repo @visualizacao
   Cenário: Visualizar tela de repositório criado
     Dado que o projeto tem githubRepoUrl
@@ -176,7 +184,7 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     Então o sistema decriptografa o token do usuário
     E cria um site na Netlify com nome derivado do projeto
     E salva netlifySiteId e productionUrl no projeto
-    E atualiza o status do projeto para "GENERATING"
+    E mantém o status do projeto em "CONNECTING"
     E retorna os dados do site criado
 
   # ==========================================================================
@@ -191,9 +199,42 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     Então vejo alert verde "Tudo Conectado!"
     E vejo cards GitHub ✓ e Netlify ✓
     E vejo card "Pipeline de Deploy" com timeline de 3 passos
-    E vejo tip "Tudo pronto para gerar código!"
+    E vejo tip "Tudo pronto para iniciar o desenvolvimento"
     E vejo botão "← Voltar"
-    E vejo botão "Analisar Complexidade →"
+    E vejo botão "Iniciar Desenvolvimento →"
+
+  @assessment @analise
+  Cenário: Iniciar desenvolvimento executa análise automaticamente
+    Dado que o projeto está no sub-estado "connected"
+    Quando o usuário clica "Iniciar Desenvolvimento →"
+    Então o sistema chama POST /api/projects/[id]/development/assessment
+    E exibe feedback visual dos agentes "AssessmentAgent" e "IterationPlannerAgent"
+    E exibe score e plano de iterações
+    E exibe botão "Continuar para Desenvolvimento →"
+    E NÃO inicia geração de código automaticamente
+
+  @assessment @erro
+  Cenário: Falha na análise automática de complexidade
+    Dado que o projeto está no sub-estado "connected"
+    E a API POST /api/projects/[id]/development/assessment retorna erro
+    Quando o usuário clica "Iniciar Desenvolvimento →"
+    Então o usuário vê mensagem de erro da análise
+    E o botão "Continuar para Desenvolvimento →" não é exibido
+
+  @assessment @start
+  Cenário: Iniciar desenvolvimento apenas após análise concluída
+    Dado que a análise de complexidade foi concluída com sucesso
+    E o plano de iterações foi exibido
+    Quando o usuário clica "Continuar para Desenvolvimento →"
+    Então o sistema chama POST /api/projects/[id]/development/runs
+    E envia o plano de iterações confirmado no payload
+    E o pipeline autônomo inicia a execução
+
+  @assessment @guard
+  Cenário: API bloqueia início sem confirmação de assessment
+    Dado que o usuário tenta iniciar desenvolvimento sem confirmar a análise
+    Quando chama POST /api/projects/[id]/development/runs
+    Então recebe 409 "ASSESSMENT_REQUIRED"
 
   # ==========================================================================
   # ERRO: Falha na conexão com GitHub

@@ -38,6 +38,15 @@ export const FEATURES = {
    */
   PROGRESS_TRACKING:
     process.env.NEXT_PUBLIC_FEATURE_PROGRESS_TRACKING !== 'false', // default true
+
+  /**
+   * Autonomous Development V1
+   *
+   * Enables the asynchronous multi-agent development run pipeline.
+   * Rollout should be progressive (canary) and monitored.
+   */
+  AUTONOMOUS_DEVELOPMENT_V1:
+    process.env.NEXT_PUBLIC_FEATURE_AUTONOMOUS_DEVELOPMENT_V1 !== 'false',
 } as const
 
 /**

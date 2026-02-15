@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca de Componentes - Visual Preview | True Coding</title>
+  <link rel="stylesheet" href="../../../css/tokens.css">
+  <style>
+    body {
+      background: var(--color-bg-secondary);
+      padding: var(--space-6);
+    }
+    .container {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .back-link:hover { color: var(--color-primary); }
+
+    .plan-card {
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    .plan-card h3 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+    .plan-card .subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Component group */
+    .comp-group {
+      margin-bottom: var(--space-6);
+    }
+    .comp-group:last-child {
+      margin-bottom: 0;
+    }
+    .comp-group-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+    .comp-group-preview {
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+      padding: var(--space-4);
+    }
+
+    /* Variant row */
+    .variant-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-2) 0;
+    }
+    .variant-row + .variant-row {
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-3);
+      margin-top: var(--space-2);
+    }
+    .variant-preview {
+      min-width: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .variant-info {
+      flex: 1;
+    }
+    .variant-name {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+    .variant-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    @media (max-width: 640px) {
+      .variant-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+      }
+      .variant-preview {
+        min-width: auto;
+      }
+    }
+
+    /* ============ BUTTON PREVIEWS ============ */
+    .preview-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: default;
+      border: none;
+      white-space: nowrap;
+      font-family: var(--font-family);
+      transition: opacity var(--transition-fast);
+    }
+    .preview-btn.primary {
+      background: #2563eb;
+      color: white;
+    }
+    .preview-btn.secondary {
+      background: white;
+      color: #2563eb;
+      border: 2px solid #2563eb;
+    }
+    .preview-btn.destructive {
+      background: #ef4444;
+      color: white;
+    }
+    .preview-btn.ghost {
+      background: transparent;
+      color: #374151;
+      border: 1px solid transparent;
+    }
+    .preview-btn.ghost:hover {
+      background: var(--color-bg-tertiary);
+    }
+    .preview-btn.outline {
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    .preview-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ============ BADGE PREVIEWS ============ */
+    .preview-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .preview-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .preview-badge.preparing {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .preview-badge.ready {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .preview-badge.delivering {
+      background: #ddd6fe;
+      color: #5b21b6;
+    }
+    .preview-badge.delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .preview-badge.cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* ============ CARD PREVIEWS ============ */
+    .preview-card {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: white;
+    }
+    .preview-card.default {
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .preview-card.highlighted {
+      border: 2px solid #2563eb;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.12);
+    }
+    .preview-card.elevated {
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .preview-card-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: 4px;
+    }
+    .preview-card-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ============ INPUT PREVIEWS ============ */
+    .preview-input-group {
+      width: 100%;
+      max-width: 280px;
+    }
+    .preview-input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--color-text-primary);
+    }
+    .preview-input-label.error {
+      color: #ef4444;
+    }
+    .preview-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: var(--font-family);
+      outline: none;
+      transition: border-color var(--transition-fast);
+      box-sizing: border-box;
+    }
+    .preview-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .preview-input.error {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+    .preview-input.disabled {
+      background: #f3f4f6;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+    .preview-helper {
+      font-size: 11px;
+      margin-top: 4px;
+      color: var(--color-text-tertiary);
+    }
+    .preview-helper.error {
+      color: #ef4444;
+    }
+
+    /* Comparison */
+    .comparison {
+      margin-top: var(--space-8);
+    }
+    .comparison h3 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    @media (max-width: 640px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    .comparison-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--space-4);
+      background: white;
+    }
+    .comparison-card.before {
+      border-color: var(--color-error);
+      border-style: dashed;
+    }
+    .comparison-card.after {
+      border-color: var(--color-success);
+    }
+    .comparison-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+    }
+    .comparison-card.before .comparison-label { color: var(--color-error); }
+    .comparison-card.after .comparison-label { color: var(--color-success); }
+
+    .text-only-comp {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+    .text-only-comp .chip {
+      padding: 2px 8px;
+      background: var(--color-bg-tertiary);
+      border-radius: var(--border-radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
+    .text-only-comp .desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* Implementation hint */
+    .impl-hint {
+      margin-top: var(--space-6);
+      padding: var(--space-4);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+      border-left: 4px solid var(--color-primary);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+    .impl-hint strong {
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+    .impl-hint code {
+      background: var(--color-bg-tertiary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: var(--font-size-xs);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">&#8592; Voltar ao indice</a>
+
+    <!-- ============================================ -->
+    <!-- ANTES vs DEPOIS -->
+    <!-- ============================================ -->
+    <div class="comparison">
+      <h3>Antes vs Depois</h3>
+      <div class="comparison-grid">
+        <div class="comparison-card before">
+          <div class="comparison-label">Antes (somente texto)</div>
+
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">Buttons</div>
+          <div class="text-only-comp">
+            <span class="chip">Primary</span>
+            <span class="desc">Acoes principais (aceitar, salvar)</span>
+          </div>
+          <div class="text-only-comp">
+            <span class="chip">Secondary</span>
+            <span class="desc">Acoes secundarias (cancelar, voltar)</span>
+          </div>
+          <div class="text-only-comp">
+            <span class="chip">Destructive</span>
+            <span class="desc">Acoes destrutivas (excluir, recusar)</span>
+          </div>
+
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-top: var(--space-3); margin-bottom: var(--space-2);">Status Badges</div>
+          <div class="text-only-comp">
+            <span class="chip">Pendente</span>
+            <span class="desc">Pedido aguardando acao</span>
+          </div>
+          <div class="text-only-comp">
+            <span class="chip">Entregue</span>
+            <span class="desc">Pedido finalizado</span>
+          </div>
+        </div>
+
+        <div class="comparison-card after">
+          <div class="comparison-label">Depois (com preview visual)</div>
+
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">Buttons</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-3);">
+            <button class="preview-btn primary" style="font-size: 11px; padding: 4px 10px;">Primary</button>
+            <button class="preview-btn secondary" style="font-size: 11px; padding: 4px 10px;">Secondary</button>
+            <button class="preview-btn destructive" style="font-size: 11px; padding: 4px 10px;">Destructive</button>
+          </div>
+
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">Status Badges</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span class="preview-badge pending" style="font-size: 10px; padding: 2px 8px;">Pendente</span>
+            <span class="preview-badge delivered" style="font-size: 10px; padding: 2px 8px;">Entregue</span>
+            <span class="preview-badge cancelled" style="font-size: 10px; padding: 2px 8px;">Cancelado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- COMO FICARIA NO UX PLAN -->
+    <!-- ============================================ -->
+    <div style="margin-top: var(--space-8);">
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-2);">
+        Como ficaria no UX Plan
+      </h3>
+      <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+        Cada grupo em <code>componentLibrary[]</code> gera uma secao com preview visual real das variantes.
+        O tipo de preview e inferido pelo <code>name</code> do grupo (ex: "Buttons" renderiza botoes reais).
+      </p>
+    </div>
+
+    <!-- Card no estilo do WorkspacePanel -->
+    <div class="plan-card">
+      <h3>Biblioteca de Componentes</h3>
+      <p class="subtitle">Preview das variantes de UI definidas para o projeto</p>
+
+      <!-- ============ GRUPO 1: BUTTONS ============ -->
+      <div class="comp-group">
+        <div class="comp-group-name">Botoes</div>
+        <div class="comp-group-preview">
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn primary">Primary</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Primary</div>
+              <div class="variant-desc">Acoes principais (aceitar pedido, salvar, continuar)</div>
+            </div>
+          </div>
+
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn secondary">Secondary</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Secondary</div>
+              <div class="variant-desc">Acoes secundarias (cancelar, voltar)</div>
+            </div>
+          </div>
+
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn destructive">Destructive</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Destructive</div>
+              <div class="variant-desc">Acoes destrutivas (excluir, recusar pedido)</div>
+            </div>
+          </div>
+
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn ghost">Ghost</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Ghost</div>
+              <div class="variant-desc">Acoes sutis, links disfarçados de botao</div>
+            </div>
+          </div>
+
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn outline">Outline</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Outline</div>
+              <div class="variant-desc">Acoes secundarias com borda neutra</div>
+            </div>
+          </div>
+
+          <div class="variant-row">
+            <div class="variant-preview">
+              <button class="preview-btn primary disabled" disabled>Disabled</button>
+            </div>
+            <div class="variant-info">
+              <div class="variant-name">Disabled</div>
+              <div class="variant-desc">Estado desabilitado (acao nao disponivel)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GRUPO 2: STATUS BADGES ============ -->
+      <div class="comp-group">
+        <div class="comp-group-name">Status Badges</div>
+        <div class="comp-group-preview">
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;">
+            <div style="text-align: center;">
+              <span class="preview-badge pending">Pendente</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">Aguardando</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="preview-badge preparing">Preparando</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">Em preparo</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="preview-badge ready">Pronto</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">Para coleta</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="preview-badge delivering">Em Entrega</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">A caminho</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="preview-badge delivered">Entregue</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">Finalizado</div>
+            </div>
+            <div style="text-align: center;">
+              <span class="preview-badge cancelled">Cancelado</span>
+              <div style="font-size: 9px; color: var(--color-text-tertiary); margin-top: 4px;">Removido</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GRUPO 3: CARDS ============ -->
+      <div class="comp-group">
+        <div class="comp-group-name">Cards</div>
+        <div class="comp-group-preview">
+          <div style="display: grid; gap: var(--space-3);">
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-card default" style="width: 100%;">
+                <div class="preview-card-title">Default Card</div>
+                <div class="preview-card-text">Borda 2px cinza, border-radius 12px, shadow leve. Usado para conteudo geral.</div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Default</div>
+                <div class="variant-desc">Container padrao para agrupamento de conteudo</div>
+              </div>
+            </div>
+
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-card highlighted" style="width: 100%;">
+                <div class="preview-card-title">Highlighted Card</div>
+                <div class="preview-card-text">Borda 2px azul, shadow azul. Para itens selecionados ou em destaque.</div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Highlighted</div>
+                <div class="variant-desc">Card com destaque para selecao ou enfase</div>
+              </div>
+            </div>
+
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-card elevated" style="width: 100%;">
+                <div class="preview-card-title">Elevated Card</div>
+                <div class="preview-card-text">Shadow mais pronunciado. Para cards que "flutuam" sobre o conteudo.</div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Elevated</div>
+                <div class="variant-desc">Card com elevacao visual (dropdowns, popovers)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GRUPO 4: FORM INPUTS ============ -->
+      <div class="comp-group">
+        <div class="comp-group-name">Form Inputs</div>
+        <div class="comp-group-preview">
+          <div style="display: grid; gap: var(--space-4);">
+            <!-- Default input -->
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-input-group">
+                <label class="preview-input-label">Nome do Restaurante</label>
+                <input type="text" class="preview-input" placeholder="Digite o nome..." readonly>
+                <div class="preview-helper">Texto de ajuda abaixo do campo</div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Default</div>
+                <div class="variant-desc">Campo padrao com label, placeholder e helper text</div>
+              </div>
+            </div>
+
+            <!-- Focused input -->
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-input-group">
+                <label class="preview-input-label">Email</label>
+                <input type="text" class="preview-input" value="usuario@email.com" style="border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);" readonly>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Focused</div>
+                <div class="variant-desc">Estado de foco com borda azul e ring</div>
+              </div>
+            </div>
+
+            <!-- Error input -->
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-input-group">
+                <label class="preview-input-label error">Campo com Erro</label>
+                <input type="text" class="preview-input error" value="Valor invalido" readonly>
+                <div class="preview-helper error">Este campo e obrigatorio</div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Error</div>
+                <div class="variant-desc">Estado de erro com borda vermelha, fundo rosa e mensagem</div>
+              </div>
+            </div>
+
+            <!-- Disabled input -->
+            <div class="variant-row" style="flex-direction: column; align-items: flex-start; gap: var(--space-2);">
+              <div class="preview-input-group">
+                <label class="preview-input-label" style="color: var(--color-text-tertiary);">Campo Desabilitado</label>
+                <input type="text" class="preview-input disabled" value="Nao editavel" disabled readonly>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Disabled</div>
+                <div class="variant-desc">Campo desabilitado com fundo cinza e texto esmaecido</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GRUPO 5: NAVIGATION / MENUS ============ -->
+      <div class="comp-group">
+        <div class="comp-group-name">Navigation Items</div>
+        <div class="comp-group-preview">
+          <div style="display: grid; gap: var(--space-3);">
+            <!-- Sidebar menu items -->
+            <div class="variant-row">
+              <div class="variant-preview" style="flex-direction: column; gap: 4px; min-width: 160px;">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--color-primary-light); border-radius: 6px; width: 100%;">
+                  <div style="width: 14px; height: 14px; background: var(--color-primary); border-radius: 3px;"></div>
+                  <span style="font-size: 12px; font-weight: 600; color: var(--color-primary);">Dashboard</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px; width: 100%;">
+                  <div style="width: 14px; height: 14px; background: var(--color-gray-300); border-radius: 3px;"></div>
+                  <span style="font-size: 12px; color: var(--color-text-secondary);">Pedidos</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px; width: 100%;">
+                  <div style="width: 14px; height: 14px; background: var(--color-gray-300); border-radius: 3px;"></div>
+                  <span style="font-size: 12px; color: var(--color-text-secondary);">Cardapio</span>
+                </div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Sidebar Menu</div>
+                <div class="variant-desc">Icone + label, item ativo com fundo azul, hover com fundo cinza</div>
+              </div>
+            </div>
+
+            <!-- Tab navigation -->
+            <div class="variant-row">
+              <div class="variant-preview" style="min-width: 200px;">
+                <div style="display: flex; border-bottom: 2px solid var(--color-gray-200); width: 100%;">
+                  <div style="padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--color-primary); border-bottom: 2px solid var(--color-primary); margin-bottom: -2px;">Geral</div>
+                  <div style="padding: 6px 14px; font-size: 12px; color: var(--color-text-tertiary);">Detalhes</div>
+                  <div style="padding: 6px 14px; font-size: 12px; color: var(--color-text-tertiary);">Config</div>
+                </div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Tab Navigation</div>
+                <div class="variant-desc">Abas horizontais com indicador de ativo na borda inferior</div>
+              </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <div class="variant-row">
+              <div class="variant-preview" style="min-width: 200px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                  <span style="color: var(--color-primary);">Pedidos</span>
+                  <span style="color: var(--color-gray-400);">></span>
+                  <span style="color: var(--color-primary);">#1234</span>
+                  <span style="color: var(--color-gray-400);">></span>
+                  <span style="color: var(--color-text-primary); font-weight: 600;">Detalhes</span>
+                </div>
+              </div>
+              <div class="variant-info">
+                <div class="variant-name">Breadcrumb</div>
+                <div class="variant-desc">Navegacao hierarquica com links e separadores</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DICAS DE IMPLEMENTACAO -->
+    <!-- ============================================ -->
+    <div class="impl-hint">
+      <strong>Dicas de Implementacao em React/Tailwind</strong>
+      <p>
+        <strong>Componente:</strong> <code>ComponentLibraryPreview</code><br>
+        <strong>Entrada:</strong> <code>componentLibrary: Array&lt;{"{"} name, variants: [{"{"} name, description {"}"}] {"}"}&gt;</code>
+      </p>
+      <p style="margin-top: var(--space-2);">
+        <strong>Logica de deteccao do tipo:</strong> Fazer <code>group.name.toLowerCase()</code> e testar keywords:
+      </p>
+      <ul style="font-size: var(--font-size-xs); margin-top: var(--space-2); padding-left: var(--space-5); line-height: 2;">
+        <li><code>button</code> / <code>botao</code> / <code>botoes</code> -> Renderizar <code>&lt;button&gt;</code> reais com classes Tailwind diferenciadas por variante</li>
+        <li><code>badge</code> / <code>status</code> / <code>tag</code> -> Renderizar pills coloridas. Mapear cores: <code>variant.name.toLowerCase()</code> contem "pend"=amarelo, "prepar"=azul, "entregue"/"done"=verde, "cancel"/"error"=vermelho</li>
+        <li><code>card</code> -> Renderizar <code>&lt;div&gt;</code> com bordas e sombras diferenciadas</li>
+        <li><code>input</code> / <code>form</code> / <code>campo</code> -> Renderizar <code>&lt;input&gt;</code> reais com estados (default, focus, error, disabled)</li>
+        <li><code>nav</code> / <code>menu</code> / <code>navigation</code> -> Renderizar listas de links simuladas</li>
+        <li>Default -> Chip generico com nome + descricao ao lado</li>
+      </ul>
+      <p style="margin-top: var(--space-3);">
+        <strong>Mapeamento de cores para badges:</strong><br>
+        Para inferir a cor de cada variante sem dados extras, usar heuristica baseada no nome:
+      </p>
+      <pre style="font-size: var(--font-size-xs); margin-top: var(--space-2); background: var(--color-bg-tertiary); padding: var(--space-3); border-radius: var(--border-radius-sm); overflow-x: auto; line-height: 1.8;">
+const BADGE_COLORS: Record&lt;string, {bg: string, text: string}&gt; = {
+  pending:    { bg: 'bg-amber-100',  text: 'text-amber-800'  },
+  preparing:  { bg: 'bg-blue-100',   text: 'text-blue-800'   },
+  ready:      { bg: 'bg-amber-100',  text: 'text-amber-800'  },
+  delivering: { bg: 'bg-purple-100', text: 'text-purple-800' },
+  delivered:  { bg: 'bg-green-100',  text: 'text-green-800'  },
+  cancelled:  { bg: 'bg-red-100',    text: 'text-red-800'    },
+  success:    { bg: 'bg-green-100',  text: 'text-green-800'  },
+  warning:    { bg: 'bg-amber-100',  text: 'text-amber-800'  },
+  error:      { bg: 'bg-red-100',    text: 'text-red-800'    },
+  info:       { bg: 'bg-blue-100',   text: 'text-blue-800'   },
+  default:    { bg: 'bg-gray-100',   text: 'text-gray-800'   },
+}
+
+function getBadgeColor(variantName: string) {
+  const key = variantName.toLowerCase()
+  for (const [pattern, colors] of Object.entries(BADGE_COLORS)) {
+    if (key.includes(pattern)) return colors
+  }
+  return BADGE_COLORS.default
+}
+      </pre>
+    </div>
+  </div>
+</body>
+</html>
