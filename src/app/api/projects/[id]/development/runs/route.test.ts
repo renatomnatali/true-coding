@@ -8,7 +8,7 @@ vi.mock('@/lib/development/auth', () => ({
   assertProjectOwnership: vi.fn(),
 }))
 
-vi.mock('@/lib/development/orchestrator', () => ({
+vi.mock('@/lib/development/run-control', () => ({
   createDevelopmentRun: vi.fn(),
   isDevelopmentRunActiveInWorker: vi.fn(),
 }))
@@ -27,7 +27,7 @@ vi.mock('@/lib/db/prisma', () => ({
 
 import { auth } from '@clerk/nextjs/server'
 import { assertProjectOwnership } from '@/lib/development/auth'
-import { createDevelopmentRun, isDevelopmentRunActiveInWorker } from '@/lib/development/orchestrator'
+import { createDevelopmentRun, isDevelopmentRunActiveInWorker } from '@/lib/development/run-control'
 import { assertAutonomousDevelopmentSchemaReady } from '@/lib/development/schema-health'
 import { prisma } from '@/lib/db/prisma'
 

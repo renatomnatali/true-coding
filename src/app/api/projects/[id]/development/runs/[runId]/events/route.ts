@@ -5,7 +5,7 @@ import {
   getDevelopmentRunEvents,
   getDevelopmentRun,
   getDevelopmentRunRetryBoundary,
-} from '@/lib/development/orchestrator'
+} from '@/lib/development/run-control'
 
 interface RouteParams {
   params: Promise<{ id: string; runId: string }>

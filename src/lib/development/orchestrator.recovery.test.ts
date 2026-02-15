@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { prismaMock, appendRunEventMock, isRunActiveMock } = vi.hoisted(() => ({
+const { prismaMock, appendRunEventMock, isRunActiveMock, cleanupSandboxMock } = vi.hoisted(() => ({
   prismaMock: {
     developmentRun: {
       findFirst: vi.fn(),
@@ -17,6 +17,7 @@ const { prismaMock, appendRunEventMock, isRunActiveMock } = vi.hoisted(() => ({
   },
   appendRunEventMock: vi.fn(),
   isRunActiveMock: vi.fn(),
+  cleanupSandboxMock: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('@/lib/db/prisma', () => ({
@@ -35,12 +36,24 @@ vi.mock('./worker-registry', () => ({
   isRunActive: isRunActiveMock,
 }))
 
+vi.mock('./workspace', () => ({
+  cleanupSandbox: cleanupSandboxMock,
+}))
+
+vi.mock('./orchestrator', async (importOriginal) => {
+  const original = await importOriginal<typeof import('./orchestrator')>()
+  return {
+    ...original,
+    enqueueDevelopmentRun: vi.fn(),
+  }
+})
+
+import { __moveRunToReleaseCheckpointForTest } from './orchestrator'
 import {
-  __moveRunToReleaseCheckpointForTest,
   checkpointAction,
   recoverDevelopmentRun,
   retryDevelopmentRun,
-} from './orchestrator'
+} from './run-control'
 
 describe('orchestrator recovery flows', () => {
   beforeEach(() => {
@@ -90,12 +103,7 @@ describe('orchestrator recovery flows', () => {
         attemptCount: 0,
       },
     })
-    expect(prismaMock.developmentRun.update.mock.calls).toContainEqual([
-      {
-        where: { id: 'run-1' },
-        data: { workerSandboxPath: null },
-      },
-    ])
+    expect(cleanupSandboxMock).toHaveBeenCalledWith('run-1')
   })
 
   it('checkpointAction resume resets attemptCount before restarting iteration', async () => {
@@ -137,12 +145,7 @@ describe('orchestrator recovery flows', () => {
         attemptCount: 0,
       },
     })
-    expect(prismaMock.developmentRun.update.mock.calls).toContainEqual([
-      {
-        where: { id: 'run-1' },
-        data: { workerSandboxPath: null },
-      },
-    ])
+    expect(cleanupSandboxMock).toHaveBeenCalledWith('run-1')
   })
 
   it('recoverDevelopmentRun resets exhausted running iteration before manual resume', async () => {
@@ -184,12 +187,7 @@ describe('orchestrator recovery flows', () => {
         attemptCount: 0,
       },
     })
-    expect(prismaMock.developmentRun.update.mock.calls).toContainEqual([
-      {
-        where: { id: 'run-1' },
-        data: { workerSandboxPath: null },
-      },
-    ])
+    expect(cleanupSandboxMock).toHaveBeenCalledWith('run-1')
   })
 
   it('moves run to WAITING_CHECKPOINT when release step fails', async () => {

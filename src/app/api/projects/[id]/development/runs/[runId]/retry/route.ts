@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { assertProjectOwnership } from '@/lib/development/auth'
-import { retryDevelopmentRun } from '@/lib/development/orchestrator'
+import { retryDevelopmentRun } from '@/lib/development/run-control'
 
 interface RouteParams {
   params: Promise<{ id: string; runId: string }>

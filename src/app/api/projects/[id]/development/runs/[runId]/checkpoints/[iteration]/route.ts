@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { assertProjectOwnership } from '@/lib/development/auth'
-import { checkpointAction } from '@/lib/development/orchestrator'
+import { checkpointAction } from '@/lib/development/run-control'
 
 interface RouteParams {
   params: Promise<{ id: string; runId: string; iteration: string }>

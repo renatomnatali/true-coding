@@ -8,13 +8,13 @@ vi.mock('@/lib/development/auth', () => ({
   assertProjectOwnership: vi.fn(),
 }))
 
-vi.mock('@/lib/development/orchestrator', () => ({
+vi.mock('@/lib/development/run-control', () => ({
   recoverDevelopmentRun: vi.fn(),
 }))
 
 import { auth } from '@clerk/nextjs/server'
 import { assertProjectOwnership } from '@/lib/development/auth'
-import { recoverDevelopmentRun } from '@/lib/development/orchestrator'
+import { recoverDevelopmentRun } from '@/lib/development/run-control'
 
 const mockAuth = vi.mocked(auth)
 const mockAssertProjectOwnership = vi.mocked(assertProjectOwnership)

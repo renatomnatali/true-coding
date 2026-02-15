@@ -24,7 +24,7 @@ vi.mock('@/lib/development/auth', () => ({
   assertProjectOwnership: assertProjectOwnershipMock,
 }))
 
-vi.mock('@/lib/development/orchestrator', () => ({
+vi.mock('@/lib/development/run-control', () => ({
   getDevelopmentRun: getDevelopmentRunMock,
   getDevelopmentRunEvents: getDevelopmentRunEventsMock,
   getDevelopmentRunRetryBoundary: getDevelopmentRunRetryBoundaryMock,

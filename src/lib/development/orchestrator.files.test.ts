@@ -6,7 +6,7 @@ import {
   __collectWorkspaceArtifactsForCommit,
   __extractGeneratedFilesFromAgentOutput,
   __getFallbackBootstrapFilesForTest,
-} from './orchestrator'
+} from './workspace'
 
 describe('orchestrator workspace artifacts', () => {
   it('extracts generated files from agent output', () => {

@@ -6,9 +6,6 @@ import {
   runTestAgent,
   runCodeAgent,
   runReviewAgent,
-  runRecoveryAgent,
-  runReleaseAgent,
-  runDeployAgent,
 } from './agents'
 
 const baseContext = {
@@ -99,24 +96,6 @@ describe('development agents', () => {
 
     const review = await runReviewAgent({ ...baseContext, iterationId: 'iter_1' }, first)
     expect(review.output.approved).toBe(true)
-
-    const recovery = await runRecoveryAgent(
-      { ...baseContext, iterationId: 'iter_1' },
-      first,
-      1,
-      ['BUILD']
-    )
-    expect(recovery.output.nextAttempt).toBe(2)
-
-    const release = await runReleaseAgent(
-      { ...baseContext, iterationId: 'iter_1' },
-      first,
-      'iter/run-1'
-    )
-    expect(release.output.mergeStrategy).toBe('squash')
-
-    const deploy = await runDeployAgent({ ...baseContext, iterationId: 'iter_1' }, first)
-    expect(deploy.output.deployed).toBe(true)
   })
 
   it('fails outside test mode when Claude runtime is not enabled', async () => {
