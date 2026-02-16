@@ -1276,4 +1276,363 @@ describe('DevelopmentActivityPanel', () => {
 
     expect(screen.queryByText('BUILD: FALHOU')).not.toBeInTheDocument()
   })
+
+  it('calls resume checkpoint endpoint when user clicks resume checkpoint', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-cp-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 2,
+            totalIterations: 3,
+            errorSummary: 'Iteration 2 failed after retries',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ runId: 'run-cp-1', status: 'RUNNING' }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-cp-1',
+            status: 'RUNNING',
+            currentIteration: 2,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retomar checkpoint' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/projects/proj-1/development/runs/run-cp-1/checkpoints/2',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'resume' }),
+        }
+      )
+    })
+  })
+
+  it('calls cancel endpoint when user clicks cancel execution', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-cancel-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed after retries',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ runId: 'run-cancel-1', status: 'CANCELED' }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-cancel-1',
+            status: 'CANCELED',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Execução cancelada',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: '2026-02-13T15:12:00.000Z',
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Cancelar execução' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar execução' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/projects/proj-1/development/runs/run-cancel-1/cancel',
+        { method: 'POST' }
+      )
+    })
+  })
+
+  it('shows error message when recovery action fails', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-err-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'Iteração não pode ser retomada' }),
+      } as Response)
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retomar checkpoint' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Iteração não pode ser retomada')).toBeInTheDocument()
+    })
+  })
+
+  it('shows network error message when recovery action throws', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-net-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockRejectedValueOnce(new Error('Network error'))
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Tentar novamente iteração' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente iteração' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Erro de rede ao executar ação da run. Tente novamente.')).toBeInTheDocument()
+    })
+  })
+
+  it('shows error when starting a fresh run fails', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-fresh-fail',
+            status: 'CANCELED',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Execução anterior cancelada',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: '2026-02-13T15:08:00.000Z',
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'Tabelas do pipeline não existem' }),
+      } as Response)
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Iniciar nova run' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar nova run' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Tabelas do pipeline não existem')).toBeInTheDocument()
+    })
+  })
+
+  it('fires onJourneyStateChange with awaiting_confirmation and monitoring', async () => {
+    const onJourneyStateChange = vi.fn()
+
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-journey-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ runId: 'run-journey-1', status: 'RUNNING', alreadyProcessing: true }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-journey-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+        onJourneyStateChange={onJourneyStateChange}
+      />
+    )
+
+    await waitFor(() => {
+      expect(onJourneyStateChange).toHaveBeenCalledWith('awaiting_confirmation')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar execução' }))
+
+    await waitFor(() => {
+      expect(onJourneyStateChange).toHaveBeenCalledWith('monitoring')
+    })
+  })
+
+  it('fires onProjectStatusChange when cancel action succeeds', async () => {
+    const onProjectStatusChange = vi.fn()
+
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-psc-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ runId: 'run-psc-1', status: 'CANCELED' }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-psc-1',
+            status: 'CANCELED',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Execução cancelada',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: '2026-02-13T15:12:00.000Z',
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="FAILED"
+        onProjectStatusChange={onProjectStatusChange}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Cancelar execução' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar execução' }))
+
+    await waitFor(() => {
+      expect(onProjectStatusChange).toHaveBeenCalledWith('FAILED')
+    })
+  })
+
+  it('renders null when feature flag is disabled', async () => {
+    const { FEATURES } = await import('@/config/features')
+    const original = FEATURES.AUTONOMOUS_DEVELOPMENT_V1
+    FEATURES.AUTONOMOUS_DEVELOPMENT_V1 = false
+
+    const { container } = render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    expect(container.innerHTML).toBe('')
+
+    FEATURES.AUTONOMOUS_DEVELOPMENT_V1 = original
+  })
 })
