@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { GateExecutionOptions, GateRunOutput } from './types'
+import { scanWorkspaceFiles, scanWorkspaceForEnvFiles, type ScanCheck, type ScanFinding } from './code-scanner'
 
 type CommandType = 'INSTALL' | 'BUILD' | 'UNIT' | 'BDD'
 type GateCommandExecutor = (
@@ -254,46 +255,84 @@ function toSkippedGate(
   }
 }
 
+const REVIEW_CHECKS: ScanCheck[] = [
+  { name: 'eval_usage', pattern: /\beval\s*\(|new\s+Function\s*\(/, severity: 'fail' },
+  { name: 'dangerous_html', pattern: /dangerouslySetInnerHTML/, severity: 'fail' },
+  { name: 'console_debug', pattern: /\bconsole\.(log|debug)\s*\(/, severity: 'warn' },
+  { name: 'ts_escape', pattern: /@ts-ignore|@ts-expect-error/, severity: 'warn' },
+  { name: 'destructive_commands', pattern: /rm\s+-rf|drop\s+table|push\s+--force/i, severity: 'fail' },
+]
+
 async function executeReviewGate(
   options: GateExecutionOptions
 ): Promise<GateRunOutput> {
   const started = nowMs()
 
+  const findings = await scanWorkspaceFiles(options.workspacePath, REVIEW_CHECKS)
+  const failCount = findings.filter((f) => f.severity === 'fail').length
+  const passed = failCount === 0
+
   return {
     gateType: 'REVIEW',
-    passed: true,
+    passed,
     durationMs: nowMs() - started,
     logsRef: 'review-report',
     report: {
-      mode: 'policy',
-      checklist: [
-        'scope-adherence',
-        'no-destructive-commands',
-        'conventional-commit-message',
-      ],
-      iterationIndex: options.iterationIndex,
+      mode: 'static_analysis',
+      findings: findings.map((f) => ({
+        file: f.file,
+        line: f.line,
+        check: f.check,
+        severity: f.severity,
+        match: f.match,
+      })),
+      summary: {
+        totalFindings: findings.length,
+        failCount,
+        warnCount: findings.filter((f) => f.severity === 'warn').length,
+      },
     },
   }
 }
+
+const SECURITY_CHECKS: ScanCheck[] = [
+  { name: 'hardcoded_secret', pattern: /\bsk-[a-zA-Z0-9]{20,}|pk_(?:live|test)_[a-zA-Z0-9]+|AKIA[A-Z0-9]{16}|password\s*=\s*['"][^'"]+['"]/, severity: 'fail' },
+  { name: 'sql_injection', pattern: /\$\{[^}]+\}.*(?:SELECT|INSERT|UPDATE|DELETE|DROP)\b/i, severity: 'warn' },
+  { name: 'xss_vector', pattern: /\.innerHTML\s*=|document\.write\s*\(/, severity: 'fail' },
+  { name: 'process_spawn', pattern: /\bchild_process\b|\bexec\s*\(|\bexecSync\s*\(/, severity: 'warn' },
+]
 
 async function executeSecurityGate(
   options: GateExecutionOptions
 ): Promise<GateRunOutput> {
   const started = nowMs()
 
+  const codeFindings = await scanWorkspaceFiles(options.workspacePath, SECURITY_CHECKS)
+  const envFindings = await scanWorkspaceForEnvFiles(options.workspacePath)
+  const findings: ScanFinding[] = [...codeFindings, ...envFindings]
+
+  const failCount = findings.filter((f) => f.severity === 'fail').length
+  const passed = failCount === 0
+
   return {
     gateType: 'SECURITY',
-    passed: true,
+    passed,
     durationMs: nowMs() - started,
     logsRef: 'security-report',
     report: {
-      mode: 'policy',
-      controls: [
-        'command-allowlist-enforced',
-        'sandbox-workspace-isolated',
-        'secrets-not-serialized',
-      ],
-      runId: options.runId,
+      mode: 'static_analysis',
+      findings: findings.map((f) => ({
+        file: f.file,
+        line: f.line,
+        check: f.check,
+        severity: f.severity,
+        match: f.match,
+      })),
+      summary: {
+        totalFindings: findings.length,
+        failCount,
+        warnCount: findings.filter((f) => f.severity === 'warn').length,
+      },
     },
   }
 }
@@ -309,8 +348,20 @@ async function runQualityGatesWithExecutor(
     const build = toFailureGate('BUILD', nowMs(), 'execution_disabled', detail)
     const unit = toFailureGate('UNIT', nowMs(), 'execution_disabled', detail)
     const bdd = toFailureGate('BDD', nowMs(), 'execution_disabled', detail)
-    const review = await executeReviewGate(options)
-    const security = await executeSecurityGate(options)
+    const review: GateRunOutput = {
+      gateType: 'REVIEW',
+      passed: true,
+      durationMs: 0,
+      logsRef: 'review-report',
+      report: { mode: 'skipped', reason: 'execution_disabled' },
+    }
+    const security: GateRunOutput = {
+      gateType: 'SECURITY',
+      passed: true,
+      durationMs: 0,
+      logsRef: 'security-report',
+      report: { mode: 'skipped', reason: 'execution_disabled' },
+    }
 
     return [build, unit, bdd, review, security]
   }
