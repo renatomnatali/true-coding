@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import Handlebars from 'handlebars'
-import { renderTemplate, kebabCase, TemplateContext } from './templates'
+import { loadTemplate, renderTemplate, kebabCase, TemplateContext } from './templates'
 
 describe('Template Helpers', () => {
   describe('pascalCase', () => {
@@ -94,5 +94,15 @@ describe('renderTemplate', () => {
     const template = '{{#each features}}{{this}},{{/each}}'
     const result = renderTemplate(template, baseContext)
     expect(result).toBe('feature1,feature2,')
+  })
+
+  it('includes jest-dom dependency required by generated vitest setup', async () => {
+    const packageTemplate = await loadTemplate('nextjs-basic/package.json.hbs')
+    const renderedPackage = renderTemplate(packageTemplate, baseContext)
+    const parsed = JSON.parse(renderedPackage) as {
+      devDependencies?: Record<string, string>
+    }
+
+    expect(parsed.devDependencies?.['@testing-library/jest-dom']).toBeDefined()
   })
 })

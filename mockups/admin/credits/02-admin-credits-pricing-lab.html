@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Credits - Proposta 2 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+</head>
+<body>
+  <div class="credits-app">
+    <aside class="credits-sidebar">
+      <div class="credits-logo"><span class="credits-logo-icon">TC</span>True Coding</div>
+      <div class="credits-nav-title">Financeiro</div>
+      <a class="credits-nav-item" href="01-admin-credits-control-tower.html">Proposta 1 - Control Tower</a>
+      <a class="credits-nav-item active" href="02-admin-credits-pricing-lab.html">Proposta 2 - Pricing Lab</a>
+      <a class="credits-nav-item" href="03-admin-credits-ops-ledger.html">Proposta 3 - Ops Ledger</a>
+      <div class="credits-nav-title">Modelagem</div>
+      <a class="credits-nav-item" href="#">Parametros de custo</a>
+      <a class="credits-nav-item" href="#">Curva de desconto</a>
+      <a class="credits-nav-item" href="#">Pricing A/B</a>
+      <a class="credits-nav-item" href="#">Regras de trial</a>
+    </aside>
+
+    <main class="credits-main">
+      <header class="credits-topbar">
+        <div>
+          <h1>Pricing Lab</h1>
+          <div class="credits-subtitle">Workspace para testar preco, margem e impacto de consumo antes de publicar no CMS.</div>
+        </div>
+        <div class="credits-actions">
+          <span class="credits-badge">Staging</span>
+          <button class="btn btn-secondary btn-sm">Duplicar cenario</button>
+          <button class="btn btn-primary btn-sm">Aplicar no catalogo</button>
+        </div>
+      </header>
+
+      <section class="credits-content">
+        <div class="credits-grid-main">
+          <div class="credits-card">
+            <h2 class="credits-card-title">Editor de pacotes</h2>
+            <p class="credits-card-subtitle">Mecanica similar a Claude: janela de uso clara + upgrade orientado por previsao de consumo.</p>
+
+            <table class="credits-table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Creditos</th>
+                  <th>Preco</th>
+                  <th>COGS</th>
+                  <th>Margem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Start</td>
+                  <td>300</td>
+                  <td><input class="form-input" type="text" value="89" style="max-width: 90px;"></td>
+                  <td>R$ 15,00</td>
+                  <td><strong>83,1%</strong></td>
+                </tr>
+                <tr>
+                  <td>Pro</td>
+                  <td>1000</td>
+                  <td><input class="form-input" type="text" value="249" style="max-width: 90px;"></td>
+                  <td>R$ 50,00</td>
+                  <td><strong>79,9%</strong></td>
+                </tr>
+                <tr>
+                  <td>Scale</td>
+                  <td>3000</td>
+                  <td><input class="form-input" type="text" value="599" style="max-width: 90px;"></td>
+                  <td>R$ 150,00</td>
+                  <td><strong>75,0%</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="height: var(--space-4);"></div>
+
+            <div class="credits-grid-2">
+              <div class="credits-callout">
+                <strong>Regra:</strong> preco minimo = (creditos x cogs) / (1 - margem alvo)
+                <div class="credits-mono" style="margin-top: var(--space-2);">(300 x 0,05) / (1 - 0,75) = R$ 60,00</div>
+              </div>
+              <div class="credits-callout success">
+                Todos os SKUs estao acima do piso de margem.
+              </div>
+            </div>
+
+            <div style="height: var(--space-4);"></div>
+
+            <h3 class="credits-card-title" style="font-size: var(--font-size-base);">Politica de trial e freemium</h3>
+            <div class="credits-list">
+              <div class="credits-list-item">
+                <span>Trial one-shot (7 dias)</span>
+                <span class="credits-chip">60 creditos</span>
+              </div>
+              <div class="credits-list-item">
+                <span>Discovery Lite gratuito</span>
+                <span class="credits-chip">2 perguntas</span>
+              </div>
+              <div class="credits-list-item">
+                <span>Codegen completo no trial</span>
+                <span class="credits-badge warning">bloqueado</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="credits-list" style="gap: var(--space-4);">
+            <div class="credits-card">
+              <h3 class="credits-card-title">Simulador de unidade economica</h3>
+              <div class="credits-window">
+                <div class="credits-window-row"><span>Projetos base/mes</span><strong>4.500</strong></div>
+                <div class="credits-window-row"><span>Creditos por projeto</span><strong>303</strong></div>
+                <div class="credits-window-row"><span>Consumo previsto</span><strong>1.363.500</strong></div>
+                <div class="credits-window-row"><span>Receita prevista</span><strong>R$ 426.200</strong></div>
+                <div class="credits-window-row"><span>COGS previsto</span><strong>R$ 68.175</strong></div>
+                <div class="credits-window-row"><span>Margem prevista</span><strong>84,0%</strong></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Impacto por alteracao</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Business detalhado: 80 -> 75</span><strong>+2,1pp conversao</strong></div>
+                <div class="credits-list-item"><span>Codegen: 120 -> 110</span><strong>-4,7pp margem</strong></div>
+                <div class="credits-list-item"><span>Trial: 60 -> 80</span><strong>+3,0pp trial->paid</strong></div>
+              </div>
+              <div style="height: var(--space-3);"></div>
+              <div class="credits-callout warning">Alteracoes de preco acima de 15% exigem aprovacao dupla.</div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Publicacao segura</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Checklist tecnico</span><span class="credits-badge success">ok</span></div>
+                <div class="credits-list-item"><span>Checklist suporte</span><span class="credits-badge success">ok</span></div>
+                <div class="credits-list-item"><span>Janela de rollout</span><span class="credits-chip">10%</span></div>
+              </div>
+              <div style="height: var(--space-3);"></div>
+              <button class="btn btn-primary btn-sm" style="width: 100%;">Publicar com canary</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="01-admin-credits-control-tower.html">Anterior</a>
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="03-admin-credits-ops-ledger.html">Proxima proposta</a>
+  </nav>
+</body>
+</html>

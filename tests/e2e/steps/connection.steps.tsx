@@ -270,14 +270,134 @@ describe('ConnectionPhase → sub-estado "connected"', () => {
     expect(screen.getByText(/Tudo pronto!/)).toBeDefined()
   })
 
-  it('shows "Analisar Complexidade" button (disabled — phase 4)', () => {
+  it('shows "Iniciar Desenvolvimento" button enabled', () => {
     render(<ConnectionPhase {...connectedProps} />)
 
-    const btn = screen.getByText('Analisar Complexidade →')
-    expect(btn).toBeDefined()
-    // Button should be disabled since Assessment phase is not implemented
-    const button = btn.closest('button')
-    expect(button?.disabled).toBe(true)
+    const button = screen.getByRole('button', { name: 'Iniciar Desenvolvimento →' })
+    expect(button).toBeDefined()
+    expect(button).not.toBeDisabled()
+  })
+
+  it('clicking "Iniciar Desenvolvimento" calls assessment endpoint and shows error when it fails', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Falha ao analisar complexidade' }),
+    } as Response)
+
+    render(<ConnectionPhase {...connectedProps} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar Desenvolvimento →' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+    })
+
+    const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit]
+    expect(url).toBe('/api/projects/proj-test-1/development/assessment')
+    expect(init.method).toBe('POST')
+    expect(screen.getByText('Falha ao analisar complexidade')).toBeDefined()
+  })
+
+  it('shows assessment result and enables "Continuar para Desenvolvimento" after analysis', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assessment: {
+            complexityScore: 62,
+            complexityLevel: 'complex',
+            factors: [
+              {
+                name: 'API',
+                score: 4,
+                maxScore: 5,
+                detail: '8 endpoints',
+              },
+            ],
+            recommendedIterations: 4,
+          },
+          iterations: [
+            {
+              index: 1,
+              name: 'Fundacao',
+              slug: 'fundacao',
+              scope: {
+                goals: ['Base do projeto'],
+                featureTags: ['@fundacao'],
+                risks: ['Acoplamento inicial'],
+              },
+              gherkinPath: 'docs/specifications/generated/iter-1-fundacao.feature',
+            },
+          ],
+        }),
+      } as Response)
+
+    render(<ConnectionPhase {...connectedProps} />)
+
+    expect(screen.queryByRole('button', { name: 'Continuar para Desenvolvimento →' })).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar Desenvolvimento →' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Resultado da Análise')).toBeDefined()
+    })
+
+    expect(screen.getByText(/Iterações recomendadas:/)).toBeDefined()
+    expect(screen.getByText(/Iteração 1: Fundacao/)).toBeDefined()
+    expect(screen.getByRole('button', { name: 'Continuar para Desenvolvimento →' })).not.toBeDisabled()
+  })
+
+  it('starts autonomous run only after user confirms continuation', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assessment: {
+            complexityScore: 40,
+            complexityLevel: 'medium',
+            factors: [],
+            recommendedIterations: 3,
+          },
+          iterations: [
+            {
+              index: 1,
+              name: 'Fundacao',
+              slug: 'fundacao',
+              scope: { goals: ['Base'], featureTags: ['@fundacao'], risks: [] },
+              gherkinPath: 'docs/specifications/generated/iter-1-fundacao.feature',
+            },
+          ],
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ message: 'Falha ao iniciar run' }),
+      } as Response)
+
+    render(<ConnectionPhase {...connectedProps} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar Desenvolvimento →' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Continuar para Desenvolvimento →' })).not.toBeDisabled()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar para Desenvolvimento →' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    const [url, init] = mockFetch.mock.calls[1] as [string, RequestInit]
+    expect(url).toBe('/api/projects/proj-test-1/development/runs')
+    expect(init.method).toBe('POST')
+    const payload = JSON.parse(String(init.body))
+    expect(payload.assessmentConfirmed).toBe(true)
+    expect(payload.approvedAssessment.complexityScore).toBe(40)
+    expect(payload.approvedAssessment.recommendedIterations).toBe(3)
+    expect(Array.isArray(payload.approvedIterations)).toBe(true)
+    expect(payload.approvedIterations[0].name).toBe('Fundacao')
+    expect(screen.getByText('Falha ao iniciar run')).toBeDefined()
   })
 })
 

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Credits - Proposta 3 | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/credits.css">
+</head>
+<body>
+  <div class="credits-app">
+    <aside class="credits-sidebar">
+      <div class="credits-logo"><span class="credits-logo-icon">TC</span>True Coding</div>
+      <div class="credits-nav-title">Financeiro</div>
+      <a class="credits-nav-item" href="01-admin-credits-control-tower.html">Proposta 1 - Control Tower</a>
+      <a class="credits-nav-item" href="02-admin-credits-pricing-lab.html">Proposta 2 - Pricing Lab</a>
+      <a class="credits-nav-item active" href="03-admin-credits-ops-ledger.html">Proposta 3 - Ops Ledger</a>
+      <div class="credits-nav-title">Operacao</div>
+      <a class="credits-nav-item" href="#">Fila de execucao</a>
+      <a class="credits-nav-item" href="#">Ledger imutavel</a>
+      <a class="credits-nav-item" href="#">Refund monitor</a>
+      <a class="credits-nav-item" href="#">Anomalias</a>
+    </aside>
+
+    <main class="credits-main">
+      <header class="credits-topbar">
+        <div>
+          <h1>Ops Ledger Console</h1>
+          <div class="credits-subtitle">Visao operacional para reconciliar hold/capture/refund e detectar risco financeiro.</div>
+        </div>
+        <div class="credits-actions">
+          <span class="credits-badge warning">3 alertas abertos</span>
+          <button class="btn btn-secondary btn-sm">Filtrar por conta</button>
+          <button class="btn btn-primary btn-sm">Executar reconciliacao</button>
+        </div>
+      </header>
+
+      <section class="credits-content">
+        <div class="credits-grid-3">
+          <div class="credits-card">
+            <div class="credits-kpi-label">Hold pendente</div>
+            <div class="credits-kpi-value">12.430 cr</div>
+            <div class="credits-kpi-delta">saldo pendente: R$ 621,50</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">Refund 24h</div>
+            <div class="credits-kpi-value">1.980 cr</div>
+            <div class="credits-kpi-delta">0,92% das execucoes</div>
+          </div>
+          <div class="credits-card">
+            <div class="credits-kpi-label">Anomalias ativas</div>
+            <div class="credits-kpi-value">7</div>
+            <div class="credits-kpi-delta">2 criticas, 5 medias</div>
+          </div>
+        </div>
+
+        <div style="height: var(--space-4);"></div>
+
+        <div class="credits-grid-main">
+          <div class="credits-card">
+            <h2 class="credits-card-title">Ledger stream (tempo real)</h2>
+            <p class="credits-card-subtitle">Eventos imutaveis por ordem de processamento.</p>
+            <table class="credits-table">
+              <thead>
+                <tr>
+                  <th>Horario</th>
+                  <th>Conta</th>
+                  <th>Evento</th>
+                  <th>Etapa</th>
+                  <th>Creditos</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="credits-mono">14:08:12</td>
+                  <td>conta_8F21</td>
+                  <td>hold</td>
+                  <td>codegen.initial</td>
+                  <td>120</td>
+                  <td><span class="credits-badge">aguardando</span></td>
+                </tr>
+                <tr>
+                  <td class="credits-mono">14:08:28</td>
+                  <td>conta_8F21</td>
+                  <td>capture</td>
+                  <td>codegen.initial</td>
+                  <td>120</td>
+                  <td><span class="credits-badge success">sucesso</span></td>
+                </tr>
+                <tr>
+                  <td class="credits-mono">14:11:44</td>
+                  <td>conta_B19D</td>
+                  <td>hold</td>
+                  <td>technical.plan</td>
+                  <td>70</td>
+                  <td><span class="credits-badge">aguardando</span></td>
+                </tr>
+                <tr>
+                  <td class="credits-mono">14:12:02</td>
+                  <td>conta_B19D</td>
+                  <td>refund</td>
+                  <td>technical.plan</td>
+                  <td>70</td>
+                  <td><span class="credits-badge warning">timeout</span></td>
+                </tr>
+                <tr>
+                  <td class="credits-mono">14:12:33</td>
+                  <td>conta_Z771</td>
+                  <td>grant</td>
+                  <td>purchase.pro</td>
+                  <td>1000</td>
+                  <td><span class="credits-badge success">confirmado</span></td>
+                </tr>
+                <tr>
+                  <td class="credits-mono">14:13:18</td>
+                  <td>conta_M225</td>
+                  <td>expire</td>
+                  <td>lot.trial</td>
+                  <td>24</td>
+                  <td><span class="credits-badge">expirado</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="height: var(--space-4);"></div>
+            <div class="credits-callout">
+              SLA de reconciliacao: 5 min. Desvio atual: 2 min 14s.
+            </div>
+          </div>
+
+          <div class="credits-list" style="gap: var(--space-4);">
+            <div class="credits-card">
+              <h3 class="credits-card-title">Alertas de risco</h3>
+              <div class="credits-list">
+                <div class="credits-list-item"><span>Refund rate > 2% no provider B</span><span class="credits-badge warning">critico</span></div>
+                <div class="credits-list-item"><span>Padrao de uso suspeito no trial</span><span class="credits-badge warning">critico</span></div>
+                <div class="credits-list-item"><span>Latency no hold->capture</span><span class="credits-badge">medio</span></div>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Acoes rapidas</h3>
+              <div class="credits-actions">
+                <button class="btn btn-secondary btn-sm">Congelar trial em massa</button>
+                <button class="btn btn-secondary btn-sm">Reprocessar fila</button>
+                <button class="btn btn-secondary btn-sm">Estornar lote</button>
+                <button class="btn btn-primary btn-sm">Abrir incidente</button>
+              </div>
+            </div>
+
+            <div class="credits-card">
+              <h3 class="credits-card-title">Auditoria</h3>
+              <div class="credits-window">
+                <div class="credits-window-row"><span>Eventos/dia</span><strong>280k</strong></div>
+                <div class="credits-window-row"><span>Integridade hash chain</span><strong>100%</strong></div>
+                <div class="credits-window-row"><span>Drift financeiro</span><strong>0,04%</strong></div>
+                <div class="credits-window-row"><span>Ultima auditoria</span><strong>Hoje 13:40</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="credits-nav">
+    <a class="btn btn-secondary btn-sm" href="02-admin-credits-pricing-lab.html">Anterior</a>
+    <a class="btn btn-secondary btn-sm" href="../../index.html">Hub</a>
+    <a class="btn btn-primary btn-sm" href="../../project/credits/01-user-credits-usage-dock.html">Ver propostas do usuario</a>
+  </nav>
+</body>
+</html>

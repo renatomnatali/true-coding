@@ -112,11 +112,11 @@
         <!-- Error State -->
         <div class="error-state">
           <div class="error-icon">✕</div>
-          <div class="error-title">Erro na Iteração 3: Pagamentos</div>
+          <div class="error-title">Erro no Release da Iteração 3: Pagamentos</div>
           <div class="error-message">
-            Encontrei um problema ao tentar integrar o webhook do Stripe.
+            Encontrei um problema na etapa de push para o GitHub durante o release da iteração.
             <br>
-            <strong>Erro:</strong> <code style="font-family: var(--font-mono); font-size: var(--font-size-sm); background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">Invalid endpoint signature verification</code>
+            <strong>Erro:</strong> <code style="font-family: var(--font-mono); font-size: var(--font-size-sm); background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">phase=release step=push: remote rejected update</code>
           </div>
         </div>
 
@@ -158,38 +158,29 @@
           <div class="card-body">
             <div class="recovery-options">
               <div class="recovery-option" onclick="location.href='05-iteration-progress.html'">
-                <div class="recovery-option-title">Tentar Novamente</div>
+                <div class="recovery-option-title">Tentar novamente iteração</div>
                 <div class="recovery-option-description">
-                  Vou analisar o erro e tentar gerar a Iteração 3 novamente com as correções necessárias.
+                  Reinicia a mesma iteração desde os agentes e quality gates para tentar novo release completo.
                   <br>
-                  <strong>Recomendado</strong> - geralmente resolve o problema.
+                  <strong>Recomendado</strong> quando o erro foi transitório.
                 </div>
               </div>
 
               <div class="recovery-option" onclick="location.href='../phase-4-assessment/02-iteration-plan.html'">
-                <div class="recovery-option-title">Simplificar Escopo</div>
+                <div class="recovery-option-title">Retomar checkpoint</div>
                 <div class="recovery-option-description">
-                  Vou dividir a Iteração 3 em partes menores. Primeiro adiciono só o Stripe, depois o PIX.
+                  Mantém a mesma run e retoma do checkpoint atual para continuar o pipeline.
                   <br>
-                  Útil quando a iteração está muito complexa.
-                </div>
-              </div>
-
-              <div class="recovery-option" onclick="location.href='05-iteration-progress.html'">
-                <div class="recovery-option-title">Pular para Iteração 4</div>
-                <div class="recovery-option-description">
-                  Vou para a próxima iteração (Tracking) e você pode voltar nos pagamentos depois.
-                  <br>
-                  Use apenas se quiser testar outras funcionalidades primeiro.
+                  Útil para reprocessar sem perder histórico.
                 </div>
               </div>
 
               <div class="recovery-option" onclick="location.href='07-project-paused.html'">
-                <div class="recovery-option-title">Pausar e Revisar</div>
+                <div class="recovery-option-title">Cancelar execução</div>
                 <div class="recovery-option-description">
-                  Pausar o projeto para você revisar o erro com calma. Posso fornecer logs detalhados.
+                  Finaliza a run atual e mantém o estado já publicado no repositório.
                   <br>
-                  Seu app atual continua funcionando normalmente.
+                  Use quando quiser interromper o ciclo atual.
                 </div>
               </div>
             </div>
@@ -203,22 +194,21 @@
           </summary>
           <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--color-gray-900); color: #e5e7eb; border-radius: var(--border-radius-md); font-family: var(--font-mono); font-size: var(--font-size-xs); overflow-x: auto;">
             <pre style="margin: 0; white-space: pre-wrap;">
-Error in file: src/app/api/webhooks/stripe/route.ts
-
-Error: Invalid endpoint signature verification
+Error in phase: release (git-cli)
+Step: push
 
 Stack trace:
-  at verifySignature (stripe.ts:45)
-  at POST handler (route.ts:12)
-  at generateIteration (iteration-generator.ts:234)
+  at git push origin iter/cmlmtw6s-3-pagamentos
+  at executeGitRelease (git-release-cli.ts:148)
+  at ReleaseAgent (orchestrator.ts:1188)
 
 Attempted fix:
-  • Updated STRIPE_WEBHOOK_SECRET env var
-  • Verified endpoint configuration
+  • Recreated local branch with checkout -B
+  • Validated remote permissions and branch protection
 
 Suggestion:
-  • Check Stripe dashboard webhook settings
-  • Ensure secret key matches environment variable
+  • Retry release from checkpoint
+  • If persistent, inspect remote reject reason in push stderr
             </pre>
           </div>
         </details>
@@ -239,7 +229,7 @@ Suggestion:
               <div class="message-text">
                 Encontrei um erro na Iteração 3
                 <br><br>
-                <strong>Não se preocupe!</strong> Suas iterações anteriores estão funcionando normalmente:
+                <strong>Não se preocupe!</strong> As iterações anteriores estão funcionando normalmente:
                 <br>
                 ✓ Iteração 1: Fundação
                 <br>
@@ -247,17 +237,17 @@ Suggestion:
                 <br><br>
                 <strong>Opções:</strong>
                 <br><br>
-                1. <strong>Tentar novamente</strong> (recomendado)
+                1. <strong>Tentar novamente iteração</strong> (recomendado)
                 <br>
-                Vou analisar o erro e corrigir
+                Reinicia a iteração atual
                 <br><br>
-                2. <strong>Simplificar</strong>
+                2. <strong>Retomar checkpoint</strong>
                 <br>
-                Dividir em partes menores
+                Continua da mesma run
                 <br><br>
-                3. <strong>Pular</strong>
+                3. <strong>Cancelar execução</strong>
                 <br>
-                Ir para Iteração 4 e voltar depois
+                Interrompe a run atual
                 <br><br>
                 O que você prefere?
               </div>
@@ -268,10 +258,13 @@ Suggestion:
           <div class="quick-replies-label">AÇÕES RÁPIDAS</div>
           <div class="quick-replies-buttons">
             <button class="quick-reply-btn" onclick="location.href='05-iteration-progress.html'">
-              Tentar novamente
+              Tentar novamente iteração
+            </button>
+            <button class="quick-reply-btn" onclick="location.href='../phase-4-assessment/02-iteration-plan.html'">
+              Retomar checkpoint
             </button>
             <button class="quick-reply-btn" onclick="location.href='07-project-paused.html'">
-              Pausar e revisar
+              Cancelar execução
             </button>
           </div>
         </div>

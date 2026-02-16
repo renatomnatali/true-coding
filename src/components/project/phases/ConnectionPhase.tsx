@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import type { AssessmentResult, IterationPlanItem } from '@/types'
 
 // ---------------------------------------------------------------------------
 // Sub-state derivation
@@ -11,6 +12,28 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 // ---------------------------------------------------------------------------
 
 type ConnectionSubState = 'github' | 'repo-created' | 'connected'
+
+type AssessmentAgentName = 'AssessmentAgent' | 'IterationPlannerAgent'
+type AssessmentAgentStatus = 'idle' | 'running' | 'succeeded' | 'failed'
+
+interface AssessmentAgentStep {
+  agentName: AssessmentAgentName
+  label: string
+  status: AssessmentAgentStatus
+}
+
+const INITIAL_ASSESSMENT_STEPS: AssessmentAgentStep[] = [
+  {
+    agentName: 'AssessmentAgent',
+    label: 'AssessmentAgent está analisando a complexidade',
+    status: 'idle',
+  },
+  {
+    agentName: 'IterationPlannerAgent',
+    label: 'IterationPlannerAgent está montando o plano de iterações',
+    status: 'idle',
+  },
+]
 
 function deriveSubState(githubRepoUrl: string | null, productionUrl: string | null): ConnectionSubState {
   if (!githubRepoUrl) return 'github'
@@ -49,6 +72,13 @@ export function ConnectionPhase({
   const [isConnectingNetlify, setIsConnectingNetlify] = useState(false)
   const [copied, setCopied] = useState(false)
   const [checkpointStep, setCheckpointStep] = useState<'checkpoint' | 'create-account' | 'oauth'>('checkpoint')
+  const [isAnalyzingComplexity, setIsAnalyzingComplexity] = useState(false)
+  const [assessmentError, setAssessmentError] = useState<string | null>(null)
+  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null)
+  const [iterationPlan, setIterationPlan] = useState<IterationPlanItem[]>([])
+  const [assessmentSteps, setAssessmentSteps] = useState<AssessmentAgentStep[]>(INITIAL_ASSESSMENT_STEPS)
+  const [isStartingDevelopment, setIsStartingDevelopment] = useState(false)
+  const [startDevelopmentError, setStartDevelopmentError] = useState<string | null>(null)
 
   const subState = deriveSubState(githubRepoUrl, productionUrl)
 
@@ -114,6 +144,124 @@ export function ConnectionPhase({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
+  const analyzeComplexity = useCallback(async () => {
+    if (isAnalyzingComplexity) return
+
+    setIsAnalyzingComplexity(true)
+    setAssessmentError(null)
+    setStartDevelopmentError(null)
+    setAssessmentResult(null)
+    setIterationPlan([])
+    setAssessmentSteps([
+      { ...INITIAL_ASSESSMENT_STEPS[0], status: 'running' },
+      { ...INITIAL_ASSESSMENT_STEPS[1], status: 'idle' },
+    ])
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}/development/assessment`, {
+        method: 'POST',
+      })
+
+      if (!res.ok) {
+        let message = 'Erro ao analisar a complexidade.'
+        try {
+          const data = await res.json()
+          if (typeof data?.message === 'string' && data.message) {
+            message = data.message
+          }
+        } catch {
+          // ignore parse failures
+        }
+
+        setAssessmentError(message)
+        setAssessmentSteps([
+          { ...INITIAL_ASSESSMENT_STEPS[0], status: 'failed' },
+          { ...INITIAL_ASSESSMENT_STEPS[1], status: 'idle' },
+        ])
+        return
+      }
+
+      const data = await res.json()
+      const assessment = data?.assessment as AssessmentResult | undefined
+      const iterations = Array.isArray(data?.iterations)
+        ? (data.iterations as IterationPlanItem[])
+        : []
+
+      if (!assessment) {
+        setAssessmentError('Resposta inválida da análise de complexidade.')
+        setAssessmentSteps([
+          { ...INITIAL_ASSESSMENT_STEPS[0], status: 'failed' },
+          { ...INITIAL_ASSESSMENT_STEPS[1], status: 'idle' },
+        ])
+        return
+      }
+
+      setAssessmentSteps([
+        { ...INITIAL_ASSESSMENT_STEPS[0], status: 'succeeded' },
+        { ...INITIAL_ASSESSMENT_STEPS[1], status: 'running' },
+      ])
+
+      setAssessmentResult(assessment)
+      setIterationPlan(iterations)
+      setAssessmentSteps([
+        { ...INITIAL_ASSESSMENT_STEPS[0], status: 'succeeded' },
+        { ...INITIAL_ASSESSMENT_STEPS[1], status: 'succeeded' },
+      ])
+    } catch {
+      setAssessmentError('Erro de rede ao analisar a complexidade. Tente novamente.')
+      setAssessmentSteps([
+        { ...INITIAL_ASSESSMENT_STEPS[0], status: 'failed' },
+        { ...INITIAL_ASSESSMENT_STEPS[1], status: 'idle' },
+      ])
+    } finally {
+      setIsAnalyzingComplexity(false)
+    }
+  }, [projectId, isAnalyzingComplexity])
+
+  const startDevelopment = useCallback(async () => {
+    if (isStartingDevelopment) return
+
+    if (!assessmentResult || iterationPlan.length === 0) {
+      setStartDevelopmentError('Conclua a análise de complexidade para continuar o desenvolvimento.')
+      return
+    }
+
+    setIsStartingDevelopment(true)
+    setStartDevelopmentError(null)
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}/development/runs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          assessmentConfirmed: true,
+          approvedAssessment: assessmentResult,
+          approvedIterations: iterationPlan,
+        }),
+      })
+
+      if (!res.ok) {
+        let message = 'Erro ao iniciar o desenvolvimento autônomo.'
+        try {
+          const data = await res.json()
+          if (typeof data?.message === 'string' && data.message) {
+            message = data.message
+          }
+        } catch {
+          // ignore parse failures
+        }
+        setStartDevelopmentError(message)
+        return
+      }
+
+      window.location.reload()
+    } catch {
+      setStartDevelopmentError('Erro de rede ao iniciar o desenvolvimento. Tente novamente.')
+    } finally {
+      setIsStartingDevelopment(false)
+    }
+  }, [projectId, isStartingDevelopment, assessmentResult, iterationPlan])
+
   useEffect(() => {
     if (githubJustConnected && !githubRepoUrl && !repoAttemptedRef.current) {
       repoAttemptedRef.current = true
@@ -166,7 +314,23 @@ export function ConnectionPhase({
         />
       )
     case 'connected':
-      return <ConnectedView projectName={projectName} githubRepoUrl={githubRepoUrl!} productionUrl={productionUrl!} />
+      return (
+        <ConnectedView
+          projectId={projectId}
+          projectName={projectName}
+          githubRepoUrl={githubRepoUrl!}
+          productionUrl={productionUrl!}
+          isAnalyzingComplexity={isAnalyzingComplexity}
+          assessmentError={assessmentError}
+          assessmentResult={assessmentResult}
+          iterationPlan={iterationPlan}
+          assessmentSteps={assessmentSteps}
+          onAnalyzeComplexity={analyzeComplexity}
+          isStartingDevelopment={isStartingDevelopment}
+          startDevelopmentError={startDevelopmentError}
+          onStartDevelopment={startDevelopment}
+        />
+      )
   }
 }
 
@@ -587,14 +751,48 @@ function RepoCreatedView({
 // Tela 03: Tudo conectado — pipeline de deploy
 // ---------------------------------------------------------------------------
 function ConnectedView({
+  projectId: _projectId,
   projectName: _projectName,
   githubRepoUrl,
   productionUrl,
+  isAnalyzingComplexity,
+  assessmentError,
+  assessmentResult,
+  iterationPlan,
+  assessmentSteps,
+  onAnalyzeComplexity,
+  isStartingDevelopment,
+  startDevelopmentError,
+  onStartDevelopment,
 }: {
+  projectId: string
   projectName: string
   githubRepoUrl: string
   productionUrl: string
+  isAnalyzingComplexity: boolean
+  assessmentError: string | null
+  assessmentResult: AssessmentResult | null
+  iterationPlan: IterationPlanItem[]
+  assessmentSteps: AssessmentAgentStep[]
+  onAnalyzeComplexity: () => void
+  isStartingDevelopment: boolean
+  startDevelopmentError: string | null
+  onStartDevelopment: () => void
 }) {
+  const complexityLevelLabel =
+    assessmentResult?.complexityLevel === 'complex'
+      ? 'COMPLEXA'
+      : assessmentResult?.complexityLevel === 'medium'
+        ? 'MÉDIA'
+        : 'SIMPLES'
+
+  const complexityBadgeStyles =
+    assessmentResult?.complexityLevel === 'complex'
+      ? 'bg-amber-100 text-amber-900'
+      : assessmentResult?.complexityLevel === 'medium'
+        ? 'bg-blue-100 text-blue-900'
+        : 'bg-green-100 text-green-900'
+
   return (
     <div className="h-full overflow-y-auto bg-gray-50 p-8">
       <div className="mx-auto max-w-lg space-y-5">
@@ -644,24 +842,125 @@ function ConnectedView({
         {/* Tip */}
         <div className="rounded-md border-l-4 border-blue-600 bg-blue-50 p-4">
           <p className="text-sm text-gray-900">
-            <strong>Tudo pronto!</strong> O próximo passo é a análise de complexidade e geração do código do seu projeto.
+            <strong>Tudo pronto!</strong> Ao clicar em iniciar desenvolvimento, vamos analisar a complexidade e montar o plano de iterações.
           </p>
         </div>
 
+        {(isAnalyzingComplexity || assessmentResult || assessmentError) && (
+          <div className="rounded-lg border border-gray-200 bg-white p-5">
+            <h3 className="mb-3 text-sm font-semibold text-gray-900">Análise de Complexidade</h3>
+
+            <div className="space-y-2">
+              {assessmentSteps.map((step) => (
+                <div key={step.agentName} className="flex items-center gap-2 text-sm text-gray-700">
+                  {step.status === 'running' ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  ) : step.status === 'succeeded' ? (
+                    <span className="text-green-600">✓</span>
+                  ) : step.status === 'failed' ? (
+                    <span className="text-red-600">✗</span>
+                  ) : (
+                    <span className="text-gray-400">○</span>
+                  )}
+                  <span>{step.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {assessmentError && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {assessmentError}
+          </div>
+        )}
+
+        {assessmentResult && (
+          <>
+            <div className="rounded-lg border border-gray-200 bg-white p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900">Resultado da Análise</h3>
+                <span className={`rounded-full px-2 py-1 text-xs font-semibold ${complexityBadgeStyles}`}>
+                  Complexidade {complexityLevelLabel}
+                </span>
+              </div>
+
+              <p className="mb-3 text-sm text-gray-700">
+                Score: <strong>{assessmentResult.complexityScore}/100</strong> · Iterações recomendadas:{' '}
+                <strong>{assessmentResult.recommendedIterations}</strong>
+              </p>
+
+              {assessmentResult.factors.length > 0 && (
+                <ul className="space-y-1.5 text-sm text-gray-600">
+                  {assessmentResult.factors.map((factor) => (
+                    <li key={factor.name}>
+                      <strong>{factor.name}</strong>: {factor.score}/{factor.maxScore} · {factor.detail}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-5">
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">Plano de Iterações</h3>
+              {iterationPlan.length === 0 ? (
+                <p className="text-sm text-gray-600">
+                  Nenhuma iteração foi retornada pela análise.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {iterationPlan.map((iteration) => (
+                    <div key={iteration.index} className="rounded-md border border-gray-200 p-3">
+                      <p className="text-sm font-semibold text-gray-900">
+                        Iteração {iteration.index}: {iteration.name}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        Tag BDD: {iteration.scope.featureTags.join(', ')}
+                      </p>
+                      <ul className="mt-2 space-y-1 text-xs text-gray-600">
+                        {iteration.scope.goals.slice(0, 3).map((goal) => (
+                          <li key={goal}>• {goal}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {startDevelopmentError && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {startDevelopmentError}
+          </div>
+        )}
+
         {/* Action buttons */}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={() => window.history.back()}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             ← Voltar
           </button>
-          <button
-            className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-            disabled
-          >
-            Analisar Complexidade →
-          </button>
+          {!assessmentResult ? (
+            <button
+              onClick={onAnalyzeComplexity}
+              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isAnalyzingComplexity || isStartingDevelopment}
+            >
+              {isAnalyzingComplexity ? 'Analisando...' : 'Iniciar Desenvolvimento →'}
+            </button>
+          ) : (
+            <button
+              onClick={onStartDevelopment}
+              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={iterationPlan.length === 0 || isAnalyzingComplexity || isStartingDevelopment}
+            >
+              {isStartingDevelopment ? 'Iniciando...' : 'Continuar para Desenvolvimento →'}
+            </button>
+          )}
         </div>
       </div>
     </div>
