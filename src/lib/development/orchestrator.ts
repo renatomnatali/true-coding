@@ -18,7 +18,7 @@ import {
 import { markRunActive, unmarkRunActive } from './worker-registry'
 import { TERMINAL_RUN_STATUSES, toBranchName } from './utils'
 import type { PlanSnapshot, GateRunOutput } from './types'
-import { executeIterationGitRelease } from './gitops'
+import { executeIterationGitRelease, type IterationGitReleaseResult } from './gitops'
 import { executeAgent } from './agent-executor'
 import {
   getApprovedPlan,
@@ -557,7 +557,7 @@ async function processIteration(runContext: RunContext, iterationId: string): Pr
           ? specResult.output.gherkin
           : ''
 
-      let gitReleaseResult: Record<string, unknown>
+      let gitReleaseResult: IterationGitReleaseResult
 
       try {
         await appendRunEvent({

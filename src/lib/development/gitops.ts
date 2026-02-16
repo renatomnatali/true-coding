@@ -119,8 +119,7 @@ export async function executeIterationGitRelease(
   })
 
   const headRef = `${project.githubRepoOwner}:${input.branchName}`
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let pullRequest: any = await findOpenPullRequestByHeadBase(
+  let pullRequest: Awaited<ReturnType<typeof createPullRequest>> | Awaited<ReturnType<typeof findOpenPullRequestByHeadBase>> = await findOpenPullRequestByHeadBase(
     client,
     project.githubRepoOwner,
     project.githubRepoName,
