@@ -52,7 +52,7 @@ jobs:
 
       - name: Verify autonomous-development tables
         run: |
-          node -e "const {PrismaClient}=require('@prisma/client');const prisma=new PrismaClient();(async()=>{await prisma.developmentRun.count();await prisma.iterationRun.count();console.log('Autonomous schema smoke check passed');})().catch((err)=>{console.error('Schema smoke check failed:', err);process.exit(1);}).finally(async()=>{await prisma.$disconnect();});"
+          node -e "const {PrismaClient}=require('@prisma/client');const prisma=new PrismaClient();(async()=>{await prisma.developmentRun.count();await prisma.iterationRun.count();console.log('Autonomous schema smoke check passed');})().catch((err)=>{console.error('Schema smoke check failed:', err);process.exit(1);}).finally(async()=>{await prisma.\$disconnect();});"
 
   test:
     needs: db-schema-smoke
