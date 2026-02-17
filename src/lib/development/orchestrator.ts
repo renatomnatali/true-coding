@@ -24,6 +24,7 @@ import {
   getApprovedPlan,
   type RunContext,
 } from './plan-snapshot'
+import { executeNetlifyDeploy } from './deploy'
 import {
   sanitizeWorkspacePath,
   mergeWorkspaceFiles,
@@ -876,6 +877,42 @@ async function processRunInternal(runId: string): Promise<void> {
     }
   }
 
+  // Deploy to Netlify
+  await prisma.project.update({
+    where: { id: run.projectId },
+    data: { status: 'DEPLOYING' },
+  })
+
+  await appendRunEvent({
+    runId,
+    eventType: 'DEPLOY_STATUS',
+    message: 'Iniciando deploy na Netlify',
+    payload: { status: 'DEPLOYING' },
+  })
+
+  const deployResult = await executeNetlifyDeploy(run.projectId, async (event) => {
+    await appendRunEvent({ runId, ...event })
+  })
+
+  if (!deployResult.success && !deployResult.skipped) {
+    await prisma.developmentRun.update({
+      where: { id: runId },
+      data: { status: 'FAILED', errorSummary: deployResult.error, finishedAt: new Date() },
+    })
+    await prisma.project.update({
+      where: { id: run.projectId },
+      data: { status: 'FAILED' },
+    })
+    await appendRunEvent({
+      runId,
+      eventType: 'RUN_STATUS',
+      message: 'Run failed — deploy error',
+      payload: { status: 'FAILED', error: deployResult.error },
+    })
+    return
+  }
+
+  // Deploy succeeded or was skipped — mark LIVE
   await prisma.developmentRun.update({
     where: { id: runId },
     data: {
@@ -889,6 +926,7 @@ async function processRunInternal(runId: string): Promise<void> {
     where: { id: run.projectId },
     data: {
       status: 'LIVE',
+      productionUrl: deployResult.productionUrl ?? undefined,
       lastDeployAt: new Date(),
     },
   })
