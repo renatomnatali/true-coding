@@ -25,6 +25,7 @@ interface RunsResponse {
 interface DevelopmentActivityPanelProps {
   projectId: string
   projectStatus: string
+  projectName?: string
   onProjectStatusChange?: (status: string) => void
   onJourneyStateChange?: (state: 'awaiting_confirmation' | 'monitoring') => void
 }
@@ -182,6 +183,7 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
 export function DevelopmentActivityPanel({
   projectId,
   projectStatus,
+  projectName,
   onProjectStatusChange,
   onJourneyStateChange,
 }: DevelopmentActivityPanelProps) {
@@ -679,10 +681,9 @@ export function DevelopmentActivityPanel({
       <div className="mx-auto max-w-5xl">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Pipeline Autônomo</h3>
-            <p className="text-xs text-slate-600">
-              Feedback em tempo real dos agentes e quality gates
-            </p>
+            <h3 className="text-sm font-semibold text-slate-900">
+              {projectName ? `Construindo ${projectName}` : 'Construindo...'}
+            </h3>
           </div>
 
           {requiresResumeConfirmation ? (

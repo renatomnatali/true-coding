@@ -212,6 +212,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         <DevelopmentActivityPanel
           projectId={project.id}
           projectStatus={status}
+          projectName={project.name}
           onProjectStatusChange={setStatus}
           onJourneyStateChange={setDevelopmentUiState}
         />

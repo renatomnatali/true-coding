@@ -1635,4 +1635,37 @@ describe('DevelopmentActivityPanel', () => {
 
     FEATURES.AUTONOMOUS_DEVELOPMENT_V1 = original
   })
+
+  describe('projectName prop', () => {
+    it('displays project name in title when projectName is provided', async () => {
+      mockFetch.mockResolvedValueOnce(runsResponse([]))
+
+      render(
+        <DevelopmentActivityPanel
+          projectId="proj-1"
+          projectStatus="GENERATING"
+          projectName="Meu App Incrível"
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Construindo Meu App Incrível')).toBeInTheDocument()
+      })
+    })
+
+    it('displays fallback title when projectName is not provided', async () => {
+      mockFetch.mockResolvedValueOnce(runsResponse([]))
+
+      render(
+        <DevelopmentActivityPanel
+          projectId="proj-1"
+          projectStatus="GENERATING"
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByText('Construindo...')).toBeInTheDocument()
+      })
+    })
+  })
 })
