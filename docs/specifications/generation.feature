@@ -96,7 +96,7 @@ Funcionalidade: Fase de Geracao de Codigo
   Cenário: Status GENERATING stale com run terminal não exige confirmação
     Dado que o projeto está com status "GENERATING"
     E a última run está em status terminal "CANCELED"
-    Quando o usuário visualiza o painel "Pipeline Autônomo"
+    Quando o usuário visualiza o painel de construção do projeto
     Então o sistema NÃO exibe "Aguardando confirmação"
     E exibe o botão "Iniciar nova run"
     E sincroniza o status macro do projeto para "FAILED"
@@ -112,7 +112,7 @@ Funcionalidade: Fase de Geracao de Codigo
   Cenário: Painel de pipeline exibe execução com estado consistente
     Dado que a execução do pipeline autônomo está habilitada
     E existe uma run finalizada com status "SUCCEEDED"
-    Quando o usuário visualiza o painel "Pipeline Autônomo"
+    Quando o usuário visualiza o painel de construção do projeto
     Então o status exibido deve ser "Concluído"
     E não deve exibir rótulos ambíguos de modo de execução
     E o usuário não deve ver data inválida na timeline
@@ -121,7 +121,7 @@ Funcionalidade: Fase de Geracao de Codigo
   @ux @run @reinicio
   Cenário: Run terminal permite iniciar nova execução sem usar console
     Dado que a última run do projeto está em status terminal ("CANCELED" ou "SUCCEEDED")
-    Quando o usuário visualiza o painel "Pipeline Autônomo"
+    Quando o usuário visualiza o painel de construção do projeto
     Então o sistema deve exibir o botão "Iniciar nova run"
     Quando o usuário clica em "Iniciar nova run"
     Então o cliente chama POST /api/projects/:id/development/runs com assessmentConfirmed=true
@@ -131,7 +131,7 @@ Funcionalidade: Fase de Geracao de Codigo
   Cenário: Run em WAITING_CHECKPOINT exige ação explícita do usuário
     Dado que existe uma run ativa com status "WAITING_CHECKPOINT"
     E a iteração atual está marcada como falha após retries
-    Quando o usuário visualiza o painel "Pipeline Autônomo"
+    Quando o usuário visualiza o painel de construção do projeto
     Então o sistema deve exibir ações de recuperação
     E devo ver os botões "Retomar checkpoint", "Tentar novamente iteração" e "Cancelar execução"
     E ao clicar em "Tentar novamente iteração" o cliente chama POST /api/projects/:id/development/runs/:runId/retry
