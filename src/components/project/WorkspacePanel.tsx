@@ -854,6 +854,9 @@ function TechnicalPlanView({
               <strong>Relacionamentos:</strong> {techPlan.database.summary}
             </div>
           )}
+          <div className="mt-4 rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            💡 Atualmente oferecemos PostgreSQL, MySQL e MongoDB. Estamos avaliando suporte a outros bancos e em breve teremos mais opções disponíveis.
+          </div>
         </div>
       )}
 
@@ -1019,6 +1022,22 @@ function TechnicalPlanView({
           </div>
         </div>
       )}
+
+      {/* 9. Deploy Info */}
+      <div className="rounded-xl border bg-card p-6">
+        <h3 className="mb-4 text-lg font-semibold">🚀 Deploy</h3>
+        <div className="space-y-3">
+          <div className="rounded-lg bg-muted/50 p-3">
+            <p className="font-semibold">Netlify</p>
+            <p className="text-sm text-muted-foreground">
+              SSL automático, CDN global, preview deploys para cada PR.
+            </p>
+          </div>
+          <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            💡 Durante o MVP, oferecemos deploy através da Netlify. Estamos avaliando novos provedores e em breve teremos a opção de deploy em servidor personalizado.
+          </div>
+        </div>
+      </div>
 
       {/* Botões de ação */}
       {!technicalPlanApproved && (

@@ -456,7 +456,7 @@ describe('Planning: Technical Plan - Visualização', () => {
     // E vejo informações da stack (Next.js aparece nome + descrição)
     const nextJsElements = screen.getAllByText(/Next\.js/i)
     expect(nextJsElements.length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText(/PostgreSQL/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/PostgreSQL/i).length).toBeGreaterThan(0)
   })
 
   /**
