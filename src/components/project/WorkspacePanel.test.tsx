@@ -26,10 +26,11 @@ describe('WorkspacePanel - generating journey consistency', () => {
     )
 
     expect(screen.getByText('Operação pendente encontrada')).toBeInTheDocument()
+    // New minimal workspace doesn't show "Gerando Código" anymore
     expect(screen.queryByText('Gerando Código')).not.toBeInTheDocument()
   })
 
-  it('shows generation animation after resume confirmation', () => {
+  it('shows minimal generation workspace after resume confirmation', () => {
     render(
       <WorkspacePanel
         projectId="proj-1"
@@ -39,6 +40,8 @@ describe('WorkspacePanel - generating journey consistency', () => {
       />
     )
 
-    expect(screen.getByText('Gerando Código')).toBeInTheDocument()
+    // New minimal workspace shows breadcrumb and instruction
+    expect(screen.getByText('Geração › Construindo')).toBeInTheDocument()
+    expect(screen.getByText('Acompanhe o progresso no painel de pipeline abaixo.')).toBeInTheDocument()
   })
 })
