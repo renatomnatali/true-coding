@@ -74,65 +74,169 @@ function getRunStatusPresentation(status: DevelopmentRunStatus) {
   }
 }
 
-function buildEventSummary(event: DevelopmentEvent): string {
-  const payload = event.payload ?? {}
+// ===== PR2: Pipeline Steps Types =====
 
-  if (event.eventType === 'agent_task') {
-    const agentName = typeof payload.agentName === 'string' ? payload.agentName : 'Agent'
-    const status = typeof payload.status === 'string' ? payload.status : 'UPDATED'
-    return `${agentName}: ${status}`
+type PipelineStepStatus = 'pending' | 'running' | 'done' | 'failed'
+
+interface PipelineStep {
+  id: string
+  label: string
+  status: PipelineStepStatus
+  detail?: string
+  children?: PipelineStep[]
+}
+
+interface PipelineGroup {
+  id: string
+  label: string
+  status: PipelineStepStatus
+  count?: string // e.g., "1/6"
+  children?: PipelineStep[]
+}
+
+// ===== PR2: derivePipelineSteps =====
+
+function derivePipelineSteps(
+  events: DevelopmentEvent[],
+  activeRun: DevelopmentRunSummary | null
+): { preparation: PipelineGroup; iterations: PipelineGroup[]; finalization: PipelineGroup } {
+  const hasEvent = (type: string, match?: (p: Record<string, unknown>) => boolean) =>
+    events.some((e) => {
+      if (e.eventType !== type) return false
+      if (!match) return true
+      return match((e.payload ?? {}) as Record<string, unknown>)
+    })
+
+  const agentStatus = (name: string): PipelineStepStatus => {
+    const agentEvents = events.filter(
+      (e) => e.eventType === 'agent_task' && (e.payload as Record<string, unknown>)?.agentName === name
+    )
+    if (agentEvents.length === 0) return 'pending'
+    const last = agentEvents[agentEvents.length - 1]
+    const status = (last.payload as Record<string, unknown>)?.status
+    if (status === 'SUCCEEDED') return 'done'
+    if (status === 'FAILED') return 'failed'
+    return 'running'
   }
 
-  if (event.eventType === 'quality_gate') {
-    const gateType = typeof payload.gateType === 'string' ? payload.gateType : 'GATE'
-    const passed = typeof payload.passed === 'boolean' ? payload.passed : false
-    const summary = typeof payload.summary === 'string' ? payload.summary : null
-    const skippedByDependency = summary === 'skipped_due_to_previous_failure'
-    if (skippedByDependency) {
-      return `${gateType}: PULADO (dependência anterior falhou)`
-    }
-    if (!passed && summary) {
-      return `${gateType}: FALHOU (${summary})`
-    }
-    return `${gateType}: ${passed ? 'PASSOU' : 'FALHOU'}`
+  // 1. Preparação
+  const sandboxDone = events.length > 2 || hasEvent('info', (p) =>
+    typeof p.message === 'string' && p.message.includes('workspace')
+  )
+  const prepSteps: PipelineStep[] = [
+    { id: 'prep-env', label: 'Preparando ambiente', status: sandboxDone ? 'done' : 'running' },
+    { id: 'prep-structure', label: 'Criando estrutura do projeto', status: sandboxDone ? 'done' : 'pending' },
+    { id: 'prep-deps', label: 'Instalando dependências', status: sandboxDone ? 'done' : 'pending' },
+    { id: 'prep-db', label: 'Configurando banco de dados', status: sandboxDone ? 'done' : 'pending' },
+  ]
+  const prepDone = prepSteps.every(s => s.status === 'done')
+  const prepCount = `${prepSteps.filter(s => s.status === 'done').length}/${prepSteps.length}`
+
+  // 2. Iterações
+  const totalIterations = activeRun?.totalIterations ?? 0
+  const currentIteration = activeRun?.currentIteration ?? 0
+  const iterationGroups: PipelineGroup[] = []
+
+  for (let i = 1; i <= Math.max(totalIterations, 1); i++) {
+    const isCurrent = i === currentIteration || (currentIteration === 0 && i === 1)
+    const isPast = i < currentIteration
+
+    const iterDone = hasEvent('iteration_status', (p) =>
+      p.iterationIndex === i && (p.status === 'MERGED' || p.status === 'DEPLOYED')
+    )
+    const iterFailed = hasEvent('error', (p) => p.iterationIndex === i) && !iterDone
+
+    // Steps dentro da iteração
+    const specStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('SpecAgent') : 'pending'
+    const testStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('TestAgent') : 'pending'
+    const codeStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('CodeAgent') : 'pending'
+    const reviewStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('ReviewAgent') : 'pending'
+
+    const gateEvents = events.filter((e) => e.eventType === 'quality_gate')
+    const gatesPassed = gateEvents.length > 0 && gateEvents.every((e) => (e.payload as Record<string, unknown>)?.passed === true)
+    const gatesFailed = gateEvents.some((e) => (e.payload as Record<string, unknown>)?.passed === false)
+    let gatesStatus: PipelineStepStatus = 'pending'
+    if (gatesPassed) gatesStatus = 'done'
+    else if (gatesFailed) gatesStatus = 'failed'
+    else if ((reviewStatus === 'done' || reviewStatus === 'running') && isCurrent) gatesStatus = 'running'
+
+    const releaseDone = hasEvent('iteration_status', (p) => p.iterationIndex === i && p.status === 'MERGED')
+    let releaseStatus: PipelineStepStatus = 'pending'
+    if (releaseDone) releaseStatus = 'done'
+    else if (gatesStatus === 'done' && isCurrent) releaseStatus = 'running'
+
+    const iterSteps: PipelineStep[] = [
+      { id: `iter-${i}-spec`, label: 'Escrevendo especificação', status: specStatus },
+      { id: `iter-${i}-test`, label: 'Gerando testes', status: testStatus },
+      { id: `iter-${i}-code`, label: 'Gerando código', status: codeStatus },
+      { id: `iter-${i}-review`, label: 'Revisando código', status: reviewStatus },
+      { id: `iter-${i}-gates`, label: 'Verificando qualidade', status: gatesStatus },
+      { id: `iter-${i}-release`, label: 'Publicando no Git', status: releaseStatus },
+    ]
+
+    const completedCount = iterSteps.filter(s => s.status === 'done').length
+    const iterGroupStatus: PipelineStepStatus = iterDone ? 'done' : iterFailed ? 'failed' : isCurrent ? 'running' : 'pending'
+
+    iterationGroups.push({
+      id: `iter-${i}`,
+      label: `Iteração ${i}`,
+      status: iterGroupStatus,
+      count: `${completedCount}/${iterSteps.length}`,
+      children: iterSteps,
+    })
   }
 
-  if (event.eventType === 'iteration_status') {
-    const idx = typeof payload.iterationIndex === 'number' ? payload.iterationIndex : null
-    const status = typeof payload.status === 'string' ? payload.status : null
-    if (idx && status) return `Iteração ${idx}: ${status}`
+  // 3. Finalização
+  const finalDeployRunning = hasEvent('deploy_status', (p) => p.status === 'DEPLOYING')
+  const finalDeployDone = activeRun?.status === 'SUCCEEDED'
+  const finalDeployFailed = hasEvent('deploy_status', (p) => p.status === 'FAILED')
+
+  let finalStatus: PipelineStepStatus = 'pending'
+  if (finalDeployDone) finalStatus = 'done'
+  else if (finalDeployFailed) finalStatus = 'failed'
+  else if (finalDeployRunning) finalStatus = 'running'
+
+  return {
+    preparation: {
+      id: 'preparation',
+      label: 'Preparação',
+      status: prepDone ? 'done' : 'running',
+      count: prepCount,
+      children: prepSteps,
+    },
+    iterations: iterationGroups,
+    finalization: {
+      id: 'finalization',
+      label: 'Finalização',
+      status: finalStatus,
+      children: [
+        { id: 'final-deploy', label: 'Publicando na internet (Netlify)', status: finalStatus },
+      ],
+    },
   }
+}
 
-  if (event.eventType === 'run_status') {
-    const status = typeof payload.status === 'string' ? payload.status : null
-    if (status) return `Run: ${status}`
-  }
+// ===== PR2: Step Status Icons & Styles =====
 
-  if (event.eventType === 'deploy_status') {
-    const idx = typeof payload.iterationIndex === 'number' ? payload.iterationIndex : null
-    if (idx) return `Deploy da iteração ${idx} concluído`
-  }
+const STEP_STATUS_ICON: Record<PipelineStepStatus, string> = {
+  pending: '○',
+  running: '●',
+  done: '✓',
+  failed: '✗',
+}
 
-  if (event.eventType === 'error') {
-    const error = typeof payload.error === 'string' ? payload.error : null
-    if (error) return `Erro: ${error}`
-  }
+const STEP_STATUS_STYLES: Record<PipelineStepStatus, string> = {
+  pending: 'text-slate-400',
+  running: 'text-blue-600 animate-pulse',
+  done: 'text-emerald-600',
+  failed: 'text-red-600',
+}
 
-  if (event.eventType === 'info') {
-    const phase = typeof payload.phase === 'string' ? payload.phase : null
-    const step = typeof payload.step === 'string' ? payload.step : null
-    const summary = typeof payload.summary === 'string' ? payload.summary : null
-
-    if (phase === 'release' && step) {
-      return `Release ${step}: ${summary ?? 'executando'}`
-    }
-  }
-
-  if (event.message) {
-    return event.message
-  }
-
-  return event.eventType
+const STEP_LABEL_STYLES: Record<PipelineStepStatus, string> = {
+  pending: 'text-slate-400',
+  running: 'text-slate-900 font-medium',
+  done: 'text-slate-600',
+  failed: 'text-red-700 font-medium',
 }
 
 function mapRunStatusToProjectStatus(status: DevelopmentRunStatus): string | null {
@@ -621,37 +725,14 @@ export function DevelopmentActivityPanel({
       .filter((agent, index, list) => list.indexOf(agent) === index)
   }, [events, activeRun])
 
-  const timelineEvents = useMemo(() => {
+  const pipelineSteps = useMemo(() => {
     const retryBoundary = getRetryBoundarySequence(events)
     const scopedEvents =
       retryBoundary > 0
         ? events.filter((event) => event.sequence >= retryBoundary)
         : events
-
-    const latestAgentTaskById = new Map<string, DevelopmentEvent>()
-    const passthrough: DevelopmentEvent[] = []
-
-    for (const event of scopedEvents) {
-      if (event.eventType !== 'agent_task') {
-        passthrough.push(event)
-        continue
-      }
-
-      const payload = event.payload ?? {}
-      const taskId = typeof payload.taskId === 'string' ? payload.taskId : null
-
-      if (!taskId) {
-        passthrough.push(event)
-        continue
-      }
-
-      latestAgentTaskById.set(taskId, event)
-    }
-
-    return [...passthrough, ...latestAgentTaskById.values()]
-      .sort((a, b) => b.sequence - a.sequence)
-      .slice(0, 8)
-  }, [events])
+    return derivePipelineSteps(scopedEvents, activeRun)
+  }, [events, activeRun])
 
   if (!FEATURES.AUTONOMOUS_DEVELOPMENT_V1) {
     return null
@@ -858,28 +939,75 @@ export function DevelopmentActivityPanel({
           </div>
         )}
 
-        <div className="rounded-md border bg-white p-2">
-          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Timeline da execução
+        <div className="rounded-md border bg-white p-3">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Progresso do pipeline
           </div>
 
-          {timelineEvents.length === 0 ? (
-            <div className="text-xs text-slate-500">Aguardando eventos...</div>
-          ) : (
-            <ul className="space-y-1">
-              {timelineEvents.map((event) => (
-                <li
-                  key={`${event.id}-${event.sequence}`}
-                  className="flex items-start justify-between gap-3 rounded px-2 py-1 text-xs"
-                >
-                  <div className="min-w-0 flex-1 text-slate-700">
-                    {buildEventSummary(event)}
-                  </div>
-                  <div className="shrink-0 text-slate-400">{formatTime(event.createdAt)}</div>
+          {/* Preparação */}
+          <div className="mb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-slate-700">{pipelineSteps.preparation.label}</span>
+              <span className="flex-1 border-t border-slate-200"></span>
+              <span className="text-[10px] text-slate-400">{pipelineSteps.preparation.count}</span>
+            </div>
+            <ul className="space-y-0.5">
+              {pipelineSteps.preparation.children?.map((step) => (
+                <li key={step.id} className="flex items-center gap-2 py-0.5 text-xs">
+                  <span className={`w-4 text-center text-[11px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
+                    {STEP_STATUS_ICON[step.status]}
+                  </span>
+                  <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
                 </li>
               ))}
             </ul>
-          )}
+          </div>
+
+          {/* Iterações */}
+          {pipelineSteps.iterations.map((iter) => (
+            <div key={iter.id} className="mb-2">
+              <div className="flex items-center gap-2 py-1">
+                <span className={`w-4 text-center text-[11px] leading-none ${STEP_STATUS_STYLES[iter.status]}`}>
+                  {STEP_STATUS_ICON[iter.status]}
+                </span>
+                <span className={`flex-1 text-xs font-medium ${STEP_LABEL_STYLES[iter.status]}`}>
+                  {iter.label}
+                </span>
+                <span className="text-[10px] text-slate-400">{iter.count}</span>
+              </div>
+              {/* Mostrar steps da iteração ativa ou completas */}
+              {(iter.status === 'running' || iter.status === 'done' || iter.status === 'failed') && iter.children && (
+                <ul className="ml-5 space-y-0.5 border-l border-slate-200 pl-2">
+                  {iter.children.map((step) => (
+                    <li key={step.id} className="flex items-center gap-2 py-0.5 text-xs">
+                      <span className={`w-4 text-center text-[10px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
+                        {STEP_STATUS_ICON[step.status]}
+                      </span>
+                      <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+
+          {/* Finalização */}
+          <div className="mt-3 pt-2 border-t border-slate-100">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-slate-700">{pipelineSteps.finalization.label}</span>
+              <span className="flex-1 border-t border-slate-200"></span>
+            </div>
+            <ul className="space-y-0.5">
+              {pipelineSteps.finalization.children?.map((step) => (
+                <li key={step.id} className="flex items-center gap-2 py-0.5 text-xs">
+                  <span className={`w-4 text-center text-[11px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
+                    {STEP_STATUS_ICON[step.status]}
+                  </span>
+                  <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {activeRun && TERMINAL_RUN_STATUSES.has(activeRun.status) && (
