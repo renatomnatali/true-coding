@@ -380,6 +380,14 @@ function PlanningWorkspace({
 }) {
   const activePlan = getActivePlanPhase(businessPlanApproved, technicalPlanApproved)
 
+  // Issue #57: Scroll to top when active plan changes
+  useEffect(() => {
+    const container = document.querySelector('.overflow-y-auto')
+    if (container && typeof container.scrollTo === 'function') {
+      container.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [activePlan])
+
   // Sub-phase breadcrumb
   const SUB_PHASES = [
     { key: 'business', label: 'Plano de Negócio', state: businessPlanApproved ? 'completed' : activePlan === 'business' ? 'active' : 'blocked' },
@@ -463,20 +471,36 @@ const UX_PLAN_STEPS = [
   'Finalizando Plano de UX...',
 ]
 
+// Issue #61: Technical Plan steps
+const TECHNICAL_PLAN_STEPS = [
+  'Analisando arquitetura...',
+  'Definindo stack tecnológica...',
+  'Planejando banco de dados...',
+  'Criando endpoints da API...',
+  'Configurando autenticação...',
+  'Definindo segurança...',
+  'Otimizando performance...',
+  'Finalizando Plano Técnico...',
+]
+
 function PlanGenerationOverlay({ activePlan }: { activePlan: string }) {
-  const isUxGeneration = activePlan === 'technical'
+  const isUxGeneration = activePlan === 'ux'
+  const isTechnicalGeneration = activePlan === 'technical'
+  const showSteps = isUxGeneration || isTechnicalGeneration
+  const steps = isUxGeneration ? UX_PLAN_STEPS : TECHNICAL_PLAN_STEPS
+  // Issue #61: Show appropriate message based on which plan is being generated
   const staticMessage = activePlan === 'business' ? 'Gerando Plano Técnico...' : 'Aprovando...'
   const [stepIndex, setStepIndex] = useState(0)
 
   useEffect(() => {
-    if (!isUxGeneration) return
+    if (!showSteps) return
     const interval = setInterval(() => {
-      setStepIndex((prev) => (prev < UX_PLAN_STEPS.length - 1 ? prev + 1 : prev))
+      setStepIndex((prev) => (prev < steps.length - 1 ? prev + 1 : prev))
     }, 15000)
     return () => clearInterval(interval)
-  }, [isUxGeneration])
+  }, [showSteps, steps.length])
 
-  const message = isUxGeneration ? UX_PLAN_STEPS[stepIndex] : staticMessage
+  const message = showSteps ? steps[stepIndex] : staticMessage
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -484,9 +508,9 @@ function PlanGenerationOverlay({ activePlan }: { activePlan: string }) {
         <div className="flex flex-col items-center gap-4">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           <p className="text-sm font-medium text-gray-700">{message}</p>
-          {isUxGeneration && (
+          {showSteps && (
             <div className="flex gap-1">
-              {UX_PLAN_STEPS.map((_, i) => (
+              {steps.map((_, i) => (
                 <div
                   key={i}
                   className={`h-1.5 w-1.5 rounded-full transition-colors ${i <= stepIndex ? 'bg-blue-600' : 'bg-gray-200'}`}

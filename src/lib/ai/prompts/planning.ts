@@ -10,7 +10,7 @@ Para o MVP, use SEMPRE esta stack base:
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Banco**: PostgreSQL (Supabase ou Neon)
 - **Auth**: Clerk
-- **Deploy**: Vercel
+- **Deploy**: Netlify
 
 Adicione tecnologias extras conforme necessario (real-time, pagamentos, maps, etc).
 
@@ -84,7 +84,7 @@ Responda com o TechnicalPlan em JSON:
       { "name": "Frontend", "technologies": ["Next.js 15", "React 19", "TypeScript", "Tailwind CSS", "shadcn/ui"] },
       { "name": "Backend", "technologies": ["Next.js API Routes", "Prisma ORM", "PostgreSQL"] },
       { "name": "Autenticacao", "technologies": ["Clerk", "OAuth (Google, GitHub)"] },
-      { "name": "Infraestrutura", "technologies": ["Vercel", "Supabase (DB)", "Uploadthing (Files)"] }
+      { "name": "Infraestrutura", "technologies": ["Netlify", "Supabase (DB)", "Uploadthing (Files)"] }
     ]
   },
   "architecture": {
@@ -129,7 +129,7 @@ Responda com o TechnicalPlan em JSON:
     "sensitiveData": [
       "Pagamentos: PCI-compliant via Stripe (nunca armazenamos card data)",
       "Senhas: Hash bcrypt gerenciado por Clerk",
-      "Variaveis de ambiente: Secrets gerenciados por Vercel"
+      "Variaveis de ambiente: Secrets gerenciados por Netlify"
     ],
     "compliance": [
       "LGPD: Consentimento explicito, direito ao esquecimento",
@@ -138,7 +138,7 @@ Responda com o TechnicalPlan em JSON:
   },
   "performance": {
     "caching": [
-      { "name": "CDN (Vercel Edge)", "description": "Assets estaticos com cache de 1 ano" },
+      { "name": "CDN (Netlify Edge)", "description": "Assets estaticos com cache de 1 ano" },
       { "name": "React Query", "description": "Client-side cache com staleTime de 30s" }
     ],
     "database": [
@@ -397,7 +397,7 @@ export interface TechnicalPlan {
   // 7. Performance
   performance: {
     caching: Array<{
-      name: string // "CDN (Vercel Edge)"
+      name: string // "CDN (Netlify Edge)"
       description: string
     }>
     database: string[] // ["Índices estratégicos...", ...]
