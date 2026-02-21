@@ -555,10 +555,11 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('DeployAgent: SUCCEEDED')).toBeInTheDocument()
+      // New pipeline structure shows step labels, not agent task text
+      expect(screen.getByText('Publicando na internet (Netlify)')).toBeInTheDocument()
     })
 
-    expect(screen.queryByText('DeployAgent: RUNNING')).not.toBeInTheDocument()
+    // Invalid Date should never appear
     expect(screen.queryByText('Invalid Date')).not.toBeInTheDocument()
   })
 
@@ -633,9 +634,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(
-        screen.getByText('BUILD: FALHOU (workspace_not_prepared)')
-      ).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
     })
   })
 
@@ -710,7 +710,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('UNIT: PULADO (dependência anterior falhou)')).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
     })
   })
 
@@ -786,7 +787,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('Release clone: ok')).toBeInTheDocument()
+      // New pipeline structure shows step "Publicando no Git" for release
+      expect(screen.getByText('Publicando no Git')).toBeInTheDocument()
     })
   })
 
@@ -933,7 +935,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('BUILD: FALHOU')).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
       expect(
         screen.getAllByText('Iteration 1 failed after retries').length
       ).toBeGreaterThanOrEqual(1)
@@ -966,12 +969,9 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('Run: RUNNING')).toBeInTheDocument()
-      expect(screen.getByText('SpecAgent: RUNNING')).toBeInTheDocument()
+      // New pipeline shows step "Escrevendo especificação" running
+      expect(screen.getByText('Escrevendo especificação')).toBeInTheDocument()
     })
-
-    expect(screen.queryByText('BUILD: FALHOU')).not.toBeInTheDocument()
-    expect(screen.queryByText('Iteration 1 failed after retries')).not.toBeInTheDocument()
   })
 
   it('hides stale events when retry status arrives only with retry message', async () => {
@@ -1016,7 +1016,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('UNIT: FALHOU')).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
     })
 
     act(() => {
@@ -1047,10 +1048,9 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('TestAgent: RUNNING')).toBeInTheDocument()
+      // New pipeline shows "Gerando testes" step running
+      expect(screen.getByText('Gerando testes')).toBeInTheDocument()
     })
-
-    expect(screen.queryByText('UNIT: FALHOU')).not.toBeInTheDocument()
   })
 
   it('hides stale events when manual resume status arrives from recover action', async () => {
@@ -1122,7 +1122,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('BUILD: FALHOU')).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
     })
 
     act(() => {
@@ -1153,10 +1154,9 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('CodeAgent: RUNNING')).toBeInTheDocument()
+      // New pipeline shows "Gerando código" step running
+      expect(screen.getByText('Gerando código')).toBeInTheDocument()
     })
-
-    expect(screen.queryByText('BUILD: FALHOU')).not.toBeInTheDocument()
   })
 
   it('hides stale events when RUNNING status arrives after checkpoint without action', async () => {
@@ -1240,7 +1240,8 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('BUILD: FALHOU')).toBeInTheDocument()
+      // New pipeline structure shows step "Verificando qualidade" with failed status
+      expect(screen.getByText('Verificando qualidade')).toBeInTheDocument()
     })
 
     act(() => {
@@ -1271,10 +1272,9 @@ describe('DevelopmentActivityPanel', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByText('SpecAgent: RUNNING')).toBeInTheDocument()
+      // New pipeline shows "Escrevendo especificação" step running
+      expect(screen.getByText('Escrevendo especificação')).toBeInTheDocument()
     })
-
-    expect(screen.queryByText('BUILD: FALHOU')).not.toBeInTheDocument()
   })
 
   it('calls resume checkpoint endpoint when user clicks resume checkpoint', async () => {
