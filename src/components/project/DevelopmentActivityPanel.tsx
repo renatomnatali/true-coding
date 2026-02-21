@@ -52,7 +52,7 @@ const TERMINAL_RUN_STATUSES = new Set<DevelopmentRunStatus>([
 const STATUS_LABELS: Record<DevelopmentRunStatus, string> = {
   QUEUED: 'Na fila',
   RUNNING: 'Executando',
-  WAITING_CHECKPOINT: 'Aguardando checkpoint',
+  WAITING_CHECKPOINT: 'Aguardando ação',
   FAILED: 'Falhou',
   CANCELED: 'Cancelado',
   SUCCEEDED: 'Concluído',
@@ -160,6 +160,18 @@ function derivePipelineSteps(
     else if (gatesFailed) gatesStatus = 'failed'
     else if ((reviewStatus === 'done' || reviewStatus === 'running') && isCurrent) gatesStatus = 'running'
 
+    // Build sub-gates children for "Verificando qualidade" step
+    const gatesChildren: PipelineStep[] = gateEvents.map((e, idx) => {
+      const payload = (e.payload ?? {}) as Record<string, unknown>
+      const gateType = typeof payload.gateType === 'string' ? payload.gateType : `Gate ${idx + 1}`
+      const passed = payload.passed === true
+      const summary = typeof payload.summary === 'string' ? payload.summary : null
+      const skipped = summary === 'skipped_due_to_previous_failure'
+      const gateLabel = skipped ? `${gateType} (pulado)` : gateType
+      const gateStatus: PipelineStepStatus = skipped ? 'pending' : passed ? 'done' : 'failed'
+      return { id: `gate-${i}-${idx}`, label: gateLabel, status: gateStatus }
+    })
+
     const releaseDone = hasEvent('iteration_status', (p) => p.iterationIndex === i && p.status === 'MERGED')
     let releaseStatus: PipelineStepStatus = 'pending'
     if (releaseDone) releaseStatus = 'done'
@@ -170,7 +182,12 @@ function derivePipelineSteps(
       { id: `iter-${i}-test`, label: 'Gerando testes', status: testStatus },
       { id: `iter-${i}-code`, label: 'Gerando código', status: codeStatus },
       { id: `iter-${i}-review`, label: 'Revisando código', status: reviewStatus },
-      { id: `iter-${i}-gates`, label: 'Verificando qualidade', status: gatesStatus },
+      {
+        id: `iter-${i}-gates`,
+        label: 'Verificando qualidade',
+        status: gatesStatus,
+        children: gatesChildren.length > 0 ? gatesChildren : undefined,
+      },
       { id: `iter-${i}-release`, label: 'Publicando no Git', status: releaseStatus },
     ]
 
@@ -979,11 +996,26 @@ export function DevelopmentActivityPanel({
               {(iter.status === 'running' || iter.status === 'done' || iter.status === 'failed') && iter.children && (
                 <ul className="ml-5 space-y-0.5 border-l border-slate-200 pl-2">
                   {iter.children.map((step) => (
-                    <li key={step.id} className="flex items-center gap-2 py-0.5 text-xs">
-                      <span className={`w-4 text-center text-[10px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
-                        {STEP_STATUS_ICON[step.status]}
-                      </span>
-                      <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
+                    <li key={step.id}>
+                      <div className="flex items-center gap-2 py-0.5 text-xs">
+                        <span className={`w-4 text-center text-[10px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
+                          {STEP_STATUS_ICON[step.status]}
+                        </span>
+                        <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
+                      </div>
+                      {/* Sub-gates inline (quando step tem children, ex: quality gates) */}
+                      {step.children && step.children.length > 0 && (step.status === 'failed' || step.status === 'done') && (
+                        <ul className="ml-5 space-y-0 border-l border-slate-100 pl-2">
+                          {step.children.map((sub) => (
+                            <li key={sub.id} className="flex items-center gap-2 py-px text-[10px]">
+                              <span className={`w-3 text-center leading-none ${STEP_STATUS_STYLES[sub.status]}`}>
+                                {STEP_STATUS_ICON[sub.status]}
+                              </span>
+                              <span className="text-slate-500">{sub.label}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
