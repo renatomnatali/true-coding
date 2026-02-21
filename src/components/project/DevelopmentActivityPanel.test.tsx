@@ -906,7 +906,7 @@ describe('DevelopmentActivityPanel', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Aguardando checkpoint')).toBeInTheDocument()
+      expect(screen.getByText('Aguardando ação')).toBeInTheDocument()
     })
 
     const source = MockEventSource.latest()
@@ -998,7 +998,7 @@ describe('DevelopmentActivityPanel', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Aguardando checkpoint')).toBeInTheDocument()
+      expect(screen.getByText('Aguardando ação')).toBeInTheDocument()
     })
 
     const source = MockEventSource.latest()
