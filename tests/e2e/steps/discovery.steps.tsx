@@ -800,6 +800,79 @@ describe('Discovery: Loading States', () => {
 
     expect(screen.getByText('Plano pronto')).toBeInTheDocument()
   })
+
+  /**
+   * @geracao @loading
+   * Cenário: Overlay de geração abre somente após confirmação explícita
+   */
+  it('Exibe overlay de geração quando usuário confirma na fase de confirmação', async () => {
+    global.fetch = vi.fn().mockImplementation(
+      () =>
+        new Promise(() => {
+          // Mantém request pendente para validar estado de loading visível.
+        })
+    )
+
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialQuestionProgress={{
+          current: 5,
+          total: 5,
+          completedQuestions: [1, 2, 3, 4, 5],
+        }}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    await userEvent.type(textarea, 'Sim')
+    await userEvent.keyboard('{Enter}')
+
+    await waitFor(() => {
+      expect(screen.getByTestId('plan-generation-overlay')).toBeInTheDocument()
+      expect(screen.getByText('Gerando Plano de Negócio...')).toBeInTheDocument()
+    })
+  })
+
+  /**
+   * @geracao @loading @regressao
+   * Cenário: Overlay não abre sem confirmação explícita
+   */
+  it('Não exibe overlay de geração sem confirmação explícita', async () => {
+    global.fetch = vi.fn().mockImplementation(
+      () =>
+        new Promise(() => {
+          // Mantém request pendente para validar que o overlay não abriu por engano.
+        })
+    )
+
+    render(
+      <ChatPanel
+        projectId="test"
+        projectName="Test"
+        initialPlanReady={false}
+        initialQuestionProgress={{
+          current: 5,
+          total: 5,
+          completedQuestions: [1, 2, 3, 4, 5],
+        }}
+        initialMessages={[]}
+      />
+    )
+
+    const textarea = screen.getByPlaceholderText('Digite sua resposta...')
+    await userEvent.type(textarea, 'Quero revisar mais um ponto')
+    await userEvent.keyboard('{Enter}')
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('plan-generation-overlay')
+      ).not.toBeInTheDocument()
+    })
+  })
 })
 
 /**

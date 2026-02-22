@@ -208,7 +208,8 @@ Funcionalidade: Fase de Planejamento
   Cenário: Aprovar UX Plan e avançar para Connection
     Dado que estou visualizando o UX Plan
     Quando clico em "Aprovar e Continuar"
-    Então o projeto avança para a fase "CONNECTING"
+    Então NÃO vejo loading de geração de plano
+    E o projeto avança para a fase "CONNECTING"
     E o workspace exibe a tela de conexão GitHub
     E a sidebar mostra "Planejamento" como "completed"
     E a sidebar mostra "Conexão" como "in-progress"
