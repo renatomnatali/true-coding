@@ -47,6 +47,16 @@ export const FEATURES = {
    */
   AUTONOMOUS_DEVELOPMENT_V1:
     process.env.NEXT_PUBLIC_FEATURE_AUTONOMOUS_DEVELOPMENT_V1 !== 'false',
+
+  /**
+   * Pipeline V2 (File-by-File Generation)
+   *
+   * When enabled: CodeAgent generates files one-by-one using file-generator
+   * When disabled: CodeAgent uses single-shot generation (legacy)
+   *
+   * Benefits: Avoids truncation, respects rate limits, uses prompt caching
+   */
+  PIPELINE_V2: process.env.PIPELINE_V2 === 'true',
 } as const
 
 /**
