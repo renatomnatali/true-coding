@@ -15,6 +15,22 @@ export interface PlanSnapshot {
   approvedIterations?: IterationPlanItem[] | null
 }
 
+// PR1: File-by-file generation types
+export type FileKind = 'type' | 'schema' | 'config' | 'component' | 'page' | 'api' | 'test' | 'spec'
+
+export interface FileManifestEntry {
+  path: string
+  kind: FileKind
+  estimatedTokens: number
+  dependsOn?: string[]
+  context?: string
+}
+
+export interface FileManifest {
+  entries: FileManifestEntry[]
+  totalEstimatedTokens: number
+}
+
 export interface AgentExecutionContext {
   runId: string
   projectId: string
