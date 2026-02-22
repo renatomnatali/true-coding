@@ -288,6 +288,15 @@ Funcionalidade: Fase de Planejamento
     E vejo o botão "Tentar Novamente"
     E posso continuar editando o plano atual
 
+  @erro @provider
+  Cenário: Erro explícito de configuração do provedor de IA durante aprovação
+    Dado que cliquei em "Aprovar e Continuar"
+    E o provider de IA ativo está mal configurado
+    Quando a API tentar gerar o próximo plano
+    Então a API deve retornar erro de configuração do provider
+    E o plano atual deve permanecer inalterado
+    E devo conseguir corrigir a configuração e tentar novamente
+
   @erro @geracao-parcial
   Cenário: Falha na geração do próximo plano
     Dado que aprovei o Business Plan

@@ -1,12 +1,19 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { MODEL_CONFIG, type ModelPhase } from './config'
+import { resolveAIProviderConfig } from './provider-config'
 
-function getAnthropicClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY environment variable is required')
+function getAnthropicClient(phase: ModelPhase): {
+  client: Anthropic
+  model: string
+} {
+  const config = resolveAIProviderConfig(phase)
+  return {
+    client: new Anthropic({
+      apiKey: config.apiKey,
+      ...(config.baseURL ? { baseURL: config.baseURL } : {}),
+    }),
+    model: config.model,
   }
-  return new Anthropic({ apiKey })
 }
 
 // PR2: Content block with optional cache_control
@@ -66,11 +73,12 @@ export async function* streamChat(
   options: StreamChatOptions
 ): AsyncGenerator<string> {
   const config = MODEL_CONFIG[options.phase]
-  const anthropic = getAnthropicClient()
+  const { client: anthropic, model } = getAnthropicClient(options.phase)
 
   const stream = await anthropic.messages.stream({
-    model: config.model,
+    model,
     max_tokens: config.maxTokens,
+    temperature: config.temperature,
     system: options.systemPrompt,
     messages: options.messages,
   })
@@ -96,11 +104,12 @@ export interface ChatResult {
 
 export async function chat(options: StreamChatOptions): Promise<ChatResult> {
   const config = MODEL_CONFIG[options.phase]
-  const anthropic = getAnthropicClient()
+  const { client: anthropic, model } = getAnthropicClient(options.phase)
 
   const response = await anthropic.messages.create({
-    model: config.model,
+    model,
     max_tokens: config.maxTokens,
+    temperature: config.temperature,
     system: options.systemPrompt,
     messages: options.messages,
   })

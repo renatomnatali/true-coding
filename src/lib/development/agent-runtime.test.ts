@@ -14,9 +14,13 @@ import { isClaudeAgentRuntimeEnabled, runClaudeAgent } from './agent-runtime'
 describe('agent runtime', () => {
   const originalLlmFlag = process.env.AUTONOMOUS_DEV_LLM_AGENTS
   const originalApiKey = process.env.ANTHROPIC_API_KEY
+  const originalProvider = process.env.AI_PROVIDER
+  const originalZaiApiKey = process.env.ZAI_API_KEY
 
   beforeEach(() => {
     vi.clearAllMocks()
+    process.env.AI_PROVIDER = 'anthropic'
+    delete process.env.ZAI_API_KEY
   })
 
   afterEach(() => {
@@ -30,6 +34,18 @@ describe('agent runtime', () => {
       delete process.env.ANTHROPIC_API_KEY
     } else {
       process.env.ANTHROPIC_API_KEY = originalApiKey
+    }
+
+    if (typeof originalProvider === 'undefined') {
+      delete process.env.AI_PROVIDER
+    } else {
+      process.env.AI_PROVIDER = originalProvider
+    }
+
+    if (typeof originalZaiApiKey === 'undefined') {
+      delete process.env.ZAI_API_KEY
+    } else {
+      process.env.ZAI_API_KEY = originalZaiApiKey
     }
   })
 

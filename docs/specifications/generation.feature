@@ -239,6 +239,14 @@ Funcionalidade: Fase de Geracao de Codigo
     E o orquestrador deve persistir input e output de cada tarefa
     E artefatos inválidos devem bloquear avanço da iteração
 
+  @agents @runtime @provider
+  Cenário: Runtime de agentes usa o provedor de IA definido por flag
+    Dado que a execução do pipeline está habilitada
+    E a configuração `AI_PROVIDER` está definida para um provedor suportado
+    Quando SpecAgent, TestAgent, CodeAgent e ReviewAgent forem executados
+    Então o runtime deve usar o provedor configurado
+    E a troca do provider não deve alterar o contrato de saída dos agentes
+
   @agents @runtime @pipeline-v2
   Cenário: CodeAgent usa geração file-by-file quando PIPELINE_V2 está ativo e o manifest é grande
     Dado que a execução do pipeline está habilitada

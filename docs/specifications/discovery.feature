@@ -245,6 +245,14 @@ Funcionalidade: Fase de Ideação (Discovery)
     Então vejo mensagem "Desculpe, ocorreu um erro. Tente novamente."
     E posso reenviar a mensagem
 
+  @erro @provider
+  Cenário: Erro explícito quando provedor de IA está mal configurado
+    Dado que o provider de IA ativo está com credencial ausente ou inválida
+    Quando envio uma mensagem no chat de discovery
+    Então o stream deve emitir evento de erro
+    E o erro deve indicar falha de configuração do provider
+    E nenhuma resposta parcial da IA deve ser persistida como mensagem final
+
   # ==========================================================================
   # CHAT - COMPORTAMENTOS
   # ==========================================================================

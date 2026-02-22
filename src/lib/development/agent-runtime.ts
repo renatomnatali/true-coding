@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { chat, type ContentBlock } from '@/lib/ai/claude'
 import { extractJSON } from '@/lib/ai/parsers'
 import type { ModelPhase } from '@/lib/ai/config'
+import { isAIProviderConfigured } from '@/lib/ai/provider-config'
 import type { AgentExecutionResult } from './types'
 
 export interface ClaudeAgentRunOptions<TSchema extends z.ZodTypeAny> {
@@ -49,7 +50,7 @@ function truncate(text: string, max = 220): string {
 export function isClaudeAgentRuntimeEnabled(): boolean {
   return (
     process.env.AUTONOMOUS_DEV_LLM_AGENTS === 'true' &&
-    Boolean(process.env.ANTHROPIC_API_KEY)
+    isAIProviderConfigured()
   )
 }
 
