@@ -676,6 +676,28 @@ describe('Planning: Technical Plan - Aprovação', () => {
     // Então o callback é chamado
     expect(onApproveTechnicalPlan).toHaveBeenCalledTimes(1)
   })
+
+  /**
+   * @technical-plan @aprovacao @loading
+   * Cenário: isApproving=true no plano técnico exibe loading do Plano de UX
+   */
+  it('Exibe overlay "Gerando Plano de UX..." quando technical está em aprovação', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={false}
+        isApproving={true}
+      />
+    )
+
+    expect(screen.getByTestId('plan-generation-overlay')).toBeInTheDocument()
+    expect(screen.getByText('Gerando Plano de UX...')).toBeInTheDocument()
+  })
 })
 
 // Sample UX Plan for tests - nova estrutura baseada no mockup 07-ux-plan.html
@@ -890,5 +912,31 @@ describe('Planning: UX Plan - Aprovação', () => {
 
     // Então o callback é chamado
     expect(onApproveUxPlan).toHaveBeenCalledTimes(1)
+  })
+
+  /**
+   * @ux-plan @aprovacao @loading
+   * Cenário: UX em aprovação não exibe loading de geração de plano
+   */
+  it('Não exibe overlay de geração quando UX está em aprovação', () => {
+    render(
+      <WorkspacePanel
+        projectId="test-project"
+        projectName="Meu App Delivery"
+        status="PLANNING"
+        businessPlan={sampleBusinessPlan}
+        businessPlanApproved={true}
+        technicalPlan={sampleTechnicalPlan}
+        technicalPlanApproved={true}
+        uxPlan={sampleUxPlan}
+        uxPlanApproved={false}
+        isApproving={true}
+      />
+    )
+
+    expect(
+      screen.queryByTestId('plan-generation-overlay')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Gerando Plano de UX...')).not.toBeInTheDocument()
   })
 })

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useProjectLayout } from './ProjectLayout'
+import { PlanGenerationOverlay } from './PlanGenerationOverlay'
 import { FEATURES } from '@/config/features'
 import { QUICK_REPLIES_BY_QUESTION } from '@/types'
 
@@ -39,6 +40,23 @@ function stripJsonFromDisplay(content: string): string {
   result = result.replace(/\{[\s\S]*"(coreFeatures|name|tagline|targetAudience)"[\s\S]*\}/g, '')
 
   return result.trim()
+}
+
+function isPlanGenerationConfirmationMessage(content: string): boolean {
+  const normalized = content.trim().toLowerCase()
+  if (!normalized) return false
+
+  const patterns = [
+    /^sim[\s!.,?]*$/,
+    /^ok[\s!.,?]*$/,
+    /^pode[\s!.,?]*$/,
+    /confirm/i,
+    /ger(ar|e)\s+(o\s+)?plano/i,
+    /pode\s+(gerar|criar)/i,
+    /seguir\s+com\s+o\s+plano/i,
+  ]
+
+  return patterns.some((pattern) => pattern.test(normalized))
 }
 
 interface QuestionProgress {
@@ -110,6 +128,13 @@ export function ChatPanel({
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return
 
+    const completedCount = questionProgress?.completedQuestions?.length || 0
+    const isConfirmationPhase = completedCount >= 5
+    const shouldStartPlanGeneration =
+      isConfirmationPhase &&
+      !planReady &&
+      isPlanGenerationConfirmationMessage(content)
+
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -119,6 +144,7 @@ export function ChatPanel({
     setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
+    setIsGeneratingPlan(shouldStartPlanGeneration)
 
     try {
       const response = await fetch('/api/chat', {
@@ -187,10 +213,6 @@ export function ChatPanel({
                 setQuestionProgress(parsed.progress)
                 // Notify parent component
                 onProgressUpdate?.(parsed.progress)
-                // Check if this is question 5 (last question before plan generation)
-                if (parsed.progress.current === 5) {
-                  setIsGeneratingPlan(true)
-                }
               } else if (currentEvent === 'plan_ready' && parsed.plan) {
                 console.log('[CHAT] Plan ready detected! Plan:', parsed.plan)
                 setIsGeneratingPlan(false)
@@ -434,22 +456,7 @@ export function ChatPanel({
         </div>
       </div>
 
-      {/* Loading Overlay - Plan Generation */}
-      {isGeneratingPlan && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-          <div className="rounded-lg border bg-white p-6 shadow-lg">
-            <div className="flex flex-col items-center gap-4">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-              <div className="text-center">
-                <h3 className="font-semibold text-gray-900">Gerando Business Plan...</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Isso pode levar alguns segundos
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <PlanGenerationOverlay kind="business" visible={isGeneratingPlan} />
     </div>
   )
 }

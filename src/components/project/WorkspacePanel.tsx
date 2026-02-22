@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react'
 import { useProjectLayout } from './ProjectLayout'
 import { ConnectionPhase } from './phases/ConnectionPhase'
 import { GenerationProgress } from './GenerationProgress'
+import {
+  PlanGenerationOverlay,
+  type PlanGenerationKind,
+} from './PlanGenerationOverlay'
 import { FEATURES } from '@/config/features'
 
 // Parse business plan from JSON string
@@ -350,6 +354,12 @@ function getActivePlanPhase(businessPlanApproved: boolean, technicalPlanApproved
   return 'ux'
 }
 
+function getNextPlanGenerationKind(activePlan: 'business' | 'technical' | 'ux'): PlanGenerationKind | null {
+  if (activePlan === 'business') return 'technical'
+  if (activePlan === 'technical') return 'ux'
+  return null
+}
+
 // Phase: PLANNING — renders only the current active sub-plan
 function PlanningWorkspace({
   businessPlan,
@@ -379,6 +389,7 @@ function PlanningWorkspace({
   isApproving?: boolean
 }) {
   const activePlan = getActivePlanPhase(businessPlanApproved, technicalPlanApproved)
+  const nextPlanKind = getNextPlanGenerationKind(activePlan)
 
   // Issue #57: Scroll to top when active plan changes
   useEffect(() => {
@@ -450,75 +461,10 @@ function PlanningWorkspace({
         )}
 
         {/* Loading overlay while generating next plan */}
-        {isApproving && (
-          <PlanGenerationOverlay activePlan={activePlan} />
-        )}
-      </div>
-    </div>
-  )
-}
-
-// Progressive loading overlay for plan generation
-const UX_PLAN_STEPS = [
-  'Analisando requisitos...',
-  'Criando Personas...',
-  'Definindo Arquitetura de Informação...',
-  'Planejando Jornadas de Usuário...',
-  'Criando Wireframes...',
-  'Montando Biblioteca de Componentes...',
-  'Definindo Acessibilidade...',
-  'Gerando Design Tokens...',
-  'Finalizando Plano de UX...',
-]
-
-// Issue #61: Technical Plan steps
-const TECHNICAL_PLAN_STEPS = [
-  'Analisando arquitetura...',
-  'Definindo stack tecnológica...',
-  'Planejando banco de dados...',
-  'Criando endpoints da API...',
-  'Configurando autenticação...',
-  'Definindo segurança...',
-  'Otimizando performance...',
-  'Finalizando Plano Técnico...',
-]
-
-function PlanGenerationOverlay({ activePlan }: { activePlan: string }) {
-  const isUxGeneration = activePlan === 'ux'
-  const isTechnicalGeneration = activePlan === 'technical'
-  const showSteps = isUxGeneration || isTechnicalGeneration
-  const steps = isUxGeneration ? UX_PLAN_STEPS : TECHNICAL_PLAN_STEPS
-  // Issue #61: Show appropriate message based on which plan is being generated
-  const staticMessage = activePlan === 'business' ? 'Gerando Plano Técnico...' : 'Aprovando...'
-  const [stepIndex, setStepIndex] = useState(0)
-
-  useEffect(() => {
-    if (!showSteps) return
-    const interval = setInterval(() => {
-      setStepIndex((prev) => (prev < steps.length - 1 ? prev + 1 : prev))
-    }, 15000)
-    return () => clearInterval(interval)
-  }, [showSteps, steps.length])
-
-  const message = showSteps ? steps[stepIndex] : staticMessage
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="rounded-lg border bg-white p-8 shadow-lg">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-          <p className="text-sm font-medium text-gray-700">{message}</p>
-          {showSteps && (
-            <div className="flex gap-1">
-              {steps.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${i <= stepIndex ? 'bg-blue-600' : 'bg-gray-200'}`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <PlanGenerationOverlay
+          kind={nextPlanKind ?? 'technical'}
+          visible={Boolean(isApproving && nextPlanKind)}
+        />
       </div>
     </div>
   )

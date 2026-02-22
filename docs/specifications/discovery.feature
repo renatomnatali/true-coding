@@ -141,6 +141,14 @@ Funcionalidade: Fase de Ideação (Discovery)
       | Finalizando               | pending   |
     E vejo "Isso pode levar alguns segundos..."
 
+  @geracao @loading @regressao
+  Cenário: Overlay de geração não abre antes da confirmação
+    Dado que respondi todas as 5 perguntas
+    E a IA perguntou se pode gerar o plano
+    Quando envio uma mensagem sem confirmação de geração
+    Então NÃO vejo overlay de loading
+    E posso continuar conversando no chat
+
   @geracao @sucesso
   Cenário: Plano gerado com sucesso
     Dado que a geração do plano terminou
