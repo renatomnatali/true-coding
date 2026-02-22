@@ -9,10 +9,13 @@ import type {
 } from './types'
 import { toFeatureTag } from './utils'
 import { z } from 'zod'
+import { FEATURES } from '@/config/features'
 import {
   isClaudeAgentRuntimeEnabled,
   runClaudeAgent,
 } from './agent-runtime'
+import { buildManifestFromSnapshot, shouldUseSingleShot } from './file-manifest'
+import { generateFilesFromManifest } from './file-generator'
 
 function sanitizeIterationSlug(value: string): string {
   return value
@@ -440,39 +443,74 @@ export async function runCodeAgent(
   attempt: number
 ): Promise<AgentExecutionResult<Record<string, unknown>>> {
   if (isClaudeAgentRuntimeEnabled()) {
-    const prompt = [
-      'Gere o pacote do CodeAgent para a iteração.',
-      '',
-      'CONTRATO JSON OBRIGATÓRIO:',
-      '{',
-      '  "appliedChanges": string[],',
-      '  "branchStrategy": string,',
-      '  "commitMessage": string,',
-      '  "files": [{ "path": string, "content": string }]',
-      '}',
-      '',
-      'REGRAS:',
-      '- Implementar somente o necessário para satisfazer os testes da iteração.',
-      '- `commitMessage` deve seguir `feat(iter-<n>): <escopo>`.',
-      '- Não alterar arquivos fora do escopo da iteração.',
-      '- Não retorne nenhum texto fora do JSON.',
-      '',
-      `RunId: ${context.runId}`,
-      `ProjectId: ${context.projectId}`,
-      `Attempt: ${attempt}`,
-      `Iteration: ${JSON.stringify(iteration, null, 2)}`,
-      '',
-      `TechnicalPlan: ${compactJSON(context.snapshot.technicalPlan)}`,
-      `UxPlan: ${compactJSON(context.snapshot.uxPlan)}`,
-    ].join('\n')
+    const runSingleShot = () =>
+      runClaudeAgent({
+        agentName: 'CodeAgent',
+        systemPrompt: DEVELOPMENT_AGENT_SYSTEM_PROMPT,
+        userPrompt: [
+          'Gere o pacote do CodeAgent para a iteração.',
+          '',
+          'CONTRATO JSON OBRIGATÓRIO:',
+          '{',
+          '  "appliedChanges": string[],',
+          '  "branchStrategy": string,',
+          '  "commitMessage": string,',
+          '  "files": [{ "path": string, "content": string }]',
+          '}',
+          '',
+          'REGRAS:',
+          '- Implementar somente o necessário para satisfazer os testes da iteração.',
+          '- `commitMessage` deve seguir `feat(iter-<n>): <escopo>`.',
+          '- Não alterar arquivos fora do escopo da iteração.',
+          '- Não retorne nenhum texto fora do JSON.',
+          '',
+          `RunId: ${context.runId}`,
+          `ProjectId: ${context.projectId}`,
+          `Attempt: ${attempt}`,
+          `Iteration: ${JSON.stringify(iteration, null, 2)}`,
+          '',
+          `TechnicalPlan: ${compactJSON(context.snapshot.technicalPlan)}`,
+          `UxPlan: ${compactJSON(context.snapshot.uxPlan)}`,
+        ].join('\n'),
+        schema: codeAgentSchema,
+        phase: 'codegen',
+      })
 
-    return runClaudeAgent({
-      agentName: 'CodeAgent',
-      systemPrompt: DEVELOPMENT_AGENT_SYSTEM_PROMPT,
-      userPrompt: prompt,
-      schema: codeAgentSchema,
-      phase: 'codegen',
+    if (!FEATURES.PIPELINE_V2) {
+      return runSingleShot()
+    }
+
+    const manifest = buildManifestFromSnapshot(context.snapshot, iteration)
+    if (shouldUseSingleShot(manifest)) {
+      return runSingleShot()
+    }
+
+    if (!context.iterationId) {
+      throw new Error('MISSING_ITERATION_ID:CodeAgent')
+    }
+
+    const incremental = await generateFilesFromManifest({
+      runId: context.runId,
+      iterationId: context.iterationId,
+      projectId: context.projectId,
+      snapshot: context.snapshot,
+      iteration,
+      manifest,
     })
+
+    return {
+      output: {
+        appliedChanges: [
+          `Geração incremental file-by-file para ${iteration.name}`,
+          `Manifest com ${manifest.entries.length} arquivos planejados`,
+          `Tentativa ${attempt}`,
+        ],
+        branchStrategy: 'trunk-based-short-branch',
+        commitMessage: `feat(iter-${iteration.index}): ${iteration.name}`,
+        files: incremental.files,
+      },
+      tokenUsage: incremental.totalTokensUsed,
+    }
   } else if (!canUseDeterministicFallback()) {
     throw new Error('AGENT_RUNTIME_DISABLED:CodeAgent')
   }
@@ -558,4 +596,3 @@ export async function runReviewAgent(
     cost: 0.0011,
   }
 }
-

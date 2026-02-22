@@ -22,7 +22,7 @@ export interface FileManifestEntry {
   path: string
   kind: FileKind
   estimatedTokens: number
-  dependsOn?: string[]
+  dependsOn: string[]
   context?: string
 }
 

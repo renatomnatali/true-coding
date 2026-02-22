@@ -5,8 +5,9 @@
  * context coherence, and respects the rate limiter.
  */
 
-import type { TextBlockParam } from '@anthropic-ai/sdk/resources/messages/messages'
+import { z } from 'zod'
 import type { IterationPlanItem } from '@/types/development'
+import type { ContentBlock } from '@/lib/ai/claude'
 import type { FileManifest, FileManifestEntry, PlanSnapshot } from './types'
 import { OutputTokenRateLimiter } from '@/lib/ai/rate-limiter'
 import { runClaudeAgentWithCache } from './agent-runtime'
@@ -40,16 +41,20 @@ export interface FileGeneratorResult {
 
 const FILE_GEN_SYSTEM_PROMPT = [
   'Você é um agente especialista em desenvolvimento de software.',
-  'Gere APENAS o conteúdo do ficheiro solicitado, sem markdown, sem blocos de código, sem explicações.',
-  'Retorne o código-fonte diretamente, pronto para ser salvo em disco.',
+  'Retorne SOMENTE JSON válido no formato {"content":"..."} sem markdown.',
+  'O campo "content" deve conter o código-fonte completo pronto para salvar em disco.',
   'Todo conteúdo de interface deve estar em português brasileiro com acentuação correta.',
   'Use imports relativos e siga as convenções do Next.js 15 / React 19 / TypeScript.',
 ].join(' ')
 
-function buildSystemBlocks(
+const FILE_GEN_RESPONSE_SCHEMA = z.object({
+  content: z.string().min(1),
+})
+
+function buildCachedContextBlocks(
   snapshot: PlanSnapshot,
   manifest: FileManifest
-): TextBlockParam[] {
+): ContentBlock[] {
   const snapshotSummary = JSON.stringify(
     {
       businessPlan: snapshot.businessPlan,
@@ -65,11 +70,6 @@ function buildSystemBlocks(
     .join('\n')
 
   return [
-    {
-      type: 'text',
-      text: FILE_GEN_SYSTEM_PROMPT,
-      cache_control: { type: 'ephemeral' },
-    },
     {
       type: 'text',
       text: `## Planos do Projeto\n${snapshotSummary}`,
@@ -95,8 +95,8 @@ function buildFilePrompt(
     `Objetivos: ${iteration.scope.goals.join('; ')}`,
   ]
 
-  if (entry.dependsOn?.length > 0) {
-    parts.push(`Depende de: ${entry.dependsOn?.join(', ')}`)
+  if (entry.dependsOn.length > 0) {
+    parts.push(`Depende de: ${entry.dependsOn.join(', ')}`)
   }
 
   if (interfaceMapStr) {
@@ -122,7 +122,7 @@ export async function generateFilesFromManifest(
   } = options
 
   const rateLimiter = options.rateLimiter ?? new OutputTokenRateLimiter()
-  const systemBlocks = buildSystemBlocks(snapshot, manifest)
+  const cachedContextBlocks = buildCachedContextBlocks(snapshot, manifest)
   const interfaceMap: InterfaceMap = []
   const files: GeneratedFile[] = []
   let totalTokensUsed = 0
@@ -147,15 +147,21 @@ export async function generateFilesFromManifest(
     await rateLimiter.waitForCapacity(entry.estimatedTokens)
 
     const interfaceMapStr = serializeInterfaceMap(interfaceMap)
-    const userPrompt = buildFilePrompt(entry, iteration, interfaceMapStr)
+    const filePrompt = buildFilePrompt(entry, iteration, interfaceMapStr)
+    const contentBlocks: ContentBlock[] = [
+      ...cachedContextBlocks,
+      { type: 'text', text: filePrompt },
+    ]
 
     const result = await runClaudeAgentWithCache({
       agentName: `FileGen:${entry.path}`,
-      systemBlocks,
-      userPrompt,
+      systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+      contentBlocks,
+      schema: FILE_GEN_RESPONSE_SCHEMA,
+      phase: 'codegen',
     })
 
-    const content = result.output.text
+    const content = result.output.content
     const outputTokens = result.tokenUsage ?? entry.estimatedTokens
     totalTokensUsed += outputTokens
     rateLimiter.recordUsage(outputTokens)

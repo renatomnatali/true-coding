@@ -31,6 +31,36 @@ function slugify(name: string): string {
     .replace(/^-|-$/g, '')
 }
 
+function toAppRouterPath(routePath: string): string | null {
+  const trimmed = routePath.trim()
+  if (!trimmed.startsWith('/')) return null
+  if (trimmed.includes('..') || trimmed.includes('\0')) return null
+
+  const pathname = trimmed.split(/[?#]/)[0] || '/'
+  const segments = pathname.split('/').filter(Boolean)
+
+  if (segments.length === 0) {
+    return 'src/app/page.tsx'
+  }
+
+  const safeSegments = segments.map((segment) => slugify(segment))
+  if (safeSegments.some((segment) => segment.length === 0)) {
+    return null
+  }
+
+  return `src/app/${safeSegments.join('/')}/page.tsx`
+}
+
+function resolvePagePath(page: { name?: string; path?: string }): string {
+  if (typeof page.path === 'string' && page.path.trim().length > 0) {
+    const mapped = toAppRouterPath(page.path)
+    if (mapped) return mapped
+  }
+
+  const fallbackName = slugify(page.name || 'page') || 'page'
+  return `src/app/${fallbackName}/page.tsx`
+}
+
 /** Average output tokens per file kind (conservative estimates). */
 const TOKEN_ESTIMATES: Record<FileManifestEntry['kind'], number> = {
   type: 800,
@@ -103,8 +133,7 @@ export function buildManifestFromSnapshot(
   )
 
   for (const page of iterPages) {
-    const name = page.name || 'Page'
-    const path = `src/app/${slugify(name)}/page.tsx`
+    const path = resolvePagePath(page)
     entries.push({
       path,
       kind: 'page',

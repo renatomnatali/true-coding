@@ -136,6 +136,48 @@ describe('buildManifestFromSnapshot', () => {
     expect(pages2).toHaveLength(1)
   })
 
+  it('maps page.path to Next.js app router paths', () => {
+    const snapshot = makeSnapshot({
+      technicalPlan: {
+        pages: [
+          { name: 'Home', path: '/' },
+          { name: 'Dashboard', path: '/dashboard' },
+          { name: 'Settings Profile', path: '/settings/profile' },
+        ],
+        components: [],
+        apiEndpoints: [],
+      },
+    })
+
+    const m1 = buildManifestFromSnapshot(snapshot, makeIteration(1))
+    const pagePaths1 = m1.entries.filter((e) => e.kind === 'page').map((e) => e.path)
+    expect(pagePaths1).toContain('src/app/page.tsx')
+    expect(pagePaths1).toContain('src/app/dashboard/page.tsx')
+
+    const m2 = buildManifestFromSnapshot(snapshot, makeIteration(2))
+    const pagePaths2 = m2.entries.filter((e) => e.kind === 'page').map((e) => e.path)
+    expect(pagePaths2).toContain('src/app/settings/profile/page.tsx')
+  })
+
+  it('falls back to page name when page.path is missing or invalid', () => {
+    const snapshot = makeSnapshot({
+      technicalPlan: {
+        pages: [
+          { name: 'Marketing Home' },
+          { name: 'Admin Panel', path: '/../admin' },
+        ],
+        components: [],
+        apiEndpoints: [],
+      },
+    })
+
+    const manifest = buildManifestFromSnapshot(snapshot, makeIteration(1))
+    const pagePaths = manifest.entries.filter((e) => e.kind === 'page').map((e) => e.path)
+
+    expect(pagePaths).toContain('src/app/marketing-home/page.tsx')
+    expect(pagePaths).toContain('src/app/admin-panel/page.tsx')
+  })
+
   it('scopes API endpoints to the iteration index', () => {
     const snapshot = makeSnapshot()
 

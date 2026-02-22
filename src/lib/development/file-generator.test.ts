@@ -64,12 +64,12 @@ describe('generateFilesFromManifest', () => {
 
     runClaudeAgentWithCacheMock
       .mockResolvedValueOnce({
-        output: { text: 'export interface User { id: string }' },
+        output: { content: 'export interface User { id: string }' },
         tokenUsage: 100,
         cost: 0.001,
       })
       .mockResolvedValueOnce({
-        output: { text: 'export function Header() { return <div>Header</div> }' },
+        output: { content: 'export function Header() { return <div>Header</div> }' },
         tokenUsage: 150,
         cost: 0.002,
       })
@@ -92,11 +92,11 @@ describe('generateFilesFromManifest', () => {
 
     runClaudeAgentWithCacheMock
       .mockResolvedValueOnce({
-        output: { text: 'export interface CardProps { title: string }' },
+        output: { content: 'export interface CardProps { title: string }' },
         tokenUsage: 80,
       })
       .mockResolvedValueOnce({
-        output: { text: 'export function Card(props: CardProps) { return <div>{props.title}</div> }' },
+        output: { content: 'export function Card(props: CardProps) { return <div>{props.title}</div> }' },
         tokenUsage: 120,
       })
 
@@ -108,9 +108,9 @@ describe('generateFilesFromManifest', () => {
     expect(result.interfaceMap[1].path).toBe('src/components/card.tsx')
     expect(result.interfaceMap[1].exports).toContain('function Card(props: CardProps)')
 
-    // Second call should receive interface map in prompt
+    // Second call should receive interface map in content blocks
     const secondCallArgs = runClaudeAgentWithCacheMock.mock.calls[1][0]
-    expect(secondCallArgs.userPrompt).toContain('interface CardProps')
+    expect(secondCallArgs.contentBlocks[2].text).toContain('interface CardProps')
   })
 
   it('skips spec entries (Gherkin handled separately)', async () => {
@@ -120,7 +120,7 @@ describe('generateFilesFromManifest', () => {
     ])
 
     runClaudeAgentWithCacheMock.mockResolvedValue({
-      output: { text: 'export type Status = "active"' },
+      output: { content: 'export type Status = "active"' },
       tokenUsage: 50,
     })
 
@@ -137,7 +137,7 @@ describe('generateFilesFromManifest', () => {
     ])
 
     runClaudeAgentWithCacheMock.mockResolvedValue({
-      output: { text: 'export type X = string' },
+      output: { content: 'export type X = string' },
       tokenUsage: 40,
     })
 
@@ -167,8 +167,8 @@ describe('generateFilesFromManifest', () => {
     ])
 
     runClaudeAgentWithCacheMock
-      .mockResolvedValueOnce({ output: { text: 'export type A = 1' }, tokenUsage: 80 })
-      .mockResolvedValueOnce({ output: { text: 'export function api() {}' }, tokenUsage: 120 })
+      .mockResolvedValueOnce({ output: { content: 'export type A = 1' }, tokenUsage: 80 })
+      .mockResolvedValueOnce({ output: { content: 'export function api() {}' }, tokenUsage: 120 })
 
     const opts = makeOptions(manifest)
     opts.rateLimiter = limiter
@@ -214,18 +214,20 @@ describe('generateFilesFromManifest', () => {
     ])
 
     runClaudeAgentWithCacheMock.mockResolvedValue({
-      output: { text: 'export type T = 1' },
+      output: { content: 'export type T = 1' },
       tokenUsage: 30,
     })
 
     await generateFilesFromManifest(makeOptions(manifest))
 
     const callArgs = runClaudeAgentWithCacheMock.mock.calls[0][0]
-    expect(callArgs.systemBlocks).toEqual(
+    expect(callArgs.contentBlocks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ cache_control: { type: 'ephemeral' } }),
       ])
     )
+    expect(callArgs.systemPrompt).toBeTruthy()
+    expect(typeof callArgs.schema.safeParse).toBe('function')
   })
 
   it('does not add non-TS files to the interface map', async () => {
@@ -234,7 +236,7 @@ describe('generateFilesFromManifest', () => {
     ])
 
     runClaudeAgentWithCacheMock.mockResolvedValue({
-      output: { text: 'model User { id String @id }' },
+      output: { content: 'model User { id String @id }' },
       tokenUsage: 50,
     })
 
