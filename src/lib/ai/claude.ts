@@ -9,9 +9,51 @@ function getAnthropicClient(): Anthropic {
   return new Anthropic({ apiKey })
 }
 
+// PR2: Content block with optional cache_control
+export interface ContentBlock {
+  type: 'text'
+  text: string
+  cache_control?: { type: 'ephemeral' }
+}
+
 export interface Message {
   role: 'user' | 'assistant'
-  content: string
+  content: string | ContentBlock[]
+}
+
+// PR2: Build messages with optional caching for long prompts
+export interface BuildMessagesOptions {
+  cacheSystemPrompt?: boolean
+  cacheThreshold?: number // minimum chars to trigger caching
+}
+
+export function buildMessagesWithCache(
+  messages: Message[],
+  options: BuildMessagesOptions = {}
+): Message[] {
+  const { cacheSystemPrompt = false, cacheThreshold = 4000 } = options
+
+  return messages.map((msg) => {
+    // Already content blocks - return as-is
+    if (Array.isArray(msg.content)) {
+      return msg
+    }
+
+    // String content - check if we should cache
+    if (cacheSystemPrompt && msg.content.length >= cacheThreshold) {
+      const blocks: ContentBlock[] = [
+        {
+          type: 'text',
+          text: msg.content,
+          cache_control: { type: 'ephemeral' },
+        },
+      ]
+      return { ...msg, content: blocks }
+    }
+
+    // Regular string - return as-is
+    return msg
+  })
 }
 
 export interface StreamChatOptions {

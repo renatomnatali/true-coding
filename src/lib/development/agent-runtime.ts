@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { chat } from '@/lib/ai/claude'
+import { chat, type ContentBlock } from '@/lib/ai/claude'
 import { extractJSON } from '@/lib/ai/parsers'
 import type { ModelPhase } from '@/lib/ai/config'
 import type { AgentExecutionResult } from './types'
@@ -8,6 +8,15 @@ export interface ClaudeAgentRunOptions<TSchema extends z.ZodTypeAny> {
   agentName: string
   systemPrompt: string
   userPrompt: string
+  schema: TSchema
+  phase?: ModelPhase
+}
+
+// PR2: Options for cached agent with content blocks
+export interface CachedAgentOptions<TSchema extends z.ZodTypeAny> {
+  agentName: string
+  systemPrompt: string
+  contentBlocks: ContentBlock[]
   schema: TSchema
   phase?: ModelPhase
 }
@@ -51,6 +60,52 @@ export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
     phase: options.phase ?? 'codegen',
     systemPrompt: options.systemPrompt,
     messages: [{ role: 'user', content: options.userPrompt }],
+  })
+
+  if (stopReason === 'max_tokens') {
+    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+  }
+
+  const { data, repaired } = extractJSON<unknown>(text)
+
+  if (!data) {
+    throw new Error(`AGENT_RESPONSE_INVALID_JSON:${options.agentName}`)
+  }
+
+  if (repaired) {
+    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+  }
+
+  const parsed = options.schema.safeParse(data)
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    const path = issue?.path?.length ? issue.path.join('.') : 'root'
+    const reason = issue?.message ?? 'invalid output'
+    throw new Error(
+      `AGENT_CONTRACT_INVALID:${options.agentName}:${path}:${truncate(reason)}`
+    )
+  }
+
+  const tokenUsage =
+    usage && usage.inputTokens >= 0 && usage.outputTokens >= 0
+      ? usage.inputTokens + usage.outputTokens
+      : estimateTokenUsage(text)
+
+  return {
+    output: parsed.data,
+    tokenUsage,
+    cost: estimateUsdCost(usage),
+  }
+}
+
+// PR2: Run Claude agent with content blocks supporting cache_control
+export async function runClaudeAgentWithCache<TSchema extends z.ZodTypeAny>(
+  options: CachedAgentOptions<TSchema>
+): Promise<AgentExecutionResult<z.infer<TSchema>>> {
+  const { text, stopReason, usage } = await chat({
+    phase: options.phase ?? 'codegen',
+    systemPrompt: options.systemPrompt,
+    messages: [{ role: 'user', content: options.contentBlocks }],
   })
 
   if (stopReason === 'max_tokens') {
