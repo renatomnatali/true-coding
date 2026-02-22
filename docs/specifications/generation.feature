@@ -239,6 +239,34 @@ Funcionalidade: Fase de Geracao de Codigo
     E o orquestrador deve persistir input e output de cada tarefa
     E artefatos inválidos devem bloquear avanço da iteração
 
+  @agents @runtime @pipeline-v2
+  Cenário: CodeAgent usa geração file-by-file quando PIPELINE_V2 está ativo e o manifest é grande
+    Dado que a execução do pipeline está habilitada
+    E o runtime de agentes está habilitado para Claude
+    E a feature flag "PIPELINE_V2" está ativa
+    E o manifest da iteração possui totalEstimatedTokens maior ou igual a 4000
+    Quando o CodeAgent for executado
+    Então o sistema deve usar geração incremental file-by-file
+    E o resultado final deve manter o contrato "files[]", "commitMessage", "branchStrategy" e "appliedChanges"
+    E o caminho single-shot não deve ser usado nessa execução
+
+  @agents @runtime @pipeline-v2 @fallback
+  Cenário: CodeAgent mantém single-shot quando PIPELINE_V2 está ativo e o manifest é pequeno
+    Dado que a execução do pipeline está habilitada
+    E o runtime de agentes está habilitado para Claude
+    E a feature flag "PIPELINE_V2" está ativa
+    E o manifest da iteração possui totalEstimatedTokens menor que 4000
+    Quando o CodeAgent for executado
+    Então o sistema deve usar o caminho single-shot legado
+    E o contrato de saída deve permanecer compatível com o orquestrador
+
+  @agents @runtime @manifest
+  Cenário: Manifest de páginas respeita technicalPlan.pages.path
+    Dado que o technicalPlan da iteração contém páginas com path "/", "/dashboard" e "/settings/profile"
+    Quando o manifest de arquivos for construído
+    Então as páginas devem mapear para "src/app/page.tsx", "src/app/dashboard/page.tsx" e "src/app/settings/profile/page.tsx"
+    E paths inválidos ou ausentes devem usar fallback pelo nome da página
+
   @agents @erro
   Cenário: Resposta inválida do agente entra em WAITING_CHECKPOINT com diagnóstico
     Dado que um agente retornou JSON inválido ou incompleto
