@@ -84,6 +84,16 @@ Funcionalidade: Fase de Geracao de Codigo
     Então o cliente chama POST /api/projects/:id/development/runs/:runId/recover
     E só depois anexa o stream de eventos da run
 
+  @ui @resume @recover @race
+  Cenário: Transição para checkpoint durante recover não deve bloquear usuário
+    Dado que o projeto está com status "GENERATING"
+    E existe uma run ativa com status "RUNNING"
+    E antes da resposta do recover a run mudou para "WAITING_CHECKPOINT"
+    Quando o usuário clica em "Continuar execução"
+    Então o sistema não deve exibir erro técnico de endpoint de recover
+    E deve atualizar o estado da run para "WAITING_CHECKPOINT"
+    E deve exibir ações "Retomar checkpoint", "Tentar novamente iteração" e "Cancelar execução"
+
   @ux @consistencia
   Cenário: Aguardando confirmação não pode exibir animação de geração ativa
     Dado que o projeto está com status "GENERATING"
@@ -147,13 +157,13 @@ Funcionalidade: Fase de Geracao de Codigo
     E o pipeline deve reexecutar SpecAgent, TestAgent e CodeAgent
     E a run não pode permanecer em "RUNNING" sem novos eventos de agente
 
-  @ux @checkpoint @baby-steps
-  Cenário: Modo baby steps pausa no primeiro erro com checkpoint acionável
+  @ux @checkpoint @pausa-antecipada
+  Cenário: Modo de pausa antecipada envia para checkpoint no primeiro erro
     Dado que AUTONOMOUS_DEV_BABY_STEPS está habilitado
     E uma iteração falhou em pelo menos um quality gate
     Quando o orquestrador concluir a tentativa atual
     Então a run deve entrar em "WAITING_CHECKPOINT" sem consumir retries automáticos
-    E a timeline deve registrar que a pausa ocorreu em modo baby steps
+    E a timeline deve registrar que a pausa ocorreu em modo de checkpoint antecipado
     E o resumo de erro deve apontar os gates falhos com causa raiz
 
   @observabilidade @diagnostico
@@ -162,6 +172,23 @@ Funcionalidade: Fase de Geracao de Codigo
     Quando o orquestrador gerar o resumo de erro da iteração
     Então o resumo não deve priorizar linhas genéricas de comando (ex.: "npm run build")
     E deve priorizar mensagens de causa raiz (ex.: import ausente, erro de prerender)
+
+  @observabilidade @diagnostico @quality-gate-event
+  Cenário: Evento QUALITY_GATE preserva detalhes úteis para troubleshooting
+    Dado que o gate BUILD falhou durante "npm run build"
+    Quando o orquestrador persistir os quality gates
+    Então o evento QUALITY_GATE deve incluir um "summary" com causa raiz útil
+    E deve incluir o campo "reason" quando o report do gate informar esse motivo
+    E deve incluir um trecho técnico do erro para diagnóstico detalhado
+    E o summary não deve usar apenas banner de versão do framework
+
+  @observabilidade @diagnostico @preflight
+  Cenário: Sistema registra preflight de workspace antes de executar quality gates
+    Dado que a iteração está prestes a iniciar os quality gates
+    Quando o orquestrador disparar a fase de verificação
+    Então deve existir evento INFO com phase "quality_gate_preflight"
+    E o payload deve incluir o workspacePath
+    E o payload deve informar se package.json está presente no sandbox
 
   @quality-gates @sequencial
   Cenário: Gates devem executar em sequência e parar no primeiro erro
@@ -179,6 +206,33 @@ Funcionalidade: Fase de Geracao de Codigo
     Quando o usuário visualiza a timeline após retomar
     Então a timeline deve considerar esse RUN_STATUS como novo boundary de execução
     E deve exibir apenas eventos da tentativa atual
+
+  @ux @chat-feed @realtime
+  Cenário: Aba Execução exibe feedback verboso em tempo real no chat
+    Dado que existe uma run ativa para o projeto
+    E a barra de chat está visível
+    Quando o usuário seleciona a aba "Execução"
+    Então o sistema deve mostrar o status atual da run no topo
+    E deve mostrar a linha "Agora" com a tarefa ou arquivo em processamento
+    E deve atualizar a lista de eventos em até alguns segundos sem recarregar a página
+
+  @ux @chat-feed @verbosity
+  Cenário: Filtro Resumo/Técnico controla nível de detalhe do feed
+    Dado que a aba "Execução" está aberta
+    E existem eventos técnicos e eventos de alto nível da run
+    Quando o usuário mantém o filtro em "Resumo"
+    Então o sistema oculta ruído técnico de baixo valor
+    E prioriza marcos de agente, gates e erros
+    Quando o usuário alterna para "Técnico"
+    Então o sistema exibe todos os eventos recebidos da run
+
+  @ux @chat-feed @diagnostico
+  Cenário: Falha de gate mostra motivo e trecho técnico no feed de execução
+    Dado que existe um evento QUALITY_GATE com status de falha
+    E o payload possui "reason" e "diagnosticSnippet"
+    Quando o usuário visualiza a aba "Execução"
+    Então o card do gate deve exibir o motivo da falha
+    E deve exibir o trecho técnico para troubleshooting
 
   @infra @checkpoint @sandbox
   Cenário: Retry e resume devem usar sandbox limpo para evitar arquivos stale

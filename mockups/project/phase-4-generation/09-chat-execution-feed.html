@@ -114,10 +114,19 @@
       </div>
     </div>
 
-    <div class="mock-events">
+      <div class="mock-events">
+        <div class="mock-event info">
+          <span class="mock-time">14:05:11</span>
+          Iteração 1: gerando testes
+        </div>
       <div class="mock-event info">
-        <span class="mock-time">14:05:11</span>
-        Iteração 1: gerando testes
+        <span class="mock-time">14:05:20</span>
+        Preflight dos quality gates
+        <div style="margin-top: 4px; font-size: 11px; color: #475569;">
+          <div>Workspace: <code>/tmp/true-coding-run-cmly...</code></div>
+          <div>package.json: ausente</div>
+          <div>node_modules: ausente</div>
+        </div>
       </div>
       <div class="mock-event info">
         <span class="mock-time">14:05:24</span>
@@ -133,7 +142,11 @@
       </div>
       <div class="mock-event error">
         <span class="mock-time">14:06:04</span>
-        BUILD falhou: Cannot find module '@/lib/auth/register'
+        BUILD falhou
+        <div style="margin-top: 4px; font-size: 11px; color: #7f1d1d;">
+          <div>Motivo: workspace_not_prepared</div>
+          <div>Trecho técnico: workspace_not_prepared: package.json não encontrado no sandbox.</div>
+        </div>
       </div>
     </div>
   </div>

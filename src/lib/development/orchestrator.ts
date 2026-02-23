@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
 import {
@@ -9,7 +11,7 @@ import {
   runReviewAgent,
 } from './agents'
 import { appendRunEvent } from './events'
-import { buildFailedGateSummary, extractPrimaryGateFailureDetail } from './gate-diagnostics'
+import { buildFailedGateSummary, buildGateEventDiagnostics } from './gate-diagnostics'
 import { runQualityGates } from './quality-gates'
 import {
   isBabyStepModeEnabledFromEnv,
@@ -79,13 +81,65 @@ async function shouldStopRun(runId: string): Promise<boolean> {
   return run.status === 'WAITING_CHECKPOINT'
 }
 
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function resolveQualityGatePreflight(workspacePath: string) {
+  const packageJsonPath = path.join(workspacePath, 'package.json')
+  const nodeModulesPath = path.join(workspacePath, 'node_modules')
+
+  const [hasPackageJson, hasNodeModules] = await Promise.all([
+    fileExists(packageJsonPath),
+    fileExists(nodeModulesPath),
+  ])
+
+  return {
+    workspacePath,
+    packageJsonPath,
+    hasPackageJson,
+    hasNodeModules,
+  }
+}
+
+export async function __resolveQualityGatePreflightForTest(workspacePath: string) {
+  return resolveQualityGatePreflight(workspacePath)
+}
+
+async function appendQualityGatePreflightEvent(input: {
+  runId: string
+  iterationId: string
+  attempt: number
+  workspacePath: string
+}) {
+  const preflight = await resolveQualityGatePreflight(input.workspacePath)
+
+  await appendRunEvent({
+    runId: input.runId,
+    iterationId: input.iterationId,
+    eventType: 'INFO',
+    message: 'Preflight de quality gates concluído',
+    payload: {
+      phase: 'quality_gate_preflight',
+      attempt: input.attempt,
+      ...preflight,
+    },
+  })
+}
+
 async function persistQualityGates(
   runId: string,
   iterationId: string,
-  gates: GateRunOutput[]
+  gates: GateRunOutput[],
+  attempt: number
 ) {
   for (const gate of gates) {
-    const summary = extractPrimaryGateFailureDetail(gate)
+    const diagnostics = buildGateEventDiagnostics(gate)
     const reason =
       gate.report && typeof gate.report.reason === 'string'
         ? gate.report.reason
@@ -131,8 +185,9 @@ async function persistQualityGates(
         passed: gate.passed,
         durationMs: gate.durationMs,
         logsRef: gate.logsRef,
+        attempt,
         ...(skippedByDependency ? { skipped: true } : {}),
-        ...(summary ? { summary } : {}),
+        ...diagnostics,
       },
     })
   }
@@ -516,6 +571,13 @@ async function processIteration(runContext: RunContext, iterationId: string): Pr
       run: () => runReviewAgent(agentContext, iterationPlanItem),
     })
 
+    await appendQualityGatePreflightEvent({
+      runId: runContext.runId,
+      iterationId: iteration.id,
+      attempt,
+      workspacePath: runContext.sandboxPath,
+    })
+
     const gates = await runQualityGates({
       runId: runContext.runId,
       iterationId: iteration.id,
@@ -525,7 +587,7 @@ async function processIteration(runContext: RunContext, iterationId: string): Pr
       featureTags: iterationPlanItem.scope.featureTags,
     })
 
-    await persistQualityGates(runContext.runId, iteration.id, gates)
+    await persistQualityGates(runContext.runId, iteration.id, gates, attempt)
 
     const failedGateOutputs = gates.filter((gate) => !gate.passed)
     const failedGates = failedGateOutputs.map((gate) => gate.gateType)
@@ -725,7 +787,7 @@ async function processIteration(runContext: RunContext, iterationId: string): Pr
         where: { id: runContext.runId },
         data: {
           status: 'WAITING_CHECKPOINT',
-          errorSummary: `Iteration ${iteration.index} pausada em baby steps após tentativa ${attempt}. Failed gates: ${failedGateSummary}`,
+          errorSummary: `Iteração ${iteration.index} pausada para checkpoint após tentativa ${attempt}. Gates com falha: ${failedGateSummary}`,
         },
       })
 
@@ -733,23 +795,23 @@ async function processIteration(runContext: RunContext, iterationId: string): Pr
         runId: runContext.runId,
         iterationId: iteration.id,
         eventType: 'ERROR',
-        message: `Iteration ${iteration.index} paused for baby-step checkpoint`,
+        message: `Iteração ${iteration.index} pausada para checkpoint antecipado`,
         payload: {
           failedGates,
           failedGateSummary,
           attempts: attempt,
-          mode: 'baby_steps',
+          mode: 'early_checkpoint_pause',
         },
       })
 
       await appendRunEvent({
         runId: runContext.runId,
         eventType: 'RUN_STATUS',
-        message: 'Run waiting checkpoint (baby steps)',
+        message: 'Run waiting checkpoint (pausa antecipada)',
         payload: {
           status: 'WAITING_CHECKPOINT',
           iterationIndex: iteration.index,
-          action: 'baby_step_pause',
+          action: 'early_checkpoint_pause',
           attempt,
         },
       })

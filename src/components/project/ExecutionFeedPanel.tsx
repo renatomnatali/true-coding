@@ -68,6 +68,72 @@ function formatGateEvent(event: DevelopmentEvent): string {
   return `${gateType} ${passed ? 'aprovado' : 'falhou'}`
 }
 
+function formatInfoEvent(event: DevelopmentEvent): string {
+  const payload = event.payload ?? {}
+  const phase = typeof payload.phase === 'string' ? payload.phase : null
+
+  if (phase === 'quality_gate_preflight') {
+    return 'Preflight dos quality gates'
+  }
+
+  return event.message ?? 'Atualização de execução'
+}
+
+function getPayloadText(payload: Record<string, unknown>, key: string): string | null {
+  const value = payload[key]
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null
+}
+
+function getPayloadBoolean(payload: Record<string, unknown>, key: string): boolean | null {
+  const value = payload[key]
+  return typeof value === 'boolean' ? value : null
+}
+
+function formatBoolPresenceLabel(value: boolean | null): string {
+  if (value === true) return 'encontrado'
+  if (value === false) return 'ausente'
+  return '—'
+}
+
+function getEventDetails(event: DevelopmentEvent): string[] {
+  const payload = event.payload ?? {}
+
+  if (event.eventType === 'quality_gate') {
+    const reason = getPayloadText(payload, 'reason')
+    const summary = getPayloadText(payload, 'summary')
+    const command = getPayloadText(payload, 'command')
+    const snippet = getPayloadText(payload, 'diagnosticSnippet')
+
+    const details: string[] = []
+    if (reason) details.push(`Motivo: ${reason}`)
+    if (summary && summary !== reason) details.push(`Resumo: ${summary}`)
+    if (command) details.push(`Comando: ${command}`)
+    if (snippet) details.push(`Trecho técnico: ${snippet}`)
+    return details
+  }
+
+  if (event.eventType === 'info') {
+    const phase = getPayloadText(payload, 'phase')
+    if (phase !== 'quality_gate_preflight') {
+      return []
+    }
+
+    const workspacePath = getPayloadText(payload, 'workspacePath')
+    const hasPackageJson = getPayloadBoolean(payload, 'hasPackageJson')
+    const hasNodeModules = getPayloadBoolean(payload, 'hasNodeModules')
+
+    const details: string[] = []
+    if (workspacePath) {
+      details.push(`Workspace: ${workspacePath}`)
+    }
+    details.push(`package.json: ${formatBoolPresenceLabel(hasPackageJson)}`)
+    details.push(`node_modules: ${formatBoolPresenceLabel(hasNodeModules)}`)
+    return details
+  }
+
+  return []
+}
+
 function formatAgentTaskEvent(event: DevelopmentEvent): string {
   const payload = event.payload ?? {}
   const status = typeof payload.status === 'string' ? payload.status : null
@@ -134,7 +200,7 @@ function formatEventLine(event: DevelopmentEvent): string {
     case 'error':
       return event.message ?? 'Erro na execução'
     case 'info':
-      return event.message ?? 'Atualização de execução'
+      return formatInfoEvent(event)
     default:
       return event.message ?? 'Evento de execução'
   }
@@ -392,25 +458,38 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
           </div>
         ) : (
           <div className="space-y-2">
-            {visibleEvents.map((event) => (
-              <div
-                key={`${event.runId}-${event.sequence}`}
-                data-testid="execution-event-row"
-                className={`rounded-md border p-2.5 ${getEventToneClasses(event)}`}
-              >
-                <div className="mb-1 flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                    {event.eventType.replace('_', ' ')}
-                  </span>
-                  <span className="text-[11px] text-slate-500">
-                    {formatTime(event.createdAt)}
-                  </span>
+            {visibleEvents.map((event) => {
+              const details = getEventDetails(event)
+
+              return (
+                <div
+                  key={`${event.runId}-${event.sequence}`}
+                  data-testid="execution-event-row"
+                  className={`rounded-md border p-2.5 ${getEventToneClasses(event)}`}
+                >
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                      {event.eventType.replace('_', ' ')}
+                    </span>
+                    <span className="text-[11px] text-slate-500">
+                      {formatTime(event.createdAt)}
+                    </span>
+                  </div>
+                  <div className="text-sm text-slate-800">
+                    {formatEventLine(event)}
+                  </div>
+                  {details.length > 0 && (
+                    <div className="mt-1.5 space-y-1 text-xs text-slate-600">
+                      {details.map((detail, index) => (
+                        <div key={`${event.id}-detail-${index}`} className="whitespace-pre-wrap break-words">
+                          {detail}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="text-sm text-slate-800">
-                  {formatEventLine(event)}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

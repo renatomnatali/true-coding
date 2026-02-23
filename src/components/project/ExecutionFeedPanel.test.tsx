@@ -142,6 +142,88 @@ describe('ExecutionFeedPanel', () => {
     })
   })
 
+  it('mostra diagnóstico de gate no resumo e preflight no modo técnico', async () => {
+    mockFetch.mockResolvedValueOnce(
+      runsResponse([
+        {
+          id: 'run-3',
+          status: 'RUNNING',
+          currentIteration: 1,
+          totalIterations: 3,
+          errorSummary: null,
+          createdAt: '2026-02-23T15:00:00.000Z',
+          startedAt: '2026-02-23T15:00:00.000Z',
+          finishedAt: null,
+        },
+      ])
+    )
+
+    render(
+      <ExecutionFeedPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    await waitFor(() => {
+      expect(MockEventSource.instances.length).toBe(1)
+    })
+
+    const source = MockEventSource.latest()
+    expect(source).not.toBeNull()
+
+    act(() => {
+      source?.emit('quality_gate', {
+        id: 'evt-gate-1',
+        runId: 'run-3',
+        sequence: 1,
+        eventType: 'quality_gate',
+        message: 'BUILD gate failed',
+        payload: {
+          gateType: 'BUILD',
+          passed: false,
+          reason: 'workspace_not_prepared',
+          diagnosticSnippet: 'workspace_not_prepared: package.json não encontrado no sandbox.',
+        },
+        createdAt: '2026-02-23T15:00:10.000Z',
+      })
+      source?.emit('info', {
+        id: 'evt-info-preflight',
+        runId: 'run-3',
+        sequence: 2,
+        eventType: 'info',
+        message: 'Preflight de quality gates concluído',
+        payload: {
+          phase: 'quality_gate_preflight',
+          workspacePath: '/tmp/true-coding-run-3',
+          hasPackageJson: false,
+          hasNodeModules: false,
+        },
+        createdAt: '2026-02-23T15:00:11.000Z',
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Motivo: workspace_not_prepared')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Trecho técnico: workspace_not_prepared: package.json não encontrado no sandbox.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText('Preflight dos quality gates')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Técnico' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Preflight dos quality gates')).toBeInTheDocument()
+      expect(screen.getByText('Workspace: /tmp/true-coding-run-3')).toBeInTheDocument()
+      expect(screen.getByText('package.json: ausente')).toBeInTheDocument()
+      expect(screen.getByText('node_modules: ausente')).toBeInTheDocument()
+    })
+  })
+
   it('reconecta com cursor after e evita duplicidade por sequence', async () => {
     mockFetch.mockResolvedValueOnce(
       runsResponse([
