@@ -147,8 +147,11 @@ describe('generateFilesFromManifest', () => {
     const agentTaskCalls = appendRunEventMock.mock.calls.filter(
       ([arg]: [{ eventType: string }]) => arg.eventType === 'AGENT_TASK'
     )
-    expect(agentTaskCalls).toHaveLength(1)
+    expect(agentTaskCalls).toHaveLength(2)
     expect(agentTaskCalls[0][0].payload.filePath).toBe('src/types/iter-1.ts')
+    expect(agentTaskCalls[0][0].payload.status).toBe('RUNNING')
+    expect(agentTaskCalls[1][0].payload.filePath).toBe('src/types/iter-1.ts')
+    expect(agentTaskCalls[1][0].payload.status).toBe('SUCCEEDED')
 
     const infoCalls = appendRunEventMock.mock.calls.filter(
       ([arg]: [{ eventType: string }]) => arg.eventType === 'INFO'

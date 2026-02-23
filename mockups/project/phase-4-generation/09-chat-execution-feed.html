@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat de Execução Verboso | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <style>
+    .mock-chat {
+      max-width: 420px;
+      margin: 24px auto;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      background: var(--color-bg-primary);
+      box-shadow: var(--shadow-md);
+    }
+    .mock-chat-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+    }
+    .mock-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .mock-tab {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .mock-tab.active {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+    .mock-run {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .mock-chip-row {
+      display: flex;
+      gap: 8px;
+    }
+    .mock-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--color-bg-primary);
+    }
+    .mock-chip.active {
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+      border-color: var(--color-warning);
+    }
+    .mock-events {
+      padding: 14px 16px 18px;
+      display: grid;
+      gap: 8px;
+      max-height: 420px;
+      overflow: auto;
+    }
+    .mock-event {
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--color-text-primary);
+      background: var(--color-bg-primary);
+    }
+    .mock-event.error {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .mock-event.info {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    .mock-time {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 10px;
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-chat">
+    <div class="mock-chat-header">
+      <div class="mock-tabs">
+        <span class="mock-tab">Discovery</span>
+        <span class="mock-tab active">Execução</span>
+      </div>
+      <div class="mock-run">
+        <div><strong>Status:</strong> CodeAgent em execução</div>
+        <div><strong>Agora:</strong> Gerando arquivo <code>src/app/api/orders/route.ts</code></div>
+      </div>
+      <div class="mock-chip-row">
+        <span class="mock-chip active">Resumo</span>
+        <span class="mock-chip">Técnico</span>
+      </div>
+    </div>
+
+    <div class="mock-events">
+      <div class="mock-event info">
+        <span class="mock-time">14:05:11</span>
+        Iteração 1: gerando testes
+      </div>
+      <div class="mock-event info">
+        <span class="mock-time">14:05:24</span>
+        Gerando arquivo: <code>src/app/api/orders/route.test.ts</code>
+      </div>
+      <div class="mock-event">
+        <span class="mock-time">14:05:32</span>
+        BUILD aprovado
+      </div>
+      <div class="mock-event">
+        <span class="mock-time">14:05:48</span>
+        UNIT em execução
+      </div>
+      <div class="mock-event error">
+        <span class="mock-time">14:06:04</span>
+        BUILD falhou: Cannot find module '@/lib/auth/register'
+      </div>
+    </div>
+  </div>
+</body>
+</html>

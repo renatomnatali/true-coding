@@ -172,38 +172,69 @@ export async function generateFilesFromManifest(
     const primaryPhase = resolvePrimaryPhase(entry)
     let result
 
-    try {
-      result = await runClaudeAgentWithCache({
-        agentName: `FileGen:${entry.path}`,
-        systemPrompt: FILE_GEN_SYSTEM_PROMPT,
-        contentBlocks,
-        schema: FILE_GEN_RESPONSE_SCHEMA,
-        phase: primaryPhase,
-      })
-    } catch (error) {
-      if (!isTruncationError(error) || primaryPhase === 'planning') {
-        throw error
-      }
+    await appendRunEvent({
+      runId,
+      iterationId,
+      eventType: 'AGENT_TASK',
+      message: `FileGen: ${entry.path} em execução`,
+      payload: {
+        agentName: 'FileGen',
+        status: 'RUNNING',
+        filePath: entry.path,
+        fileKind: entry.kind,
+      },
+    })
 
+    try {
+      try {
+        result = await runClaudeAgentWithCache({
+          agentName: `FileGen:${entry.path}`,
+          systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+          contentBlocks,
+          schema: FILE_GEN_RESPONSE_SCHEMA,
+          phase: primaryPhase,
+        })
+      } catch (error) {
+        if (!isTruncationError(error) || primaryPhase === 'planning') {
+          throw error
+        }
+
+        await appendRunEvent({
+          runId,
+          iterationId,
+          eventType: 'INFO',
+          message: `Retry FileGen por truncamento: ${entry.path}`,
+          payload: {
+            filePath: entry.path,
+            fromPhase: primaryPhase,
+            toPhase: 'planning',
+          },
+        })
+
+        result = await runClaudeAgentWithCache({
+          agentName: `FileGen:${entry.path}`,
+          systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+          contentBlocks,
+          schema: FILE_GEN_RESPONSE_SCHEMA,
+          phase: 'planning',
+        })
+      }
+    } catch (error) {
       await appendRunEvent({
         runId,
         iterationId,
-        eventType: 'INFO',
-        message: `Retry FileGen por truncamento: ${entry.path}`,
+        eventType: 'AGENT_TASK',
+        message: `FileGen: ${entry.path} falhou`,
         payload: {
+          agentName: 'FileGen',
+          status: 'FAILED',
           filePath: entry.path,
-          fromPhase: primaryPhase,
-          toPhase: 'planning',
+          fileKind: entry.kind,
+          error: error instanceof Error ? error.message : 'FileGen failed',
         },
       })
 
-      result = await runClaudeAgentWithCache({
-        agentName: `FileGen:${entry.path}`,
-        systemPrompt: FILE_GEN_SYSTEM_PROMPT,
-        contentBlocks,
-        schema: FILE_GEN_RESPONSE_SCHEMA,
-        phase: 'planning',
-      })
+      throw error
     }
 
     const content = result.output.content
