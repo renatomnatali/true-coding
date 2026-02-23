@@ -5,6 +5,7 @@ import { resolveAIProviderConfig } from './provider-config'
 function getAnthropicClient(phase: ModelPhase): {
   client: Anthropic
   model: string
+  provider: string
 } {
   const config = resolveAIProviderConfig(phase)
   return {
@@ -13,6 +14,7 @@ function getAnthropicClient(phase: ModelPhase): {
       ...(config.baseURL ? { baseURL: config.baseURL } : {}),
     }),
     model: config.model,
+    provider: config.provider,
   }
 }
 
@@ -96,6 +98,9 @@ export async function* streamChat(
 export interface ChatResult {
   text: string
   stopReason: string
+  provider?: string
+  model?: string
+  maxTokens?: number
   usage?: {
     inputTokens: number
     outputTokens: number
@@ -104,7 +109,7 @@ export interface ChatResult {
 
 export async function chat(options: StreamChatOptions): Promise<ChatResult> {
   const config = MODEL_CONFIG[options.phase]
-  const { client: anthropic, model } = getAnthropicClient(options.phase)
+  const { client: anthropic, model, provider } = getAnthropicClient(options.phase)
 
   const response = await anthropic.messages.create({
     model,
@@ -118,6 +123,9 @@ export async function chat(options: StreamChatOptions): Promise<ChatResult> {
   return {
     text: textBlock?.type === 'text' ? textBlock.text : '',
     stopReason: response.stop_reason ?? 'end_turn',
+    provider,
+    model,
+    maxTokens: config.maxTokens,
     usage: {
       inputTokens: response.usage?.input_tokens ?? 0,
       outputTokens: response.usage?.output_tokens ?? 0,

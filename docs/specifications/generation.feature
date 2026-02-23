@@ -255,7 +255,17 @@ Funcionalidade: Fase de Geracao de Codigo
     E o manifest da iteração possui totalEstimatedTokens maior ou igual a 4000
     Quando o CodeAgent for executado
     Então o sistema deve usar geração incremental file-by-file
+    E o CodeAgent deve gerar apenas arquivos de implementação (sem arquivos de teste)
     E o resultado final deve manter o contrato "files[]", "commitMessage", "branchStrategy" e "appliedChanges"
+    E o caminho single-shot não deve ser usado nessa execução
+
+  @agents @runtime @pipeline-v2
+  Cenário: TestAgent usa geração file-by-file para arquivos de teste quando PIPELINE_V2 está ativo
+    Dado que a execução do pipeline está habilitada
+    E o runtime de agentes está habilitado para Claude
+    E a feature flag "PIPELINE_V2" está ativa
+    Quando o TestAgent for executado
+    Então o sistema deve usar geração incremental file-by-file para arquivos de teste
     E o caminho single-shot não deve ser usado nessa execução
 
   @agents @runtime @pipeline-v2 @fallback
@@ -266,7 +276,17 @@ Funcionalidade: Fase de Geracao de Codigo
     E o manifest da iteração possui totalEstimatedTokens menor que 4000
     Quando o CodeAgent for executado
     Então o sistema deve usar o caminho single-shot legado
+    E o prompt do CodeAgent deve instruir explicitamente que arquivos de teste não devem ser gerados
     E o contrato de saída deve permanecer compatível com o orquestrador
+
+  @agents @runtime @pipeline-v2 @filegen
+  Cenário: FileGen faz retry em planning quando truncar em codegen
+    Dado que a geração incremental file-by-file está ativa
+    E um arquivo do manifest falha com "AGENT_RESPONSE_TRUNCATED" na fase "codegen"
+    Quando o FileGen processar o mesmo arquivo
+    Então o sistema deve registrar evento de retry por truncamento
+    E deve repetir a geração na fase "planning"
+    E deve continuar a iteração se o retry retornar JSON válido
 
   @agents @runtime @manifest
   Cenário: Manifest de páginas respeita technicalPlan.pages.path

@@ -5,6 +5,8 @@ import type {
 import type {
   AgentExecutionContext,
   AgentExecutionResult,
+  FileManifest,
+  FileManifestEntry,
   GeneratedIterationPlan,
 } from './types'
 import { toFeatureTag } from './utils'
@@ -219,6 +221,7 @@ const codeAgentSchema = z.object({
   commitMessage: z.string().min(1),
   files: z.array(generatedFileSchema).min(1),
 })
+type CodeAgentOutput = z.infer<typeof codeAgentSchema>
 
 const reviewAgentSchema = z.object({
   approved: z.boolean(),
@@ -235,6 +238,56 @@ function compactJSON(value: unknown, maxLength = 16_000): string {
 
 function canUseDeterministicFallback(): boolean {
   return process.env.NODE_ENV === 'test'
+}
+
+function filterManifestEntries(
+  manifest: FileManifest,
+  predicate: (entry: FileManifestEntry) => boolean
+): FileManifest {
+  const entries = manifest.entries.filter(predicate)
+  const totalEstimatedTokens = entries.reduce(
+    (sum, entry) => sum + entry.estimatedTokens,
+    0
+  )
+  return { entries, totalEstimatedTokens }
+}
+
+function buildTestOnlyManifest(manifest: FileManifest): FileManifest {
+  return filterManifestEntries(manifest, (entry) => entry.kind === 'test')
+}
+
+function buildImplementationManifest(manifest: FileManifest): FileManifest {
+  return filterManifestEntries(
+    manifest,
+    (entry) => entry.kind !== 'test' && entry.kind !== 'spec'
+  )
+}
+
+function isTestFilePath(path: string): boolean {
+  const normalized = path.toLowerCase()
+  return (
+    normalized.startsWith('tests/') ||
+    normalized.includes('/tests/') ||
+    normalized.includes('.test.') ||
+    normalized.includes('.spec.')
+  )
+}
+
+function removeTestFilesFromCodeOutput(output: CodeAgentOutput): CodeAgentOutput {
+  const files = output.files.filter((file) => !isTestFilePath(file.path))
+
+  if (files.length === output.files.length) {
+    return output
+  }
+
+  return {
+    ...output,
+    files,
+    appliedChanges: [
+      ...output.appliedChanges,
+      'Arquivos de teste removidos do escopo do CodeAgent',
+    ],
+  }
 }
 
 export async function runAssessmentAgent(
@@ -354,6 +407,33 @@ export async function runTestAgent(
   iteration: IterationPlanItem
 ): Promise<AgentExecutionResult<Record<string, unknown>>> {
   if (isClaudeAgentRuntimeEnabled()) {
+    if (FEATURES.PIPELINE_V2) {
+      if (!context.iterationId) {
+        throw new Error('MISSING_ITERATION_ID:TestAgent')
+      }
+
+      const manifest = buildManifestFromSnapshot(context.snapshot, iteration)
+      const testManifest = buildTestOnlyManifest(manifest)
+      const incremental = await generateFilesFromManifest({
+        runId: context.runId,
+        iterationId: context.iterationId,
+        projectId: context.projectId,
+        snapshot: context.snapshot,
+        iteration,
+        manifest: testManifest,
+      })
+
+      return {
+        output: {
+          redStateConfirmed: true,
+          testTargets: iteration.scope.goals,
+          command: 'npm run test',
+          files: incremental.files,
+        },
+        tokenUsage: incremental.totalTokensUsed,
+      }
+    }
+
     const prompt = [
       'Gere o pacote do TestAgent para a iteração.',
       '',
@@ -384,7 +464,7 @@ export async function runTestAgent(
       systemPrompt: DEVELOPMENT_AGENT_SYSTEM_PROMPT,
       userPrompt: prompt,
       schema: testAgentSchema,
-      phase: 'codegen',
+      phase: 'planning',
     })
   } else if (!canUseDeterministicFallback()) {
     throw new Error('AGENT_RUNTIME_DISABLED:TestAgent')
@@ -443,8 +523,8 @@ export async function runCodeAgent(
   attempt: number
 ): Promise<AgentExecutionResult<Record<string, unknown>>> {
   if (isClaudeAgentRuntimeEnabled()) {
-    const runSingleShot = () =>
-      runClaudeAgent({
+    const runSingleShot = async () => {
+      const singleShot = await runClaudeAgent({
         agentName: 'CodeAgent',
         systemPrompt: DEVELOPMENT_AGENT_SYSTEM_PROMPT,
         userPrompt: [
@@ -460,6 +540,7 @@ export async function runCodeAgent(
           '',
           'REGRAS:',
           '- Implementar somente o necessário para satisfazer os testes da iteração.',
+          '- Não gerar arquivos de teste.',
           '- `commitMessage` deve seguir `feat(iter-<n>): <escopo>`.',
           '- Não alterar arquivos fora do escopo da iteração.',
           '- Não retorne nenhum texto fora do JSON.',
@@ -475,13 +556,19 @@ export async function runCodeAgent(
         schema: codeAgentSchema,
         phase: 'codegen',
       })
+      return {
+        ...singleShot,
+        output: removeTestFilesFromCodeOutput(singleShot.output),
+      }
+    }
 
     if (!FEATURES.PIPELINE_V2) {
       return runSingleShot()
     }
 
     const manifest = buildManifestFromSnapshot(context.snapshot, iteration)
-    if (shouldUseSingleShot(manifest)) {
+    const implementationManifest = buildImplementationManifest(manifest)
+    if (shouldUseSingleShot(implementationManifest)) {
       return runSingleShot()
     }
 
@@ -495,14 +582,14 @@ export async function runCodeAgent(
       projectId: context.projectId,
       snapshot: context.snapshot,
       iteration,
-      manifest,
+      manifest: implementationManifest,
     })
 
     return {
       output: {
         appliedChanges: [
           `Geração incremental file-by-file para ${iteration.name}`,
-          `Manifest com ${manifest.entries.length} arquivos planejados`,
+          `Manifest com ${implementationManifest.entries.length} arquivos planejados`,
           `Tentativa ${attempt}`,
         ],
         branchStrategy: 'trunk-based-short-branch',

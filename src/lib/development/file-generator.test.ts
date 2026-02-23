@@ -183,14 +183,57 @@ describe('generateFilesFromManifest', () => {
     expect(recordSpy).toHaveBeenCalledWith(120)
   })
 
+  it('uses planning phase for test files', async () => {
+    const manifest = makeManifest([
+      { path: 'src/app/api/auth-register/route.test.ts', kind: 'test', dependsOn: ['src/app/api/auth-register/route.ts'], estimatedTokens: 1000 },
+    ])
+
+    runClaudeAgentWithCacheMock.mockResolvedValue({
+      output: { content: 'import { describe, it, expect } from \"vitest\"' },
+      tokenUsage: 300,
+    })
+
+    await generateFilesFromManifest(makeOptions(manifest))
+
+    const callArgs = runClaudeAgentWithCacheMock.mock.calls[0][0]
+    expect(callArgs.phase).toBe('planning')
+  })
+
+  it('retries in planning when codegen is truncated', async () => {
+    const manifest = makeManifest([
+      { path: 'src/app/api/orders/route.ts', kind: 'api', dependsOn: [], estimatedTokens: 1200 },
+    ])
+
+    runClaudeAgentWithCacheMock
+      .mockRejectedValueOnce(
+        new Error('AGENT_RESPONSE_TRUNCATED:FileGen:src/app/api/orders/route.ts:phase=codegen')
+      )
+      .mockResolvedValueOnce({
+        output: { content: 'export async function GET() { return Response.json({ ok: true }) }' },
+        tokenUsage: 500,
+      })
+
+    const result = await generateFilesFromManifest(makeOptions(manifest))
+
+    expect(runClaudeAgentWithCacheMock).toHaveBeenCalledTimes(2)
+    expect(runClaudeAgentWithCacheMock.mock.calls[0][0].phase).toBe('codegen')
+    expect(runClaudeAgentWithCacheMock.mock.calls[1][0].phase).toBe('planning')
+    expect(result.files).toHaveLength(1)
+
+    const infoCalls = appendRunEventMock.mock.calls.filter(
+      ([arg]: [{ eventType: string }]) => arg.eventType === 'INFO'
+    )
+    expect(infoCalls.some(([arg]: [{ message: string }]) => arg.message.includes('Retry FileGen por truncamento'))).toBe(true)
+  })
+
   it('propagates truncation errors from agent runtime', async () => {
     const manifest = makeManifest([
       { path: 'src/types/iter-1.ts', kind: 'type', dependsOn: [], estimatedTokens: 800 },
     ])
 
-    runClaudeAgentWithCacheMock.mockRejectedValue(
-      new Error('AGENT_RESPONSE_TRUNCATED:FileGen:src/types/iter-1.ts')
-    )
+    runClaudeAgentWithCacheMock
+      .mockRejectedValueOnce(new Error('AGENT_RESPONSE_TRUNCATED:FileGen:src/types/iter-1.ts:phase=codegen'))
+      .mockRejectedValueOnce(new Error('AGENT_RESPONSE_TRUNCATED:FileGen:src/types/iter-1.ts:phase=planning'))
 
     await expect(
       generateFilesFromManifest(makeOptions(manifest))

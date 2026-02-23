@@ -99,7 +99,7 @@
         <div class="workspace-header">
           <div class="workspace-breadcrumb">Geração › Pipeline de Arquivos</div>
           <h2 class="workspace-title">Gerando: Iteração 2 (Pedidos)</h2>
-          <p class="workspace-subtitle">PIPELINE_V2 ativo com fallback automático para single-shot em manifest pequeno.</p>
+          <p class="workspace-subtitle">PIPELINE_V2 ativo: TestAgent gera testes arquivo por arquivo, CodeAgent gera apenas implementação.</p>
         </div>
 
         <!-- Iteration Progress Header -->
@@ -158,11 +158,19 @@
             <div style="display: grid; gap: var(--space-2);">
               <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
                 <span style="color: var(--color-success);">✓</span>
-                <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);"><code>totalEstimatedTokens &gt;= 4000</code> → geração incremental file-by-file</span>
+                <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);"><code>TestAgent</code> → geração incremental de <code>kind=test</code> (sem single-shot)</span>
               </div>
               <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
                 <span style="color: var(--color-text-tertiary);">○</span>
-                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);"><code>totalEstimatedTokens &lt; 4000</code> → fallback para single-shot (legado)</span>
+                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);"><code>CodeAgent</code> com <code>totalEstimatedTokens &gt;= 4000</code> → geração incremental de implementação (sem testes)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-text-tertiary);">○</span>
+                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);"><code>CodeAgent</code> com <code>totalEstimatedTokens &lt; 4000</code> → fallback single-shot legado (prompt instruído a não gerar testes)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-text-tertiary);">○</span>
+                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);"><code>FileGen</code> com truncamento em <code>codegen</code> → retry automático em <code>planning</code> na mesma tarefa</span>
               </div>
             </div>
           </div>

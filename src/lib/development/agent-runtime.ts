@@ -27,6 +27,18 @@ interface AgentUsage {
   outputTokens: number
 }
 
+interface TruncationContext {
+  agentName: string
+  phase: ModelPhase
+  stopReason?: string
+  provider?: string
+  model?: string
+  maxTokens?: number
+  usage?: AgentUsage
+  responseChars: number
+  jsonRepaired?: boolean
+}
+
 function estimateTokenUsage(rawText: string): number {
   return Math.max(1, Math.ceil(rawText.length / 4))
 }
@@ -47,6 +59,35 @@ function truncate(text: string, max = 220): string {
   return `${normalized.slice(0, max)}...`
 }
 
+function buildTruncationError(ctx: TruncationContext): Error {
+  const details = [
+    `phase=${ctx.phase}`,
+    `stopReason=${ctx.stopReason ?? 'unknown'}`,
+    `provider=${ctx.provider ?? 'unknown'}`,
+    `model=${ctx.model ?? 'unknown'}`,
+    `maxTokens=${ctx.maxTokens ?? 'unknown'}`,
+    `inputTokens=${ctx.usage?.inputTokens ?? 'unknown'}`,
+    `outputTokens=${ctx.usage?.outputTokens ?? 'unknown'}`,
+    `responseChars=${ctx.responseChars}`,
+    `jsonRepaired=${ctx.jsonRepaired ? 'true' : 'false'}`,
+  ].join(';')
+
+  console.warn('[agent-runtime] resposta truncada', {
+    agentName: ctx.agentName,
+    phase: ctx.phase,
+    stopReason: ctx.stopReason ?? 'unknown',
+    provider: ctx.provider ?? 'unknown',
+    model: ctx.model ?? 'unknown',
+    maxTokens: ctx.maxTokens ?? 'unknown',
+    inputTokens: ctx.usage?.inputTokens ?? null,
+    outputTokens: ctx.usage?.outputTokens ?? null,
+    responseChars: ctx.responseChars,
+    jsonRepaired: Boolean(ctx.jsonRepaired),
+  })
+
+  return new Error(`AGENT_RESPONSE_TRUNCATED:${ctx.agentName}:${details}`)
+}
+
 export function isClaudeAgentRuntimeEnabled(): boolean {
   return (
     process.env.AUTONOMOUS_DEV_LLM_AGENTS === 'true' &&
@@ -57,14 +98,25 @@ export function isClaudeAgentRuntimeEnabled(): boolean {
 export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
   options: ClaudeAgentRunOptions<TSchema>
 ): Promise<AgentExecutionResult<z.infer<TSchema>>> {
-  const { text, stopReason, usage } = await chat({
-    phase: options.phase ?? 'codegen',
+  const phase = options.phase ?? 'codegen'
+  const { text, stopReason, usage, provider, model, maxTokens } = await chat({
+    phase,
     systemPrompt: options.systemPrompt,
     messages: [{ role: 'user', content: options.userPrompt }],
   })
 
   if (stopReason === 'max_tokens') {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName: options.agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: false,
+    })
   }
 
   const { data, repaired } = extractJSON<unknown>(text)
@@ -74,7 +126,17 @@ export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
   }
 
   if (repaired) {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName: options.agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: true,
+    })
   }
 
   const parsed = options.schema.safeParse(data)
@@ -103,14 +165,25 @@ export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
 export async function runClaudeAgentWithCache<TSchema extends z.ZodTypeAny>(
   options: CachedAgentOptions<TSchema>
 ): Promise<AgentExecutionResult<z.infer<TSchema>>> {
-  const { text, stopReason, usage } = await chat({
-    phase: options.phase ?? 'codegen',
+  const phase = options.phase ?? 'codegen'
+  const { text, stopReason, usage, provider, model, maxTokens } = await chat({
+    phase,
     systemPrompt: options.systemPrompt,
     messages: [{ role: 'user', content: options.contentBlocks }],
   })
 
   if (stopReason === 'max_tokens') {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName: options.agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: false,
+    })
   }
 
   const { data, repaired } = extractJSON<unknown>(text)
@@ -120,7 +193,17 @@ export async function runClaudeAgentWithCache<TSchema extends z.ZodTypeAny>(
   }
 
   if (repaired) {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName: options.agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: true,
+    })
   }
 
   const parsed = options.schema.safeParse(data)

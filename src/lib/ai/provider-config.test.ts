@@ -70,7 +70,7 @@ describe('provider-config', () => {
     expect(config.provider).toBe('zai')
     expect(config.apiKey).toBe('zai-key')
     expect(config.baseURL).toBe('https://api.z.ai/api/anthropic')
-    expect(config.model).toBe('glm-4.7')
+    expect(config.model).toBe('glm-5')
   })
 
   it('throws explicit error for invalid provider value', () => {

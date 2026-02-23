@@ -70,15 +70,26 @@ describe('runClaudeAgentWithCache', () => {
       text: '{"partial":',
       stopReason: 'max_tokens',
       usage: { inputTokens: 100, outputTokens: 4000 },
+      model: 'glm-5',
+      provider: 'zai',
+      maxTokens: 4096,
     })
 
-    await expect(
-      runClaudeAgentWithCache({
+    try {
+      await runClaudeAgentWithCache({
         agentName: 'CodeAgent',
         systemPrompt: 'Test',
         contentBlocks: [{ type: 'text', text: 'test' }],
         schema: z.object({}),
       })
-    ).rejects.toThrow('AGENT_RESPONSE_TRUNCATED')
+      throw new Error('EXPECTED_TRUNCATION')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      expect(message).toContain('AGENT_RESPONSE_TRUNCATED:CodeAgent')
+      expect(message).toContain('stopReason=max_tokens')
+      expect(message).toContain('provider=zai')
+      expect(message).toContain('model=glm-5')
+      expect(message).toContain('maxTokens=4096')
+    }
   })
 })

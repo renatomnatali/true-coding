@@ -8,6 +8,7 @@
 import { z } from 'zod'
 import type { IterationPlanItem } from '@/types/development'
 import type { ContentBlock } from '@/lib/ai/claude'
+import type { ModelPhase } from '@/lib/ai/config'
 import type { FileManifest, FileManifestEntry, PlanSnapshot } from './types'
 import { OutputTokenRateLimiter } from '@/lib/ai/rate-limiter'
 import { runClaudeAgentWithCache } from './agent-runtime'
@@ -103,7 +104,22 @@ function buildFilePrompt(
     parts.push(`\n## Exports dos ficheiros já gerados\n${interfaceMapStr}`)
   }
 
+  if (entry.kind === 'test') {
+    parts.push(
+      'Priorize uma suíte enxuta: cubra cenários críticos do arquivo alvo e evite casos redundantes.'
+    )
+  }
+
   return parts.join('\n')
+}
+
+function resolvePrimaryPhase(entry: FileManifestEntry): ModelPhase {
+  // Test files frequently exceed codegen output window; planning provides a safer cap.
+  return entry.kind === 'test' ? 'planning' : 'codegen'
+}
+
+function isTruncationError(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('AGENT_RESPONSE_TRUNCATED')
 }
 
 /**
@@ -153,13 +169,42 @@ export async function generateFilesFromManifest(
       { type: 'text', text: filePrompt },
     ]
 
-    const result = await runClaudeAgentWithCache({
-      agentName: `FileGen:${entry.path}`,
-      systemPrompt: FILE_GEN_SYSTEM_PROMPT,
-      contentBlocks,
-      schema: FILE_GEN_RESPONSE_SCHEMA,
-      phase: 'codegen',
-    })
+    const primaryPhase = resolvePrimaryPhase(entry)
+    let result
+
+    try {
+      result = await runClaudeAgentWithCache({
+        agentName: `FileGen:${entry.path}`,
+        systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+        contentBlocks,
+        schema: FILE_GEN_RESPONSE_SCHEMA,
+        phase: primaryPhase,
+      })
+    } catch (error) {
+      if (!isTruncationError(error) || primaryPhase === 'planning') {
+        throw error
+      }
+
+      await appendRunEvent({
+        runId,
+        iterationId,
+        eventType: 'INFO',
+        message: `Retry FileGen por truncamento: ${entry.path}`,
+        payload: {
+          filePath: entry.path,
+          fromPhase: primaryPhase,
+          toPhase: 'planning',
+        },
+      })
+
+      result = await runClaudeAgentWithCache({
+        agentName: `FileGen:${entry.path}`,
+        systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+        contentBlocks,
+        schema: FILE_GEN_RESPONSE_SCHEMA,
+        phase: 'planning',
+      })
+    }
 
     const content = result.output.content
     const outputTokens = result.tokenUsage ?? entry.estimatedTokens
