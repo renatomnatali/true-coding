@@ -3,6 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { prisma } from '@/lib/db/prisma'
 import { appendRunEvent } from './events'
+import { filePathSchema } from './agents'
 import {
   loadBaseTemplates,
   type GeneratedFile as TemplateGeneratedFile,
@@ -29,11 +30,12 @@ const COMMIT_ARTIFACT_EXCLUDED_DIRS = new Set([
 export function sanitizeWorkspacePath(filePath: string): string {
   const normalized = filePath.trim().replace(/\/+/g, '/').replace(/^\.\//, '')
 
-  if (!normalized || normalized.startsWith('/') || normalized.includes('..') || normalized.includes('\0')) {
+  const parsed = filePathSchema.safeParse(normalized)
+  if (!parsed.success) {
     throw new Error(`INVALID_WORKSPACE_PATH:${filePath}`)
   }
 
-  return normalized
+  return parsed.data
 }
 
 function isGeneratedWorkspaceFileLike(value: unknown): value is GeneratedWorkspaceFile {
@@ -395,7 +397,7 @@ export async function ensureSandbox(runId: string, existingPath?: string | null)
     runId,
     eventType: 'INFO',
     message: 'Worker sandbox initialized',
-    payload: { sandboxPath },
+    payload: { sandboxReady: true },
   })
 
   return sandboxPath

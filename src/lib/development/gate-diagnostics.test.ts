@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { buildFailedGateSummary, extractPrimaryGateFailureDetail } from './gate-diagnostics'
+import {
+  buildFailedGateSummary,
+  buildGateEventDiagnostics,
+  extractGateFailureDiagnosticSnippet,
+  extractPrimaryGateFailureDetail,
+} from './gate-diagnostics'
 import type { GateRunOutput } from './types'
 
 describe('extractPrimaryGateFailureDetail', () => {
@@ -35,6 +40,45 @@ describe('extractPrimaryGateFailureDetail', () => {
     })
 
     expect(detail).toBe('workspace_not_prepared')
+  })
+
+  it('ignores Next.js version banners and keeps actionable root cause', () => {
+    const detail = extractPrimaryGateFailureDetail({
+      gateType: 'BUILD',
+      passed: false,
+      durationMs: 5400,
+      report: {
+        snippet: [
+          '▲ Next.js 15.5.12',
+          '- Environments: .env.local',
+          '',
+          'Creating an optimized production build ...',
+          'Failed to compile.',
+          "Error: Cannot find module '@/lib/auth/register'",
+        ].join('\n'),
+      },
+    })
+
+    expect(detail).toContain("Cannot find module '@/lib/auth/register'")
+    expect(detail).not.toBe('▲ Next.js 15.5.12')
+  })
+})
+
+describe('extractGateFailureDiagnosticSnippet', () => {
+  it('returns tail snippet for failed gates with bounded size', () => {
+    const hugeSnippet = `${'linha sem relevancia\n'.repeat(600)}Error: build exploded`
+    const snippet = extractGateFailureDiagnosticSnippet({
+      gateType: 'BUILD',
+      passed: false,
+      durationMs: 100,
+      report: {
+        snippet: hugeSnippet,
+      },
+    })
+
+    expect(snippet).not.toBeNull()
+    expect((snippet ?? '').length).toBeLessThanOrEqual(1500)
+    expect(snippet).toContain('Error: build exploded')
   })
 })
 
@@ -109,5 +153,23 @@ describe('buildFailedGateSummary', () => {
 
     const summary = buildFailedGateSummary(gates)
     expect(summary).toBe('BUILD (Error: build exploded)')
+  })
+})
+
+describe('buildGateEventDiagnostics', () => {
+  it('includes summary, reason and diagnostic snippet for failed gate', () => {
+    const diagnostics = buildGateEventDiagnostics({
+      gateType: 'BUILD',
+      passed: false,
+      durationMs: 1000,
+      report: {
+        reason: 'workspace_not_prepared',
+        snippet: 'workspace_not_prepared: package.json não encontrado no sandbox.',
+      },
+    })
+
+    expect(diagnostics.summary).toBe('workspace_not_prepared')
+    expect(diagnostics.reason).toBe('workspace_not_prepared')
+    expect(diagnostics.diagnosticSnippet).toContain('package.json não encontrado no sandbox')
   })
 })

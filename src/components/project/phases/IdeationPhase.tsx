@@ -173,13 +173,13 @@ export function IdeationPhase({
             Vamos criar {projectName}!
           </h2>
           <p className="text-muted-foreground max-w-md mb-8">
-            Descreva o app que voce quer criar. Seja especifico sobre
-            funcionalidades, publico-alvo e diferenciais.
+            Descreva o app que você quer criar. Seja específico sobre
+            funcionalidades, público-alvo e diferenciais.
           </p>
 
           <div className="w-full max-w-lg">
             <p className="text-sm text-muted-foreground mb-3">
-              Ou comece com uma sugestao:
+              Ou comece com uma sugestão:
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {promptSuggestions.map((suggestion, i) => (

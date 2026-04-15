@@ -217,7 +217,7 @@ describe('Generation Phase (BDD) -> UI feedback and retry', () => {
     render(<GenerationProgress projectId="proj-1" autoStart={false} />)
 
     expect(screen.getByText('Pronto para gerar')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Iniciar geracao' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Iniciar geração' })).toBeInTheDocument()
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
@@ -234,11 +234,11 @@ describe('Generation Phase (BDD) -> UI feedback and retry', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<GenerationProgress projectId="proj-1" autoStart={false} />)
-    await user.click(screen.getByRole('button', { name: 'Iniciar geracao' }))
+    await user.click(screen.getByRole('button', { name: 'Iniciar geração' }))
 
     await waitFor(() => {
       expect(
-        screen.getByText('GitHub nao conectado para este projeto.')
+        screen.getByText('GitHub não conectado para este projeto.')
       ).toBeInTheDocument()
     })
 
@@ -279,7 +279,7 @@ describe('Generation Phase (BDD) -> UI feedback and retry', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<GenerationProgress projectId="proj-1" autoStart={false} />)
-    await user.click(screen.getByRole('button', { name: 'Iniciar geracao' }))
+    await user.click(screen.getByRole('button', { name: 'Iniciar geração' }))
 
     await waitFor(() => {
       expect(screen.getByText('COMMIT_FAILED')).toBeInTheDocument()

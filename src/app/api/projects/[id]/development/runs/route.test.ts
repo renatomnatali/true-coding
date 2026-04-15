@@ -22,6 +22,9 @@ vi.mock('@/lib/db/prisma', () => ({
     developmentRun: {
       findMany: vi.fn(),
     },
+    runEvent: {
+      groupBy: vi.fn(),
+    },
   },
 }))
 
@@ -84,6 +87,8 @@ describe('POST /api/projects/[id]/development/runs', () => {
     mockCreateDevelopmentRun.mockReset()
     mockIsDevelopmentRunActiveInWorker.mockReset()
     mockPrisma.developmentRun.findMany.mockReset()
+    mockPrisma.runEvent.groupBy.mockReset()
+    mockPrisma.runEvent.groupBy.mockResolvedValue([])
     process.env.AUTONOMOUS_DEV_EXECUTE_GATES = 'true'
   })
 
@@ -302,6 +307,49 @@ describe('POST /api/projects/[id]/development/runs', () => {
     expect(response.status).toBe(200)
     expect(data.runs).toHaveLength(1)
     expect(data.runs[0].id).toBe('run_active_2')
+    expect(data.runs[0].isStale).toBe(false)
+  })
+
+  it('GET keeps active run as healthy when recent event heartbeat exists', async () => {
+    const { GET } = await import('./route')
+
+    mockAuth.mockResolvedValue({
+      userId: 'user_1',
+    } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
+
+    mockAssertProjectOwnership.mockResolvedValue({ id: 'proj-1' })
+    mockIsDevelopmentRunActiveInWorker.mockReturnValue(false)
+    mockPrisma.developmentRun.findMany.mockResolvedValue([
+      {
+        id: 'run_active_3',
+        status: 'RUNNING',
+        currentIteration: 1,
+        totalIterations: 3,
+        errorSummary: null,
+        createdAt: new Date('2026-02-13T14:00:00.000Z'),
+        startedAt: new Date('2026-02-13T14:00:01.000Z'),
+        updatedAt: new Date('2026-02-13T14:00:02.000Z'),
+        finishedAt: null,
+      },
+    ] as Awaited<ReturnType<typeof prisma.developmentRun.findMany>>)
+    mockPrisma.runEvent.groupBy.mockResolvedValue([
+      {
+        runId: 'run_active_3',
+        _max: {
+          createdAt: new Date(),
+        },
+      },
+    ] as Awaited<ReturnType<typeof prisma.runEvent.groupBy>>)
+
+    const response = await GET(
+      new Request('http://localhost/api/projects/proj-1/development/runs'),
+      makeParams()
+    )
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.runs).toHaveLength(1)
+    expect(data.runs[0].id).toBe('run_active_3')
     expect(data.runs[0].isStale).toBe(false)
   })
 })

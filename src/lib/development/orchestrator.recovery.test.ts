@@ -14,6 +14,9 @@ const { prismaMock, appendRunEventMock, isRunActiveMock, cleanupSandboxMock } = 
     project: {
       update: vi.fn(),
     },
+    runEvent: {
+      findFirst: vi.fn(),
+    },
   },
   appendRunEventMock: vi.fn(),
   isRunActiveMock: vi.fn(),
@@ -58,9 +61,11 @@ import {
 describe('orchestrator recovery flows', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-02-13T23:00:00.000Z'))
     vi.clearAllMocks()
     appendRunEventMock.mockResolvedValue(undefined)
     isRunActiveMock.mockReturnValue(false)
+    prismaMock.runEvent.findFirst.mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -73,6 +78,7 @@ describe('orchestrator recovery flows', () => {
       id: 'run-1',
       status: 'WAITING_CHECKPOINT',
       currentIteration: 1,
+      updatedAt: new Date('2026-02-13T22:00:00.000Z'),
     })
     prismaMock.developmentRun.findUnique.mockResolvedValue({
       workerSandboxPath: '/tmp/true-coding-run-old',
@@ -156,6 +162,11 @@ describe('orchestrator recovery flows', () => {
       status: 'RUNNING',
       startedAt,
       currentIteration: 1,
+      updatedAt: new Date('2026-02-13T22:00:00.000Z'),
+    })
+    prismaMock.runEvent.findFirst.mockResolvedValue({
+      createdAt: new Date('2026-02-13T21:00:00.000Z'),
+      eventType: 'RUN_STATUS',
     })
     prismaMock.developmentRun.findUnique.mockResolvedValue({
       workerSandboxPath: '/tmp/true-coding-run-old',
@@ -188,6 +199,31 @@ describe('orchestrator recovery flows', () => {
       },
     })
     expect(cleanupSandboxMock).toHaveBeenCalledWith('run-1')
+  })
+
+  it('recoverDevelopmentRun does not enqueue duplicated worker when run has recent heartbeat', async () => {
+    const startedAt = new Date('2026-02-13T22:07:56.361Z')
+    const updatedAt = new Date('2026-02-13T22:09:00.000Z')
+
+    prismaMock.developmentRun.findFirst.mockResolvedValue({
+      id: 'run-1',
+      status: 'RUNNING',
+      startedAt,
+      currentIteration: 1,
+      updatedAt,
+    })
+    prismaMock.runEvent.findFirst.mockResolvedValue({
+      createdAt: new Date('2026-02-13T22:09:30.000Z'),
+      eventType: 'AGENT_TASK',
+    })
+
+    vi.setSystemTime(new Date('2026-02-13T22:10:00.000Z'))
+
+    const result = await recoverDevelopmentRun('proj-1', 'run-1')
+
+    expect(result.alreadyProcessing).toBe(true)
+    expect(prismaMock.developmentRun.update).not.toHaveBeenCalled()
+    expect(cleanupSandboxMock).not.toHaveBeenCalled()
   })
 
   it('moves run to WAITING_CHECKPOINT when release step fails', async () => {

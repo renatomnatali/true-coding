@@ -1,4 +1,16 @@
 import crypto from 'crypto'
+import fs from 'fs/promises'
+
+export const MAX_ITERATION_ATTEMPTS = 3
+
+export async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
 
 export function hashInput(input: unknown): string {
   return crypto

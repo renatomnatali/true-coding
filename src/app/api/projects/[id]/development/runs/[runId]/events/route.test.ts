@@ -6,13 +6,13 @@ const {
   authMock,
   assertProjectOwnershipMock,
   getDevelopmentRunMock,
-  getDevelopmentRunEventsMock,
+  getRunStatusAndEventsMock,
   getDevelopmentRunRetryBoundaryMock,
 } = vi.hoisted(() => ({
   authMock: vi.fn(),
   assertProjectOwnershipMock: vi.fn(),
   getDevelopmentRunMock: vi.fn(),
-  getDevelopmentRunEventsMock: vi.fn(),
+  getRunStatusAndEventsMock: vi.fn(),
   getDevelopmentRunRetryBoundaryMock: vi.fn(),
 }))
 
@@ -26,7 +26,7 @@ vi.mock('@/lib/development/auth', () => ({
 
 vi.mock('@/lib/development/run-control', () => ({
   getDevelopmentRun: getDevelopmentRunMock,
-  getDevelopmentRunEvents: getDevelopmentRunEventsMock,
+  getRunStatusAndEvents: getRunStatusAndEventsMock,
   getDevelopmentRunRetryBoundary: getDevelopmentRunRetryBoundaryMock,
 }))
 
@@ -69,12 +69,13 @@ describe('GET /api/projects/[id]/development/runs/[runId]/events', () => {
       createdAt: '2026-02-13T17:22:03.712Z',
     }
 
-    getDevelopmentRunMock
-      .mockResolvedValueOnce(runningRun)
-      .mockResolvedValueOnce({ ...runningRun, status: 'SUCCEEDED' })
+    getDevelopmentRunMock.mockResolvedValueOnce(runningRun)
 
     getDevelopmentRunRetryBoundaryMock.mockResolvedValue(125)
-    getDevelopmentRunEventsMock.mockResolvedValue([event])
+    getRunStatusAndEventsMock.mockResolvedValueOnce({
+      status: 'SUCCEEDED',
+      events: [event],
+    })
 
     const response = await GET(
       new Request('http://localhost/api/projects/proj-1/development/runs/run-1/events'),
@@ -83,7 +84,7 @@ describe('GET /api/projects/[id]/development/runs/[runId]/events', () => {
 
     expect(response.status).toBe(200)
     expect(getDevelopmentRunRetryBoundaryMock).toHaveBeenCalledWith('run-1')
-    expect(getDevelopmentRunEventsMock).toHaveBeenCalledWith('run-1', 124)
+    expect(getRunStatusAndEventsMock).toHaveBeenCalledWith('run-1', 124)
 
     const body = await readResponseBody(response)
     expect(body).toContain('event: run_status')
@@ -105,11 +106,12 @@ describe('GET /api/projects/[id]/development/runs/[runId]/events', () => {
       createdAt: '2026-02-13T17:25:00.000Z',
     }
 
-    getDevelopmentRunMock
-      .mockResolvedValueOnce(runningRun)
-      .mockResolvedValueOnce({ ...runningRun, status: 'SUCCEEDED' })
+    getDevelopmentRunMock.mockResolvedValueOnce(runningRun)
 
-    getDevelopmentRunEventsMock.mockResolvedValue([event])
+    getRunStatusAndEventsMock.mockResolvedValueOnce({
+      status: 'SUCCEEDED',
+      events: [event],
+    })
 
     const response = await GET(
       new Request('http://localhost/api/projects/proj-1/development/runs/run-2/events?after=200'),
@@ -118,7 +120,7 @@ describe('GET /api/projects/[id]/development/runs/[runId]/events', () => {
 
     expect(response.status).toBe(200)
     expect(getDevelopmentRunRetryBoundaryMock).not.toHaveBeenCalled()
-    expect(getDevelopmentRunEventsMock).toHaveBeenCalledWith('run-2', 200)
+    expect(getRunStatusAndEventsMock).toHaveBeenCalledWith('run-2', 200)
 
     const body = await readResponseBody(response)
     expect(body).toContain('event: iteration_status')

@@ -189,7 +189,7 @@ const DEVELOPMENT_AGENT_SYSTEM_PROMPT = [
   'Todo conteúdo de interface deve estar em português brasileiro com acentuação correta.',
 ].join(' ')
 
-const filePathSchema = z
+export const filePathSchema = z
   .string()
   .min(1)
   .refine((value) => !value.startsWith('/'), 'Path não pode ser absoluto')

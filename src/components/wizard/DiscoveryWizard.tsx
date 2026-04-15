@@ -127,9 +127,9 @@ function InitialStep({
 
   return (
     <div className="max-w-2xl mx-auto text-center space-y-6">
-      <h1 className="text-3xl font-bold">O que voce quer criar?</h1>
+      <h1 className="text-3xl font-bold">O que você quer criar?</h1>
       <p className="text-muted-foreground">
-        Descreva sua ideia de aplicacao. Pode ser simples - vou fazer perguntas
+        Descreva sua ideia de aplicação. Pode ser simples - vou fazer perguntas
         para entender melhor.
       </p>
 

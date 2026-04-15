@@ -1358,7 +1358,7 @@ function UxPlanView({
 // Phase: GENERATING
 function GeneratingWorkspace({
   projectId,
-  developmentUiState,
+  developmentUiState: _developmentUiState,
 }: {
   projectId: string
   developmentUiState?: 'awaiting_confirmation' | 'monitoring'
@@ -1404,30 +1404,12 @@ function GeneratingWorkspace({
     )
   }
 
-  if (developmentUiState === 'awaiting_confirmation') {
-    return (
-      <div className="h-full overflow-y-auto bg-gray-50 p-6">
-        <div className="mx-auto max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-6">
-          <h3 className="mb-2 text-lg font-semibold text-amber-900">
-            Operação pendente encontrada
-          </h3>
-          <p className="text-sm text-amber-800">
-            Há uma execução em andamento para este projeto. Confirme no painel acima para continuar a operação.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="mx-auto max-w-3xl">
         <div className="mb-4 text-xs text-slate-500">
           Geração › Construindo
         </div>
-        <p className="text-sm text-slate-600">
-          Acompanhe o progresso no painel de pipeline abaixo.
-        </p>
       </div>
     </div>
   )

@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import path from 'node:path'
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
@@ -18,7 +17,7 @@ import {
   shouldPauseForBabyStepCheckpoint,
 } from './retry-strategy'
 import { markRunActive, unmarkRunActive } from './worker-registry'
-import { TERMINAL_RUN_STATUSES, toBranchName } from './utils'
+import { MAX_ITERATION_ATTEMPTS, TERMINAL_RUN_STATUSES, fileExists, toBranchName } from './utils'
 import type { PlanSnapshot, GateRunOutput } from './types'
 import { executeIterationGitRelease, type IterationGitReleaseResult } from './gitops'
 import { executeAgent } from './agent-executor'
@@ -44,8 +43,6 @@ export {
   __collectWorkspaceArtifactsForCommit,
   __getFallbackBootstrapFilesForTest,
 }
-
-const MAX_ITERATION_ATTEMPTS = 3
 
 async function getRunSnapshot(runId: string): Promise<PlanSnapshot> {
   const run = await prisma.developmentRun.findUnique({
@@ -81,15 +78,6 @@ async function shouldStopRun(runId: string): Promise<boolean> {
   return run.status === 'WAITING_CHECKPOINT'
 }
 
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await fs.access(filePath)
-    return true
-  } catch {
-    return false
-  }
-}
-
 async function resolveQualityGatePreflight(workspacePath: string) {
   const packageJsonPath = path.join(workspacePath, 'package.json')
   const nodeModulesPath = path.join(workspacePath, 'node_modules')
@@ -119,6 +107,13 @@ async function appendQualityGatePreflightEvent(input: {
 }) {
   const preflight = await resolveQualityGatePreflight(input.workspacePath)
 
+  // Strip absolute sandbox paths from the event payload. The full paths are
+  // kept inside `preflight` for internal callers, but must not reach the DB
+  // or SSE consumers.
+  const { workspacePath: _wp, packageJsonPath: _pjp, ...safePreflight } = preflight
+  void _wp
+  void _pjp
+
   await appendRunEvent({
     runId: input.runId,
     iterationId: input.iterationId,
@@ -127,7 +122,7 @@ async function appendQualityGatePreflightEvent(input: {
     payload: {
       phase: 'quality_gate_preflight',
       attempt: input.attempt,
-      ...preflight,
+      ...safePreflight,
     },
   })
 }

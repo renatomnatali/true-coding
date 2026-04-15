@@ -4,23 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FEATURES } from '@/config/features'
 import type { DevelopmentEvent, DevelopmentRunStatus } from '@/types'
 import { getRetryBoundarySequence } from '@/lib/development/retry-boundary'
-
-interface DevelopmentRunSummary {
-  id: string
-  status: DevelopmentRunStatus
-  currentIteration: number
-  totalIterations: number
-  errorSummary: string | null
-  createdAt: string
-  updatedAt?: string
-  startedAt: string | null
-  finishedAt: string | null
-  isStale?: boolean
-}
-
-interface RunsResponse {
-  runs: DevelopmentRunSummary[]
-}
+import {
+  STATUS_LABELS,
+  STATUS_STYLES,
+  type DevelopmentRunSummary,
+  type RunsResponse,
+} from '@/lib/development/run-presentation'
 
 interface DevelopmentActivityPanelProps {
   projectId: string
@@ -49,24 +38,6 @@ const TERMINAL_RUN_STATUSES = new Set<DevelopmentRunStatus>([
   'SUCCEEDED',
 ])
 
-const STATUS_LABELS: Record<DevelopmentRunStatus, string> = {
-  QUEUED: 'Na fila',
-  RUNNING: 'Executando',
-  WAITING_CHECKPOINT: 'Aguardando ação',
-  FAILED: 'Falhou',
-  CANCELED: 'Cancelado',
-  SUCCEEDED: 'Concluído',
-}
-
-const STATUS_STYLES: Record<DevelopmentRunStatus, string> = {
-  QUEUED: 'bg-slate-100 text-slate-700',
-  RUNNING: 'bg-blue-100 text-blue-700',
-  WAITING_CHECKPOINT: 'bg-amber-100 text-amber-800',
-  FAILED: 'bg-red-100 text-red-700',
-  CANCELED: 'bg-zinc-100 text-zinc-700',
-  SUCCEEDED: 'bg-green-100 text-green-700',
-}
-
 function getRunStatusPresentation(status: DevelopmentRunStatus) {
   return {
     label: STATUS_LABELS[status],
@@ -94,6 +65,22 @@ interface PipelineGroup {
   children?: PipelineStep[]
 }
 
+function getPayloadValue(payload: Record<string, unknown>, key: string): string | null {
+  const value = payload[key]
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function mergeStepStatus(
+  current: PipelineStepStatus,
+  derived: PipelineStepStatus | null
+): PipelineStepStatus {
+  if (!derived) return current
+  if (derived === 'failed') return 'failed'
+  if (derived === 'running') return 'running'
+  if (derived === 'done' && current === 'pending') return 'done'
+  return current
+}
+
 // ===== PR2: derivePipelineSteps =====
 
 function derivePipelineSteps(
@@ -117,6 +104,62 @@ function derivePipelineSteps(
     if (status === 'SUCCEEDED') return 'done'
     if (status === 'FAILED') return 'failed'
     return 'running'
+  }
+
+  const fileGenProgress = (
+    kind: 'test' | 'implementation'
+  ): { status: PipelineStepStatus | null; detail?: string } => {
+    const relevantEvents = events.filter((event) => {
+      if (event.eventType !== 'agent_task') return false
+      const payload = (event.payload ?? {}) as Record<string, unknown>
+      const agentName = getPayloadValue(payload, 'agentName')
+      const fileKind = getPayloadValue(payload, 'fileKind')
+
+      if (agentName !== 'FileGen' || !fileKind) return false
+      if (kind === 'test') return fileKind === 'test'
+      return fileKind !== 'test' && fileKind !== 'spec'
+    })
+
+    if (relevantEvents.length === 0) {
+      return { status: null }
+    }
+
+    const lastEvent = relevantEvents[relevantEvents.length - 1]
+    const lastPayload = (lastEvent.payload ?? {}) as Record<string, unknown>
+    const lastStatus = getPayloadValue(lastPayload, 'status')
+    const lastFilePath = getPayloadValue(lastPayload, 'filePath')
+
+    const succeededCount = relevantEvents.filter((event) => {
+      const payload = (event.payload ?? {}) as Record<string, unknown>
+      return getPayloadValue(payload, 'status') === 'SUCCEEDED'
+    }).length
+
+    if (lastStatus === 'FAILED') {
+      return {
+        status: 'failed',
+        detail: lastFilePath
+          ? `Falha ao gerar ${lastFilePath}`
+          : 'Falha na geração de arquivos',
+      }
+    }
+
+    if (lastStatus === 'RUNNING') {
+      return {
+        status: 'running',
+        detail: lastFilePath ? `Gerando ${lastFilePath}` : 'Gerando arquivos',
+      }
+    }
+
+    if (lastStatus === 'SUCCEEDED') {
+      return {
+        status: 'done',
+        detail: lastFilePath
+          ? `Arquivos gerados: ${succeededCount} • último: ${lastFilePath}`
+          : `Arquivos gerados: ${succeededCount}`,
+      }
+    }
+
+    return { status: null }
   }
 
   // 1. Preparação
@@ -148,9 +191,15 @@ function derivePipelineSteps(
 
     // Steps dentro da iteração
     const specStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('SpecAgent') : 'pending'
-    const testStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('TestAgent') : 'pending'
-    const codeStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('CodeAgent') : 'pending'
+    let testStatus: PipelineStepStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('TestAgent') : 'pending'
+    let codeStatus: PipelineStepStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('CodeAgent') : 'pending'
     const reviewStatus = isPast || iterDone ? 'done' : isCurrent ? agentStatus('ReviewAgent') : 'pending'
+
+    const fileGenTest = isCurrent ? fileGenProgress('test') : { status: null as PipelineStepStatus | null }
+    const fileGenCode = isCurrent ? fileGenProgress('implementation') : { status: null as PipelineStepStatus | null }
+
+    testStatus = mergeStepStatus(testStatus, fileGenTest.status)
+    codeStatus = mergeStepStatus(codeStatus, fileGenCode.status)
 
     const gateEvents = events.filter((e) => e.eventType === 'quality_gate')
     const gatesPassed = gateEvents.length > 0 && gateEvents.every((e) => (e.payload as Record<string, unknown>)?.passed === true)
@@ -179,8 +228,18 @@ function derivePipelineSteps(
 
     const iterSteps: PipelineStep[] = [
       { id: `iter-${i}-spec`, label: 'Escrevendo especificação', status: specStatus },
-      { id: `iter-${i}-test`, label: 'Gerando testes', status: testStatus },
-      { id: `iter-${i}-code`, label: 'Gerando código', status: codeStatus },
+      {
+        id: `iter-${i}-test`,
+        label: 'Gerando testes',
+        status: testStatus,
+        detail: isCurrent ? fileGenTest.detail : undefined,
+      },
+      {
+        id: `iter-${i}-code`,
+        label: 'Gerando código',
+        status: codeStatus,
+        detail: isCurrent ? fileGenCode.detail : undefined,
+      },
       { id: `iter-${i}-review`, label: 'Revisando código', status: reviewStatus },
       {
         id: `iter-${i}-gates`,
@@ -320,11 +379,11 @@ export function DevelopmentActivityPanel({
   const [runActionMessage, setRunActionMessage] = useState<string | null>(null)
   const [hasFetchedRuns, setHasFetchedRuns] = useState(false)
   const lastSequenceRef = useRef(0)
-  const hasBlockingActiveRun = !activeRun || ACTIVE_RUN_STATUSES.has(activeRun.status)
+  const hasRecoverableActiveRun = !activeRun || RECOVERABLE_RUN_STATUSES.has(activeRun.status)
   const requiresResumeConfirmation =
     projectStatus === 'GENERATING' &&
     !resumeExecutionConfirmed &&
-    hasBlockingActiveRun
+    hasRecoverableActiveRun
 
   const fetchRuns = useCallback(async () => {
     try {
@@ -377,9 +436,12 @@ export function DevelopmentActivityPanel({
     if (projectStatus !== 'GENERATING') {
       setResumeDeferred(false)
       setStartRunError(null)
-      setResumeExecutionConfirmed(false)
     }
   }, [projectStatus])
+
+  useEffect(() => {
+    setResumeExecutionConfirmed(false)
+  }, [projectId])
 
   useEffect(() => {
     if (!activeRun) return
@@ -467,13 +529,34 @@ export function DevelopmentActivityPanel({
       })
 
       if (!response.ok) {
-        let message = 'Falha ao retomar a execução pendente.'
-        try {
-          const payload = await response.json()
-          message = extractErrorMessage(payload, message)
-        } catch {
-          // ignore parse failures
+        const payload = await response.json().catch(() => ({}))
+        const data =
+          payload && typeof payload === 'object'
+            ? (payload as { error?: unknown; message?: unknown })
+            : {}
+        const hasRecoverConflictMessage =
+          typeof data.message === 'string' &&
+          data.message.toLowerCase().includes('endpoint')
+        const isRunNotRecoverable =
+          response.status === 409 &&
+          (data.error === 'RUN_NOT_RECOVERABLE' || hasRecoverConflictMessage)
+
+        if (isRunNotRecoverable) {
+          // A run pode ter mudado para WAITING_CHECKPOINT entre o carregamento
+          // inicial e o clique em "Continuar execução". Nesse caso, sincronizamos
+          // estado e seguimos para as ações de checkpoint sem erro técnico.
+          await fetchRuns()
+          return true
         }
+
+        if (response.status === 409) {
+          const latestRun = await fetchRuns()
+          if (latestRun && !RECOVERABLE_RUN_STATUSES.has(latestRun.status)) {
+            return true
+          }
+        }
+
+        const message = extractErrorMessage(payload, 'Falha ao retomar a execução pendente.')
         setStartRunError(message)
         return false
       }
@@ -494,8 +577,13 @@ export function DevelopmentActivityPanel({
 
     const activeFromState =
       activeRun && ACTIVE_RUN_STATUSES.has(activeRun.status) ? activeRun : null
+
     if (activeFromState) {
-      if (RECOVERABLE_RUN_STATUSES.has(activeFromState.status)) {
+      const shouldRecover =
+        RECOVERABLE_RUN_STATUSES.has(activeFromState.status) &&
+        activeFromState.isStale === true
+
+      if (shouldRecover) {
         const recovered = await recoverRun(activeFromState.id)
         if (!recovered) return
       }
@@ -510,7 +598,11 @@ export function DevelopmentActivityPanel({
     }
 
     if (currentRun && ACTIVE_RUN_STATUSES.has(currentRun.status)) {
-      if (RECOVERABLE_RUN_STATUSES.has(currentRun.status)) {
+      const shouldRecover =
+        RECOVERABLE_RUN_STATUSES.has(currentRun.status) &&
+        currentRun.isStale === true
+
+      if (shouldRecover) {
         const recovered = await recoverRun(currentRun.id)
         if (!recovered) return
       }
@@ -1001,7 +1093,14 @@ export function DevelopmentActivityPanel({
                         <span className={`w-4 text-center text-[10px] leading-none ${STEP_STATUS_STYLES[step.status]}`}>
                           {STEP_STATUS_ICON[step.status]}
                         </span>
-                        <span className={STEP_LABEL_STYLES[step.status]}>{step.label}</span>
+                        <div className="min-w-0">
+                          <div className={STEP_LABEL_STYLES[step.status]}>{step.label}</div>
+                          {step.detail && (
+                            <div className="text-[10px] text-slate-500">
+                              {step.detail}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       {/* Sub-gates inline (quando step tem children, ex: quality gates) */}
                       {step.children && step.children.length > 0 && (step.status === 'failed' || step.status === 'done') && (

@@ -218,10 +218,40 @@ describe('ExecutionFeedPanel', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Preflight dos quality gates')).toBeInTheDocument()
-      expect(screen.getByText('Workspace: /tmp/true-coding-run-3')).toBeInTheDocument()
       expect(screen.getByText('package.json: ausente')).toBeInTheDocument()
       expect(screen.getByText('node_modules: ausente')).toBeInTheDocument()
     })
+    expect(screen.queryByText(/Workspace: \/tmp\//)).not.toBeInTheDocument()
+  })
+
+  it('exibe erro acionável quando a API de runs retorna 500', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: async () => "Cannot find module './chunks/vendor-chunks/next.js'",
+    } as Response)
+
+    render(
+      <ExecutionFeedPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Não foi possível carregar o feed de execução (HTTP 500).')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'O servidor de desenvolvimento está inconsistente. Reinicie o servidor e limpe a pasta .next.'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText("Cannot find module './chunks/vendor-chunks/next.js'")
+      ).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeInTheDocument()
   })
 
   it('reconecta com cursor after e evita duplicidade por sequence', async () => {

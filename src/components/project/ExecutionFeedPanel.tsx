@@ -2,46 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { DevelopmentEvent, DevelopmentRunStatus } from '@/types'
+import {
+  STATUS_LABELS as RUN_STATUS_LABELS,
+  STATUS_STYLES as RUN_STATUS_STYLES,
+  type DevelopmentRunSummary,
+  type RunsResponse,
+} from '@/lib/development/run-presentation'
 
 interface ExecutionFeedPanelProps {
   projectId: string
   projectStatus: string
 }
 
-interface DevelopmentRunSummary {
-  id: string
-  status: DevelopmentRunStatus
-  currentIteration: number
-  totalIterations: number
-  errorSummary: string | null
-  createdAt: string
-  updatedAt?: string
-  startedAt: string | null
-  finishedAt: string | null
-}
-
-interface RunsResponse {
-  runs: DevelopmentRunSummary[]
-}
-
 type VerbosityMode = 'summary' | 'technical'
 
-const RUN_STATUS_LABELS: Record<DevelopmentRunStatus, string> = {
-  QUEUED: 'Na fila',
-  RUNNING: 'Executando',
-  WAITING_CHECKPOINT: 'Aguardando ação',
-  FAILED: 'Falhou',
-  CANCELED: 'Cancelado',
-  SUCCEEDED: 'Concluído',
-}
-
-const RUN_STATUS_STYLES: Record<DevelopmentRunStatus, string> = {
-  QUEUED: 'bg-slate-100 text-slate-700',
-  RUNNING: 'bg-blue-100 text-blue-700',
-  WAITING_CHECKPOINT: 'bg-amber-100 text-amber-800',
-  FAILED: 'bg-red-100 text-red-700',
-  CANCELED: 'bg-zinc-100 text-zinc-700',
-  SUCCEEDED: 'bg-emerald-100 text-emerald-700',
+interface FeedLoadErrorState {
+  message: string
+  hint?: string
+  detail?: string
 }
 
 function formatTime(iso: string | undefined): string {
@@ -95,6 +73,51 @@ function formatBoolPresenceLabel(value: boolean | null): string {
   return '—'
 }
 
+function normalizeErrorDetail(raw: string | null): string | null {
+  if (!raw) return null
+  const compact = raw.replace(/\s+/g, ' ').trim()
+  if (!compact) return null
+  return compact.slice(0, 240)
+}
+
+function resolveLoadErrorState(
+  status: number | null,
+  detail: string | null
+): FeedLoadErrorState {
+  const statusSuffix = typeof status === 'number' ? ` (HTTP ${status})` : ''
+  const normalizedDetail = normalizeErrorDetail(detail)
+
+  if (normalizedDetail?.includes('vendor-chunks/next.js')) {
+    return {
+      message: `Não foi possível carregar o feed de execução${statusSuffix}.`,
+      hint: 'O servidor de desenvolvimento está inconsistente. Reinicie o servidor e limpe a pasta .next.',
+      detail: normalizedDetail ?? undefined,
+    }
+  }
+
+  if (status && status >= 500) {
+    return {
+      message: `Não foi possível carregar o feed de execução${statusSuffix}.`,
+      hint: 'Erro interno no servidor. Tente novamente em alguns segundos.',
+      detail: normalizedDetail ?? undefined,
+    }
+  }
+
+  if (status && status >= 400) {
+    return {
+      message: `Não foi possível carregar o feed de execução${statusSuffix}.`,
+      hint: 'Falha ao consultar dados da execução. Verifique a conexão e tente novamente.',
+      detail: normalizedDetail ?? undefined,
+    }
+  }
+
+  return {
+    message: 'Não foi possível carregar o feed de execução.',
+    hint: 'Tente novamente.',
+    detail: normalizedDetail ?? undefined,
+  }
+}
+
 function getEventDetails(event: DevelopmentEvent): string[] {
   const payload = event.payload ?? {}
 
@@ -118,14 +141,10 @@ function getEventDetails(event: DevelopmentEvent): string[] {
       return []
     }
 
-    const workspacePath = getPayloadText(payload, 'workspacePath')
     const hasPackageJson = getPayloadBoolean(payload, 'hasPackageJson')
     const hasNodeModules = getPayloadBoolean(payload, 'hasNodeModules')
 
     const details: string[] = []
-    if (workspacePath) {
-      details.push(`Workspace: ${workspacePath}`)
-    }
     details.push(`package.json: ${formatBoolPresenceLabel(hasPackageJson)}`)
     details.push(`node_modules: ${formatBoolPresenceLabel(hasNodeModules)}`)
     return details
@@ -273,7 +292,7 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
   const [activeRun, setActiveRun] = useState<DevelopmentRunSummary | null>(null)
   const [events, setEvents] = useState<DevelopmentEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<FeedLoadErrorState | null>(null)
   const [verbosity, setVerbosity] = useState<VerbosityMode>('summary')
   const [reconnectNonce, setReconnectNonce] = useState(0)
   const lastSequenceRef = useRef(0)
@@ -282,7 +301,9 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
     try {
       const response = await fetch(`/api/projects/${projectId}/development/runs`)
       if (!response.ok) {
-        throw new Error('Falha ao carregar runs')
+        const detail = await response.text().catch(() => null)
+        setLoadError(resolveLoadErrorState(response.status, detail))
+        return
       }
 
       const data = (await response.json()) as RunsResponse
@@ -299,7 +320,7 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
 
       setLoadError(null)
     } catch {
-      setLoadError('Não foi possível carregar o feed de execução.')
+      setLoadError(resolveLoadErrorState(null, null))
     } finally {
       setIsLoading(false)
     }
@@ -395,7 +416,24 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
   if (loadError) {
     return (
       <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-        {loadError}
+        <div className="font-medium">{loadError.message}</div>
+        {loadError.hint && (
+          <div className="mt-1 text-xs text-red-700/90">
+            {loadError.hint}
+          </div>
+        )}
+        {loadError.detail && (
+          <div className="mt-2 rounded border border-red-200 bg-white/80 p-2 text-[11px] text-red-900">
+            {loadError.detail}
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => void fetchRuns()}
+          className="mt-2 rounded px-2 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-300 hover:bg-red-100"
+        >
+          Tentar novamente
+        </button>
       </div>
     )
   }
@@ -469,7 +507,7 @@ export function ExecutionFeedPanel({ projectId, projectStatus }: ExecutionFeedPa
                 >
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                      {event.eventType.replace('_', ' ')}
+                      {event.eventType.replaceAll('_', ' ')}
                     </span>
                     <span className="text-[11px] text-slate-500">
                       {formatTime(event.createdAt)}

@@ -10,7 +10,7 @@ export interface ResolvedAIProviderConfig {
 }
 
 const ZAI_DEFAULT_BASE_URL = 'https://api.z.ai/api/anthropic'
-const ZAI_FIXED_MODEL = 'glm-5'
+const ZAI_DEFAULT_MODEL = 'glm-5'
 
 function normalizeEnvValue(value: string | undefined): string | undefined {
   if (!value) return undefined
@@ -80,7 +80,7 @@ export function resolveAIProviderConfig(
     provider,
     apiKey,
     baseURL,
-    model: ZAI_FIXED_MODEL,
+    model: normalizeEnvValue(process.env.ZAI_MODEL) ?? ZAI_DEFAULT_MODEL,
   }
 }
 

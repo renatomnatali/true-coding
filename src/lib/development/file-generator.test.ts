@@ -291,4 +291,133 @@ describe('generateFilesFromManifest', () => {
     expect(result.files).toHaveLength(1)
     expect(result.interfaceMap).toEqual([])
   })
+
+  it('retries api file when contract validation fails against generated types', async () => {
+    const manifest = makeManifest([
+      { path: 'src/types/iter-1.ts', kind: 'type', dependsOn: [], estimatedTokens: 800 },
+      { path: 'src/app/api/auth-me/route.ts', kind: 'api', dependsOn: ['src/types/iter-1.ts'], estimatedTokens: 1200 },
+    ])
+
+    runClaudeAgentWithCacheMock
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            export interface ApiError {
+              code: string
+              message: string
+            }
+          `,
+        },
+        tokenUsage: 120,
+      })
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            import { NextResponse } from 'next/server'
+            import type { ApiError } from '@/types/iter-1'
+
+            export async function GET() {
+              return NextResponse.json<ApiError>(
+                { error: 'Não autorizado', message: 'Token inválido' },
+                { status: 401 }
+              )
+            }
+          `,
+        },
+        tokenUsage: 150,
+      })
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            import { NextResponse } from 'next/server'
+            import type { ApiError } from '@/types/iter-1'
+
+            export async function GET() {
+              return NextResponse.json<ApiError>(
+                { code: 'UNAUTHORIZED', message: 'Token inválido' },
+                { status: 401 }
+              )
+            }
+          `,
+        },
+        tokenUsage: 170,
+      })
+
+    const result = await generateFilesFromManifest(makeOptions(manifest))
+
+    expect(runClaudeAgentWithCacheMock).toHaveBeenCalledTimes(3)
+    expect(result.files).toHaveLength(2)
+    expect(result.files[1].content).toContain('code: \'UNAUTHORIZED\'')
+
+    const infoCalls = appendRunEventMock.mock.calls.filter(
+      ([arg]: [{ eventType: string }]) => arg.eventType === 'INFO'
+    )
+
+    expect(
+      infoCalls.some(
+        ([arg]: [{ message: string }]) =>
+          arg.message.includes('Retry FileGen por inconsistência de contrato')
+      )
+    ).toBe(true)
+
+    const apiRetryCall = runClaudeAgentWithCacheMock.mock.calls[2][0]
+    expect(apiRetryCall.phase).toBe('planning')
+    expect(apiRetryCall.contentBlocks[3].text).toContain('Violações de contrato')
+  })
+
+  it('fails with explicit FILE_CONTRACT_VIOLATION when api retry keeps invalid contract', async () => {
+    const manifest = makeManifest([
+      { path: 'src/types/iter-1.ts', kind: 'type', dependsOn: [], estimatedTokens: 800 },
+      { path: 'src/app/api/auth-me/route.ts', kind: 'api', dependsOn: ['src/types/iter-1.ts'], estimatedTokens: 1200 },
+    ])
+
+    runClaudeAgentWithCacheMock
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            export interface ApiError {
+              code: string
+              message: string
+            }
+          `,
+        },
+        tokenUsage: 120,
+      })
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            import { NextResponse } from 'next/server'
+            import type { ApiError } from '@/types/iter-1'
+
+            export async function GET() {
+              return NextResponse.json<ApiError>(
+                { error: 'Não autorizado', message: 'Token inválido' },
+                { status: 401 }
+              )
+            }
+          `,
+        },
+        tokenUsage: 150,
+      })
+      .mockResolvedValueOnce({
+        output: {
+          content: `
+            import { NextResponse } from 'next/server'
+            import type { ApiError } from '@/types/iter-1'
+
+            export async function GET() {
+              return NextResponse.json<ApiError>(
+                { error: 'Ainda inválido', message: 'continua errado' },
+                { status: 401 }
+              )
+            }
+          `,
+        },
+        tokenUsage: 170,
+      })
+
+    await expect(
+      generateFilesFromManifest(makeOptions(manifest))
+    ).rejects.toThrow('FILE_CONTRACT_VIOLATION:src/app/api/auth-me/route.ts')
+  })
 })

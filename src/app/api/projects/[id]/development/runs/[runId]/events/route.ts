@@ -2,9 +2,9 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import {
-  getDevelopmentRunEvents,
   getDevelopmentRun,
   getDevelopmentRunRetryBoundary,
+  getRunStatusAndEvents,
 } from '@/lib/development/run-control'
 
 interface RouteParams {
@@ -49,19 +49,8 @@ export async function GET(request: Request, { params }: RouteParams) {
         const send = async () => {
           if (stopped) return
 
-          const events = await getDevelopmentRunEvents(runId, lastSequence)
-
-          for (const event of events) {
-            lastSequence = event.sequence
-            controller.enqueue(
-              encoder.encode(
-                `event: ${event.eventType}\ndata: ${JSON.stringify(event)}\n\n`
-              )
-            )
-          }
-
-          const latestRun = await getDevelopmentRun(id, runId)
-          if (!latestRun) {
+          const snapshot = await getRunStatusAndEvents(runId, lastSequence)
+          if (!snapshot) {
             controller.enqueue(
               encoder.encode(`event: error\ndata: ${JSON.stringify({ error: 'RUN_NOT_FOUND' })}\n\n`)
             )
@@ -70,12 +59,21 @@ export async function GET(request: Request, { params }: RouteParams) {
             return
           }
 
-          if (TERMINAL.has(latestRun.status)) {
+          for (const event of snapshot.events) {
+            lastSequence = event.sequence
+            controller.enqueue(
+              encoder.encode(
+                `event: ${event.eventType}\ndata: ${JSON.stringify(event)}\n\n`
+              )
+            )
+          }
+
+          if (TERMINAL.has(snapshot.status)) {
             controller.enqueue(
               encoder.encode(
                 `event: done\ndata: ${JSON.stringify({
                   runId,
-                  status: latestRun.status,
+                  status: snapshot.status,
                   lastSequence,
                 })}\n\n`
               )

@@ -69,6 +69,36 @@ export async function POST(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'ITERATION_NOT_FOUND' }, { status: 404 })
     }
 
+    if (message === 'RUN_NOT_RESUMABLE') {
+      return NextResponse.json(
+        {
+          error: 'RUN_NOT_RESUMABLE',
+          message: 'A execução atual não está aguardando checkpoint para retomada.',
+        },
+        { status: 409 }
+      )
+    }
+
+    if (message === 'RUN_NOT_PAUSABLE') {
+      return NextResponse.json(
+        {
+          error: 'RUN_NOT_PAUSABLE',
+          message: 'A execução atual não pode ser pausada neste estado.',
+        },
+        { status: 409 }
+      )
+    }
+
+    if (message === 'RUN_ALREADY_ACTIVE') {
+      return NextResponse.json(
+        {
+          error: 'RUN_ALREADY_ACTIVE',
+          message: 'Já existe processamento ativo para esta execução.',
+        },
+        { status: 409 }
+      )
+    }
+
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }

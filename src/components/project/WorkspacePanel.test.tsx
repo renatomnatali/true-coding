@@ -15,7 +15,7 @@ vi.mock('@/config/features', () => ({
 }))
 
 describe('WorkspacePanel - generating journey consistency', () => {
-  it('shows paused workspace while awaiting resume confirmation', () => {
+  it('keeps workspace minimal while awaiting resume confirmation', () => {
     render(
       <WorkspacePanel
         projectId="proj-1"
@@ -25,23 +25,10 @@ describe('WorkspacePanel - generating journey consistency', () => {
       />
     )
 
-    expect(screen.getByText('Operação pendente encontrada')).toBeInTheDocument()
-    // New minimal workspace doesn't show "Gerando Código" anymore
+    expect(screen.queryByText('Operação pendente encontrada')).not.toBeInTheDocument()
+    expect(screen.getByText('Geração › Construindo')).toBeInTheDocument()
     expect(screen.queryByText('Gerando Código')).not.toBeInTheDocument()
   })
 
-  it('shows minimal generation workspace after resume confirmation', () => {
-    render(
-      <WorkspacePanel
-        projectId="proj-1"
-        projectName="Projeto Teste"
-        status="GENERATING"
-        developmentUiState="monitoring"
-      />
-    )
-
-    // New minimal workspace shows breadcrumb and instruction
-    expect(screen.getByText('Geração › Construindo')).toBeInTheDocument()
-    expect(screen.getByText('Acompanhe o progresso no painel de pipeline abaixo.')).toBeInTheDocument()
-  })
 })
+
