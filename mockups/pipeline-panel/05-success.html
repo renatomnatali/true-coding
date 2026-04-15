@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Panel - Concluido com Sucesso</title>
+  <link rel="stylesheet" href="shared.css">
+  <script src="shared.js" defer></script>
+</head>
+<body>
+  <!-- MOCKUP: Concluido com Sucesso
+       Tudo concluido: preparacao, ambas iteracoes, deploy final.
+       Barra de progresso 100% verde. Badge "Concluido".
+       Mensagem de sucesso no rodape. -->
+
+  <div class="panel-container">
+
+    <!-- Barra de progresso global - 100% verde -->
+    <div class="progress-bar-track" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso geral do pipeline">
+      <div class="progress-bar-fill success" style="width: 100%"></div>
+    </div>
+
+    <!-- Cabecalho -->
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <h3>Pipeline Autonomo</h3>
+        <p>Acompanhe a criacao do seu aplicativo em tempo real</p>
+      </div>
+      <span class="badge badge-success">Concluido</span>
+    </div>
+
+    <!-- Pipeline Steps -->
+    <div class="pipeline-body" role="list" aria-label="Etapas do pipeline">
+
+      <!-- Grupo: Preparacao - tudo concluido -->
+      <div class="step-group">
+        <div class="step-group-header">
+          <span class="step-group-label">Preparacao</span>
+          <span class="step-group-line"></span>
+          <span class="step-group-detail">3/3</span>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Preparando ambiente</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Criando estrutura do projeto</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Instalando dependencias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 1 - concluida, colapsada -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-1-steps" aria-label="Expandir Iteracao 1">
+          <span class="iter-group-icon done" aria-label="Concluido">&#10003;</span>
+          <span class="iter-group-label done">Iteracao 1</span>
+          <span class="iter-group-count">6/6</span>
+        </div>
+        <div id="iter-1-steps" class="substeps" style="display: none;">
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Escrevendo especificacao</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Gerando testes</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="step-label done">Gerando codigo</span>
+                <span class="step-detail">12/12 arquivos</span>
+              </div>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Revisando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Verificando qualidade</span>
+              <div class="gate-items">
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">BUILD</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">UNIT</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">BDD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Publicando no Git</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 2 - concluida, colapsada -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-2-steps" aria-label="Expandir Iteracao 2">
+          <span class="iter-group-icon done" aria-label="Concluido">&#10003;</span>
+          <span class="iter-group-label done">Iteracao 2</span>
+          <span class="iter-group-count">6/6</span>
+        </div>
+        <div id="iter-2-steps" class="substeps" style="display: none;">
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Escrevendo especificacao</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Gerando testes</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="step-label done">Gerando codigo</span>
+                <span class="step-detail">8/8 arquivos</span>
+              </div>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Revisando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Verificando qualidade</span>
+              <div class="gate-items">
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">BUILD</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">UNIT</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon passed" aria-label="Aprovado">&#10003;</span>
+                  <span class="gate-item-label">BDD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content"><span class="step-label done">Publicando no Git</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deploy final - concluido -->
+      <div class="step-group" style="margin-top: 4px;">
+        <div class="step-group-header">
+          <span class="step-group-label">Finalizacao</span>
+          <span class="step-group-line"></span>
+        </div>
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Publicando na internet</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer - sucesso -->
+    <div class="panel-footer">
+      <p class="success">Seu aplicativo foi criado com sucesso!</p>
+    </div>
+
+    <!-- Opcao de iniciar nova run -->
+    <div class="new-run-block">
+      <p>Deseja fazer ajustes ou adicionar funcionalidades?</p>
+      <button class="btn btn-primary">Iniciar nova execucao</button>
+    </div>
+  </div>
+
+  <!-- Mockup navigation -->
+  <nav class="mockup-nav" aria-label="Navegacao entre mockups">
+    <a href="index.html">Hub</a>
+    <a href="01-initial.html">01 Inicial</a>
+    <a href="02-running.html">02 Executando</a>
+    <a href="03-files.html">03 Arquivos</a>
+    <a href="04-failure.html">04 Falha</a>
+    <a href="05-success.html" class="active">05 Sucesso</a>
+    <a href="06-confirmation.html">06 Confirmacao</a>
+  </nav>
+</body>
+</html>

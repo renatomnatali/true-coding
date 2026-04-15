@@ -1,7 +1,15 @@
 # language: pt
 # encoding: utf-8
 
-@generation @fase-4
+# ============================================================================
+# @frozen — Fase de Generation congelada no MVP (ADR-0009, Decision Log Notion)
+# Cenários preservados como referência histórica e base para v2 via MCP delegation.
+# Código correspondente fica atrás de feature flag ENABLE_CODE_GENERATION (default false).
+# Suite de testes permanece rodando na CI para detecção precoce de apodrecimento.
+# Para descongelar: ver épico TRC-07 e ADR-0009 no Decision Log.
+# ============================================================================
+
+@generation @fase-4 @frozen
 Funcionalidade: Fase de Geracao de Codigo
   Como usuario do True Coding
   Eu quero que a plataforma gere e versione o codigo com feedback real
@@ -234,6 +242,22 @@ Funcionalidade: Fase de Geracao de Codigo
     Então o card do gate deve exibir o motivo da falha
     E deve exibir o trecho técnico para troubleshooting
 
+  @ux @chat-feed @erro-servidor
+  Cenário: Erro de backend no feed deve ser acionável
+    Dado que a API /development/runs responde com erro interno
+    Quando o usuário abre a aba "Execução"
+    Então o painel deve exibir o status HTTP da falha
+    E deve exibir orientação objetiva para recuperação
+    E deve exibir a ação "Tentar novamente"
+
+  @ux @pipeline-panel @filegen
+  Cenário: Painel central reflete geração arquivo-a-arquivo
+    Dado que o pipeline incremental está ativo
+    E o sistema recebe eventos AGENT_TASK do FileGen para arquivos de teste e implementação
+    Quando o usuário acompanha o painel central de progresso
+    Então os passos "Gerando testes" e "Gerando código" devem atualizar status em tempo real
+    E cada passo deve exibir o arquivo atual em processamento quando disponível
+
   @infra @checkpoint @sandbox
   Cenário: Retry e resume devem usar sandbox limpo para evitar arquivos stale
     Dado que uma iteração falhou e deixou artefatos antigos no sandbox
@@ -341,6 +365,16 @@ Funcionalidade: Fase de Geracao de Codigo
     Então o sistema deve registrar evento de retry por truncamento
     E deve repetir a geração na fase "planning"
     E deve continuar a iteração se o retry retornar JSON válido
+
+  @agents @runtime @pipeline-v2 @filegen @contrato
+  Cenário: FileGen corrige inconsistência de contrato entre arquivo de tipos e rota API
+    Dado que a geração incremental file-by-file está ativa
+    E o arquivo de tipos da iteração define o contrato "ApiError" com campos "code" e "message"
+    E a rota API gerada usa "NextResponse.json<ApiError>" com payload incompatível
+    Quando o FileGen validar o contrato do arquivo API
+    Então o sistema deve registrar diagnóstico de inconsistência de contrato
+    E deve executar retry do mesmo arquivo com o diagnóstico no prompt
+    E deve falhar com erro explícito se o retry continuar incompatível
 
   @agents @runtime @manifest
   Cenário: Manifest de páginas respeita technicalPlan.pages.path

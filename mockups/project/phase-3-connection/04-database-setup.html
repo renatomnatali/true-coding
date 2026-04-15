@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurar Banco de Dados | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">TC</div>
+          <span>True Coding</span>
+        </div>
+        <div class="project-name">Meu App Delivery</div>
+        <a href="../../dashboard/list.html" class="back-link">&larr; Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 3/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Ideação</span></div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Planejamento</span></div>
+          <div class="nav-item in-progress"><span class="phase-icon"></span><span>Conexão</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Geração</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Deploy</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Online</span></div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">INTEGRAÇÕES</div>
+          <div class="nav-item sub-item completed"><span>GitHub</span></div>
+          <div class="nav-item sub-item completed"><span>Netlify</span></div>
+          <div class="nav-item sub-item in-progress"><span>Banco de Dados</span></div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Conexão &gt; Banco de Dados</div>
+          <h2 class="workspace-title">Configurar Banco de Dados</h2>
+          <p class="workspace-subtitle">Seu aplicativo precisa de um banco PostgreSQL para armazenar dados</p>
+        </div>
+
+        <div style="max-width: 640px; margin: 0 auto; display: grid; gap: var(--space-4);">
+
+          <!-- Opção 1: Neon Gerenciado -->
+          <div class="card" style="border: 2px solid var(--color-primary); position: relative;">
+            <div style="position: absolute; top: -1px; right: var(--space-4); background: var(--color-primary); color: white; font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); padding: 2px var(--space-3); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);">Recomendado</div>
+            <div class="card-body" style="padding: var(--space-6);">
+              <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="width: 48px; height: 48px; background: #0A0A0A; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z" fill="#00E599"/></svg>
+                </div>
+                <div>
+                  <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary);">Automático (Neon)</h3>
+                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Criamos o banco para você, sem configuração</p>
+                </div>
+              </div>
+
+              <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0 0 var(--space-4); padding-left: var(--space-5); line-height: 1.75;">
+                <li>Banco PostgreSQL provisionado automaticamente</li>
+                <li>Sem necessidade de criar conta em outro serviço</li>
+                <li>Custo incluído nos créditos do projeto</li>
+                <li>Migrations executadas automaticamente</li>
+              </ul>
+
+              <button class="btn btn-primary btn-lg" style="width: 100%;" onclick="location.href='../phase-4-assessment/01-complexity-analysis.html'">
+                Usar banco automático
+              </button>
+            </div>
+          </div>
+
+          <!-- Opção 2: Neon OAuth -->
+          <div class="card">
+            <div class="card-body" style="padding: var(--space-6);">
+              <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="width: 48px; height: 48px; background: #0A0A0A; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z" fill="#00E599"/></svg>
+                </div>
+                <div>
+                  <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary);">Conectar sua conta Neon</h3>
+                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Use sua própria conta Neon via OAuth</p>
+                </div>
+              </div>
+
+              <ul style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0 0 var(--space-4); padding-left: var(--space-5); line-height: 1.75;">
+                <li>Banco na sua conta Neon (você gerencia)</li>
+                <li>Free tier: 0,5 GiB de armazenamento</li>
+                <li>Controle total sobre o banco de dados</li>
+              </ul>
+
+              <button class="btn btn-secondary btn-lg" style="width: 100%;">
+                Conectar com Neon
+              </button>
+            </div>
+          </div>
+
+          <!-- Opção 3: Custom -->
+          <div class="card">
+            <div class="card-body" style="padding: var(--space-6);">
+              <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+                <div style="width: 48px; height: 48px; background: var(--color-bg-secondary); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center;">
+                  <span style="font-size: 24px; color: var(--color-text-tertiary);">&#9881;</span>
+                </div>
+                <div>
+                  <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text-primary);">Banco customizado</h3>
+                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Informe a connection string de qualquer PostgreSQL</p>
+                </div>
+              </div>
+
+              <div style="margin-bottom: var(--space-4);">
+                <label style="display: block; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary); margin-bottom: var(--space-2);">Connection String (DATABASE_URL)</label>
+                <input type="text" placeholder="postgresql://user:password@host:5432/database?sslmode=require" style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: var(--font-size-sm); font-family: ui-monospace, monospace; color: var(--color-text-secondary); box-sizing: border-box;">
+              </div>
+
+              <p style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-4); line-height: 1.5;">
+                Compatível com: Supabase, Railway, PlanetScale (via adapter), Amazon RDS, ou qualquer PostgreSQL.
+              </p>
+
+              <button class="btn btn-secondary btn-lg" style="width: 100%;">
+                Testar conexão e continuar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div style="margin-top: var(--space-6); display: flex; gap: var(--space-3); justify-content: space-between; max-width: 640px; margin-left: auto; margin-right: auto;">
+          <button class="btn btn-secondary btn-lg" onclick="location.href='03-netlify-connect.html'">&larr; Voltar</button>
+          <button class="btn btn-primary btn-lg" onclick="location.href='../phase-4-assessment/01-complexity-analysis.html'">Próximo &rarr;</button>
+        </div>
+      </section>
+
+      <!-- Chat Panel - collapsed -->
+      <aside class="chat-collapsed">
+        <button class="expand-btn" aria-label="Abrir chat">AI<span class="badge">1</span></button>
+        <span class="chat-label">CHAT</span>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Hub Link -->
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+</body>
+</html>

@@ -100,6 +100,7 @@
           <div class="workspace-breadcrumb">Geração › Pipeline de Arquivos</div>
           <h2 class="workspace-title">Gerando: Iteração 2 (Pedidos)</h2>
           <p class="workspace-subtitle">PIPELINE_V2 ativo: TestAgent gera testes arquivo por arquivo, CodeAgent gera apenas implementação.</p>
+          <p class="workspace-subtitle">Detalhe verboso em tempo real disponível na aba <strong>Execução</strong> da barra de chat.</p>
         </div>
 
         <!-- Iteration Progress Header -->
@@ -171,6 +172,39 @@
               <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
                 <span style="color: var(--color-text-tertiary);">○</span>
                 <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);"><code>FileGen</code> com truncamento em <code>codegen</code> → retry automático em <code>planning</code> na mesma tarefa</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-text-tertiary);">○</span>
+                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">Validação de contrato entre arquivos (<code>types</code> ↔ <code>api</code>) antes dos quality gates, com retry automático se houver inconsistência</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-text-tertiary);">○</span>
+                <span style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">Painel central mostra detalhe do arquivo atual em <code>Gerando testes</code> e <code>Gerando código</code></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Diagnóstico de falhas de qualidade</h3>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; gap: var(--space-2);">
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-success);">✓</span>
+                <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);">Resumo curto da causa raiz no evento de <code>QUALITY_GATE</code></span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-success-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-success);">✓</span>
+                <span style="color: var(--color-text-primary); font-size: var(--font-size-sm);">Campo estruturado <code>reason</code> quando disponível (ex.: <code>workspace_not_prepared</code>)</span>
+              </div>
+              <div style="display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2); background: var(--color-primary-light); border-radius: var(--border-radius-sm);">
+                <span style="color: var(--color-primary); margin-top: 1px;">⚙</span>
+                <div style="display: grid; gap: 4px; color: var(--color-text-primary); font-size: var(--font-size-sm);">
+                  <span>Trecho técnico (<code>diagnosticSnippet</code>) para investigar o erro real do build</span>
+                  <code style="display: block; white-space: pre-wrap; color: var(--color-text-secondary);">Error: Cannot find module '@/lib/auth/register'</code>
+                </div>
               </div>
             </div>
           </div>

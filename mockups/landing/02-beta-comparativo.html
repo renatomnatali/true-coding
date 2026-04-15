@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial Beta - Opção 2 | True Coding</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    :root {
+      --ink: #1f2333;
+      --muted: #555d72;
+      --surface: #fff9f2;
+      --surface-strong: #ffffff;
+      --accent: #eb5b28;
+      --accent-soft: #ffe3d5;
+      --accent-2: #0f4c81;
+      --line: #f3c7b4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(235, 91, 40, 0.22), transparent 40%),
+        radial-gradient(circle at 90% 6%, rgba(15, 76, 129, 0.17), transparent 34%),
+        linear-gradient(115deg, #fff7ec 0%, #ffffff 52%, #f6fbff 100%);
+      padding: 24px;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #fd8f63);
+      box-shadow: 0 12px 24px -18px rgba(235, 91, 40, 0.7);
+    }
+
+    .top-links {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .beta,
+    .link-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.86);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .beta {
+      background: linear-gradient(125deg, #ffe5d9, #fff4ec);
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+      border-radius: 28px;
+      padding: clamp(24px, 4vw, 44px);
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      box-shadow: 0 22px 36px -34px rgba(31, 35, 51, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(15, 76, 129, 0.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: -90px;
+      bottom: -110px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(235, 91, 40, 0.11);
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Fraunces", "Iowan Old Style", "Palatino", serif;
+      letter-spacing: -0.01em;
+    }
+
+    h1 {
+      margin: 12px 0 0;
+      font-size: clamp(34px, 5.1vw, 60px);
+      line-height: 1.05;
+      max-width: 670px;
+    }
+
+    .hero p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 650px;
+      font-size: clamp(15px, 2vw, 18px);
+    }
+
+    .hero-actions {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-main,
+    .btn-ghost {
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, var(--accent), #ff8050);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      color: var(--accent-2);
+      border: 1px solid #c8dff0;
+      background: #f4f9ff;
+    }
+
+    .beta-card {
+      border: 1px solid #d7e8f6;
+      border-radius: 18px;
+      background: linear-gradient(170deg, #f8fcff, #eef7ff);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .beta-card h3 {
+      margin: 0;
+      font-size: 25px;
+      color: #0f4c81;
+    }
+
+    .beta-card p {
+      margin: 0;
+      color: #365775;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .beta-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .beta-list li {
+      border: 1px solid #cfe2f2;
+      border-radius: 11px;
+      padding: 10px;
+      background: #fff;
+      font-size: 13px;
+      color: #1f3e59;
+    }
+
+    .section {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: clamp(20px, 3vw, 30px);
+      background: var(--surface);
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.08;
+    }
+
+    .section .intro {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      font-size: 15px;
+    }
+
+    .grid-3 {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .persona,
+    .value,
+    .faq-item,
+    .pricing-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .persona h3,
+    .value h3,
+    .faq-item h3,
+    .pricing-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .persona p,
+    .value p,
+    .faq-item p,
+    .pricing-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-size: 14px;
+    }
+
+    .ribbon {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #a83c1a;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .split {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .value-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .value-list li {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      background: #fffdf9;
+      line-height: 1.6;
+    }
+
+    .compare {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .compare th,
+    .compare td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    .compare th {
+      background: #fff1e8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 11px;
+    }
+
+    .pricing-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .pricing-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 21px;
+      color: #a83c1a;
+    }
+
+    .pricing-card small {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .journey-cost {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .journey-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .journey-row:last-child {
+      border-bottom: none;
+    }
+
+    .waitlist {
+      margin-top: 16px;
+      border: 1px solid #dce8f4;
+      border-radius: 20px;
+      background: linear-gradient(130deg, #0f4c81, #0a2f52);
+      color: #e6f0f8;
+      padding: clamp(20px, 3vw, 30px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .waitlist h2 {
+      margin: 0;
+      font-size: clamp(28px, 3.2vw, 40px);
+    }
+
+    .waitlist p {
+      margin: 10px 0 0;
+      line-height: 1.7;
+      color: #cfe2f0;
+      font-size: 14px;
+    }
+
+    .form {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(8, 28, 47, 0.42);
+      display: grid;
+      gap: 8px;
+    }
+
+    .form label {
+      display: grid;
+      gap: 4px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #bfdbec;
+      font-weight: 700;
+    }
+
+    .form input,
+    .form select,
+    .form textarea {
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(9, 39, 65, 0.68);
+      color: #f8fbff;
+      padding: 10px;
+      font: inherit;
+      width: 100%;
+    }
+
+    .form textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .form button {
+      border: none;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff9c73, #ffd0a9);
+      color: #4b1a06;
+    }
+
+    .mock-nav {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mock-nav a {
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .reveal {
+      opacity: 0;
+      animation: reveal 640ms ease forwards;
+    }
+
+    .delay-1 { animation-delay: 90ms; }
+    .delay-2 { animation-delay: 180ms; }
+    .delay-3 { animation-delay: 280ms; }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .split,
+      .waitlist {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3,
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar reveal">
+      <a class="brand" href="../index.html">
+        <span class="mark">TC</span>
+        True Coding
+      </a>
+      <div class="top-links">
+        <span class="beta">Beta fechado · narrativa comparativa</span>
+        <a class="link-chip" href="01-beta-waitlist.html">Opção 1</a>
+        <a class="link-chip" href="03-beta-pricing.html">Opção 3</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal delay-1">
+        <div>
+          <p class="eyebrow">Página de validação com foco em contexto</p>
+          <h1>Pare de improvisar código. Comece a entregar software.</h1>
+          <p>
+            Esta opção comunica o True Coding como uma ponte entre ideia e execução com método.
+            Em vez de prompt avulso, você segue um fluxo rastreável para gerar aplicação com padrão
+            técnico mínimo de produção.
+          </p>
+          <div class="hero-actions">
+            <a href="#inscricao" class="btn-main">Participar do MVP</a>
+            <a href="#comparativo" class="btn-ghost">Ver diferenciais técnicos</a>
+          </div>
+        </div>
+
+        <aside class="beta-card">
+          <h3>Beta para quem precisa provar valor rápido</h3>
+          <p>Prioridade inicial para pessoas e times que querem sair da ideia com disciplina técnica.</p>
+          <ul class="beta-list">
+            <li>Sem promessa de magia: fluxo real com etapas e critérios claros.</li>
+            <li>Código com testes, CI/CD e publicação desde a primeira entrega.</li>
+            <li>Feedback do beta influencia o roteiro de evolução do produto.</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="section reveal delay-2" id="serve">
+        <h2>Para que serve o True Coding</h2>
+        <p class="intro">Para reduzir o caminho entre escopo e produção sem sacrificar qualidade de engenharia.</p>
+        <div class="grid-3">
+          <article class="persona">
+            <h3>Empreendedor técnico</h3>
+            <p>Valida um MVP funcional sem montar toda a infraestrutura do zero em cada novo projeto.</p>
+            <span class="ribbon">Tempo de validação</span>
+          </article>
+          <article class="persona">
+            <h3>Freelancer e consultoria</h3>
+            <p>Padroniza configuração, encurta onboarding e dedica mais horas ao que gera valor para o cliente.</p>
+            <span class="ribbon">Produtividade</span>
+          </article>
+          <article class="persona">
+            <h3>Dev em evolução</h3>
+            <p>Aprende vendo estrutura de projeto real com convenções, testes e pipeline funcionando.</p>
+            <span class="ribbon">Aprendizado prático</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal delay-2" id="comparativo">
+        <h2>Diferenciais em relação ao "vibe coding"</h2>
+        <p class="intro">A proposta não é gerar qualquer código. É gerar código que você consegue manter e evoluir.</p>
+        <table class="compare">
+          <thead>
+            <tr>
+              <th>Ponto crítico</th>
+              <th>Abordagem improvisada</th>
+              <th>True Coding</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Descoberta do escopo</td>
+              <td>Prompt inicial incompleto e sem refinamento guiado.</td>
+              <td>Descoberta estruturada com perguntas objetivas antes de gerar.</td>
+            </tr>
+            <tr>
+              <td>Planejamento técnico</td>
+              <td>Arquitetura implícita e difícil de validar.</td>
+              <td>Plano técnico explícito e revisável antes da execução.</td>
+            </tr>
+            <tr>
+              <td>Entrega contínua</td>
+              <td>Publicação e ajustes feitos manualmente.</td>
+              <td>Repositório, CI/CD e publicação conectados no fluxo padrão.</td>
+            </tr>
+            <tr>
+              <td>Evolução futura</td>
+              <td>Alta chance de retrabalho para adicionar features.</td>
+              <td>Iterações com histórico de mudança e menos dívida oculta.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section reveal delay-3" id="vantagens">
+        <h2>Vantagens para quem entrar na fase beta</h2>
+        <p class="intro">A fase atual é menor em escala e maior em proximidade com o time de produto.</p>
+        <div class="split">
+          <article class="value">
+            <h3>O que muda no dia a dia</h3>
+            <ul class="value-list">
+              <li><strong>Menos configuração repetitiva:</strong> o fluxo já inclui criação de repositório, pipeline e publicação.</li>
+              <li><strong>Mais previsibilidade:</strong> você enxerga status, custo por etapa e próximos passos.</li>
+              <li><strong>Menos risco de regressão:</strong> geração orientada por testes e critérios de qualidade.</li>
+              <li><strong>Mais foco em produto:</strong> horas voltam para decisão de negócio, não para boilerplate.</li>
+            </ul>
+          </article>
+          <article class="value">
+            <h3>Precificação transparente por créditos</h3>
+            <p>Modelo recomendado para MVP: consumo por etapa com custo visível antes de executar.</p>
+            <div class="journey-cost">
+              <div class="journey-row"><span>Descoberta</span><strong>8 créditos</strong></div>
+              <div class="journey-row"><span>Business Plan (padrão)</span><strong>45 créditos</strong></div>
+              <div class="journey-row"><span>Technical Plan</span><strong>70 créditos</strong></div>
+              <div class="journey-row"><span>UX Plan</span><strong>60 créditos</strong></div>
+              <div class="journey-row"><span>Codegen inicial</span><strong>120 créditos</strong></div>
+            </div>
+          </article>
+        </div>
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <h3>Teste</h3>
+            <strong>60 créditos · R$ 0</strong>
+            <small>Uso único, validade de 7 dias</small>
+            <p>Entrada sem custo para testar proposta de valor do fluxo.</p>
+          </article>
+          <article class="pricing-card">
+            <h3>Inicial</h3>
+            <strong>300 créditos · R$ 89</strong>
+            <small>Aproximadamente 1 projeto base</small>
+            <p>Indicado para primeira validação com escopo pequeno.</p>
+          </article>
+          <article class="pricing-card">
+            <h3>Pro</h3>
+            <strong>1.000 créditos · R$ 249</strong>
+            <small>Até ~3,3 projetos base</small>
+            <p>Melhor equilíbrio para quem itera mais de uma vez por mês.</p>
+          </article>
+          <article class="pricing-card">
+            <h3>Escala</h3>
+            <strong>3.000 créditos · R$ 599</strong>
+            <small>Até ~9,9 projetos base</small>
+            <p>Para operação com volume e múltiplas frentes de entrega.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal delay-3">
+        <h2>Perguntas frequentes do beta</h2>
+        <div class="grid-3">
+          <article class="faq-item">
+            <h3>Já é um SaaS completo?</h3>
+            <p>Ainda não. Esta fase é MVP em evolução, com foco em gerar valor rápido e aprender com uso real.</p>
+          </article>
+          <article class="faq-item">
+            <h3>Preciso saber programar?</h3>
+            <p>Ajuda bastante para validar e iterar, mas o fluxo foi desenhado para reduzir carga técnica de configuração.</p>
+          </article>
+          <article class="faq-item">
+            <h3>O preço é definitivo?</h3>
+            <p>Não. É proposta inicial para beta, com ajustes conforme custo real e feedback de uso.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="waitlist reveal delay-3" id="inscricao">
+        <div>
+          <h2>Inscreva-se para participar do MVP</h2>
+          <p>
+            Se você quer validar produto com velocidade sem abrir mão de base técnica, esta fase beta é para você.
+            Preencha o formulário e entraremos em contato conforme a abertura de vagas.
+          </p>
+        </div>
+        <form class="form">
+          <label>
+            Nome
+            <input type="text" placeholder="Seu nome completo">
+          </label>
+          <label>
+            E-mail
+            <input type="email" placeholder="voce@startup.com">
+          </label>
+          <label>
+            Perfil principal
+            <select>
+              <option>Empreendedor técnico</option>
+              <option>Freelancer</option>
+              <option>Desenvolvedor em formação</option>
+              <option>Time de startup</option>
+            </select>
+          </label>
+          <label>
+            O que você quer lançar no MVP?
+            <textarea placeholder="Ex.: plataforma de agendamento para clínicas"></textarea>
+          </label>
+          <button type="button">Entrar na lista de espera</button>
+        </form>
+      </section>
+    </main>
+
+    <nav class="mock-nav">
+      <a href="../index.html">Voltar para o índice</a>
+      <a href="01-beta-waitlist.html">Ver opção 1</a>
+      <a href="03-beta-pricing.html">Ver opção 3</a>
+    </nav>
+  </div>
+</body>
+</html>

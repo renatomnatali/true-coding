@@ -1,5 +1,11 @@
 # language: pt
-@deploy @fase-5
+
+# ============================================================================
+# @frozen — Fase de Deploy congelada no MVP (ADR-0009).
+# Depende de Generation estar ativa. Sob flag ENABLE_CODE_GENERATION=false.
+# ============================================================================
+
+@deploy @fase-5 @frozen
 Funcionalidade: Fase de Deploy na Netlify
   Após todas as iterações do pipeline de desenvolvimento serem concluídas
   e mergeadas no GitHub, o sistema deve fazer deploy automático na Netlify

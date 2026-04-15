@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial Beta - Opção 1 | True Coding</title>
+  <style>
+    :root {
+      --bg: #f3f7ff;
+      --bg-soft: #eef3ff;
+      --surface: #ffffff;
+      --surface-alt: #f8faff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --primary: #1d4ed8;
+      --primary-strong: #1e40af;
+      --primary-soft: #dbe8ff;
+      --line: #d7e2f5;
+      --success: #059669;
+      --shadow-lg: 0 30px 60px -40px rgba(15, 23, 42, 0.45);
+      --shadow-md: 0 20px 40px -32px rgba(30, 64, 175, 0.42);
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 5% 0%, rgba(30, 64, 175, 0.16), transparent 32%),
+        radial-gradient(circle at 95% 14%, rgba(14, 165, 233, 0.14), transparent 28%),
+        var(--bg);
+      padding: 22px;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1220px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(140deg, var(--primary), #2563eb);
+      box-shadow: var(--shadow-md);
+    }
+
+    .top-links {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .badge,
+    .top-link {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--ink);
+      backdrop-filter: blur(3px);
+    }
+
+    .badge {
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(150deg, #ffffff 0%, #f7faff 100%);
+      padding: clamp(18px, 3vw, 34px);
+      box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      align-items: start;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: -140px;
+      top: -140px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(30, 64, 175, 0.08);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: -120px;
+      bottom: -130px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(14, 165, 233, 0.08);
+      pointer-events: none;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      margin: 0;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Space Grotesk", "Manrope", sans-serif;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    h1 {
+      margin-top: 10px;
+      font-size: clamp(32px, 5.1vw, 56px);
+      line-height: 1.04;
+      max-width: 760px;
+    }
+
+    .hero-copy p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: clamp(15px, 2vw, 18px);
+      max-width: 700px;
+    }
+
+    .hero-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 11px 15px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 160ms ease, box-shadow 200ms ease, background 200ms ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 14px 26px -20px rgba(30, 64, 175, 0.85);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-strong);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .metrics {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fff;
+      padding: 11px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 23px;
+      color: var(--primary-strong);
+      line-height: 1.1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .hero-form {
+      border: 1px solid #b9ccf4;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #eef4ff 0%, #f8fbff 100%);
+      box-shadow: 0 14px 30px -26px rgba(30, 64, 175, 0.8);
+      overflow: hidden;
+    }
+
+    .hero-form-head {
+      padding: 14px;
+      border-bottom: 1px solid #c9d8f8;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .hero-form-head h2 {
+      font-size: 24px;
+      line-height: 1.1;
+      color: #0f172a;
+    }
+
+    .hero-form-head p {
+      margin: 8px 0 0;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .hero-form-body {
+      padding: 12px 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .hero-form label {
+      display: grid;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-form input,
+    .hero-form select,
+    .hero-form textarea {
+      width: 100%;
+      border: 1px solid #b8c7e8;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font: inherit;
+      color: #0f172a;
+      background: #ffffff;
+    }
+
+    .hero-form textarea {
+      min-height: 74px;
+      resize: vertical;
+    }
+
+    .hero-form button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      background: var(--primary);
+      cursor: pointer;
+    }
+
+    .hero-form-note {
+      margin: 2px 0 0;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #475569;
+    }
+
+    .proof {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .proof-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e3a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .proof-logos {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .logo-pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #334155;
+      background: #fff;
+      font-weight: 700;
+    }
+
+    .stack {
+      margin-top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      padding: clamp(18px, 2.4vw, 26px);
+    }
+
+    .section h2 {
+      font-size: clamp(26px, 3.4vw, 38px);
+      line-height: 1.1;
+    }
+
+    .section-intro {
+      margin: 10px 0 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .serve-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .serve-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(160deg, #ffffff 0%, #f8fbff 100%);
+      padding: 12px;
+    }
+
+    .serve-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      background: var(--primary-soft);
+      color: var(--primary-strong);
+      margin-bottom: 8px;
+    }
+
+    .serve-card h3 {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .serve-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .journey-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .journey-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .journey-thumb {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg-soft);
+      overflow: hidden;
+      min-height: 170px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .journey-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .journey-thumb::after {
+      content: "Ampliar";
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--primary-strong);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 7px;
+    }
+
+    .journey-card small {
+      margin: 0;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .journey-card h3 {
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .journey-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .journey-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .open-btn,
+    .source-link {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 7px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .open-btn {
+      background: var(--primary-soft);
+      color: var(--primary-strong);
+    }
+
+    .source-link {
+      background: #fff;
+      color: #334155;
+    }
+
+    .diff-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .diff-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .diff-box h3 {
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .diff-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .diff-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafcff;
+      padding: 9px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .diff-item small {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1e3a8a;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .diff-item p {
+      margin: 0;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.45;
+    }
+
+    .benefit-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .benefit {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .benefit h3 {
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .benefit p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .full-form {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(145deg, #f8fbff, #ffffff);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .full-form label {
+      display: grid;
+      gap: 5px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .full-form input,
+    .full-form select,
+    .full-form textarea {
+      width: 100%;
+      border: 1px solid #bfd0ef;
+      border-radius: 10px;
+      padding: 10px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .full-form textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .full-form button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .footer-nav {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-nav a {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 1000;
+    }
+
+    .modal.open {
+      display: block;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-dialog {
+      position: relative;
+      margin: 3vh auto;
+      width: min(1100px, 95vw);
+      height: min(92vh, 860px);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      box-shadow: 0 26px 50px -28px rgba(15, 23, 42, 0.75);
+    }
+
+    .modal-top {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .modal-step {
+      margin: 0;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .modal-title {
+      margin: 5px 0 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .modal-desc {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 420px;
+    }
+
+    .modal-close {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+      cursor: pointer;
+    }
+
+    .modal-view {
+      background: #f3f7ff;
+      padding: 10px;
+      display: grid;
+      place-items: center;
+    }
+
+    .modal-image-wrap {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      display: grid;
+      place-items: center;
+    }
+
+    .modal-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .modal-controls {
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-btn {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+      color: #1e293b;
+    }
+
+    .modal-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .modal-counter {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .modal-source {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+    }
+
+    .reveal {
+      opacity: 0;
+      animation: reveal 520ms ease forwards;
+    }
+
+    .delay-1 { animation-delay: 90ms; }
+    .delay-2 { animation-delay: 180ms; }
+    .delay-3 { animation-delay: 260ms; }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .metrics,
+      .serve-grid,
+      .journey-grid,
+      .diff-grid,
+      .benefit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full-form {
+        grid-template-columns: 1fr;
+      }
+
+      .proof {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-dialog {
+        height: min(94vh, 940px);
+      }
+
+      .modal-top {
+        flex-direction: column;
+      }
+
+      .modal-desc {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar reveal">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">TC</span>
+        True Coding
+      </a>
+      <div class="top-links">
+        <span class="badge">Fase beta · lista de espera ativa</span>
+        <a class="top-link" href="02-beta-comparativo.html">Opção 2</a>
+        <a class="top-link" href="03-beta-pricing.html">Opção 3</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal delay-1">
+        <div class="hero-copy">
+          <p class="eyebrow">MVP em validação com adotantes iniciais</p>
+          <h1>Da ideia à publicação sem pular engenharia.</h1>
+          <p>
+            O True Coding transforma linguagem natural em aplicação web real com testes automatizados,
+            CI/CD configurado e repositório pronto. O foco é simples: acelerar entrega sem perder qualidade.
+          </p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#form-inscricao">Quero participar do beta</a>
+            <a class="btn-secondary" href="#jornada">Ver jornada com telas reais</a>
+          </div>
+          <div class="metrics">
+            <article class="metric">
+              <strong>&lt; 10 min</strong>
+              <span>Meta entre descoberta e publicação no MVP.</span>
+            </article>
+            <article class="metric">
+              <strong>&gt; 90%</strong>
+              <span>Objetivo de testes passando nos projetos gerados.</span>
+            </article>
+            <article class="metric">
+              <strong>&gt; 80%</strong>
+              <span>Meta de projetos concluídos com sucesso no fluxo inicial.</span>
+            </article>
+          </div>
+        </div>
+
+        <aside class="hero-form" id="form-rapido">
+          <div class="hero-form-head">
+            <h2>Inscrição rápida do MVP</h2>
+            <p>Preencha os dados principais para entrar na fila da fase beta.</p>
+          </div>
+          <div class="hero-form-body">
+            <label>
+              Nome
+              <input type="text" placeholder="Seu nome completo">
+            </label>
+            <label>
+              E-mail
+              <input type="email" placeholder="voce@empresa.com">
+            </label>
+            <label>
+              Perfil
+              <select>
+                <option>Empreendedor técnico</option>
+                <option>Líder de produto</option>
+                <option>Time de engenharia</option>
+                <option>Empresa de grande porte</option>
+                <option>Freelancer</option>
+              </select>
+            </label>
+            <label>
+              O que você quer lançar primeiro?
+              <textarea placeholder="Descreva sua primeira entrega"></textarea>
+            </label>
+            <button type="button">Entrar na lista de espera</button>
+            <p class="hero-form-note">Também priorizamos casos para operação com múltiplas equipes e contexto de grande porte.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="proof reveal delay-2">
+        <span class="proof-title">Perfis que estamos priorizando</span>
+        <div class="proof-logos">
+          <span class="logo-pill">Startups em validação</span>
+          <span class="logo-pill">Consultorias de produto</span>
+          <span class="logo-pill">Times internos de engenharia</span>
+          <span class="logo-pill">Operações de grande porte</span>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="section reveal delay-2">
+          <h2>Para que serve</h2>
+          <p class="section-intro">
+            O True Coding atende desde validação de MVP até estruturação de entregas recorrentes com governança técnica.
+          </p>
+          <div class="serve-grid">
+            <article class="serve-card">
+              <div class="serve-icon">⚡</div>
+              <h3>Validar MVP rápido</h3>
+              <p>Ir da ideia à versão online com base de produção desde o início.</p>
+            </article>
+            <article class="serve-card">
+              <div class="serve-icon">🚀</div>
+              <h3>Acelerar entrega</h3>
+              <p>Reduzir configuração repetitiva e focar no que gera valor de negócio.</p>
+            </article>
+            <article class="serve-card">
+              <div class="serve-icon">🏢</div>
+              <h3>Padronizar para grandes empresas</h3>
+              <p>Fluxo rastreável com etapas claras e menor ambiguidade operacional.</p>
+            </article>
+            <article class="serve-card">
+              <div class="serve-icon">🧪</div>
+              <h3>Reduzir retrabalho técnico</h3>
+              <p>Geração orientada por testes e pipeline para diminuir regressões.</p>
+            </article>
+            <article class="serve-card">
+              <div class="serve-icon">📈</div>
+              <h3>Escalar múltiplos projetos</h3>
+              <p>Planejar consumo por etapa em diferentes equipes e frentes.</p>
+            </article>
+            <article class="serve-card">
+              <div class="serve-icon">🧠</div>
+              <h3>Aprender engenharia aplicada</h3>
+              <p>Aprender com código real, convenções, CI/CD e organização sustentável.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section reveal delay-2" id="jornada">
+          <h2>Como funciona na prática</h2>
+          <p class="section-intro">
+            Miniaturas reais geradas das telas da jornada. Clique para ampliar e navegar em carrossel.
+          </p>
+
+          <div class="journey-grid" id="journey-grid">
+            <article class="journey-card" data-step="Etapa 1" data-title="Descoberta" data-description="Você descreve a ideia e responde perguntas guiadas para consolidar o escopo inicial." data-image="./screens/01-start.html.png" data-mockup="../project/phase-1-ideation/01-start.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de descoberta">
+                <img src="./screens/01-start.html.png" alt="Miniatura da tela de descoberta">
+              </div>
+              <small>Etapa 1</small>
+              <h3>Descoberta</h3>
+              <p>Perguntas guiadas para entender objetivo, usuário e escopo inicial.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-1-ideation/01-start.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+
+            <article class="journey-card" data-step="Etapa 2" data-title="Planejamento" data-description="Plano de negócio e plano técnico antes da implementação para reduzir ambiguidades." data-image="./screens/01-business-plan.html.png" data-mockup="../project/phase-2-planning/01-business-plan.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de planejamento">
+                <img src="./screens/01-business-plan.html.png" alt="Miniatura da tela de planejamento">
+              </div>
+              <small>Etapa 2</small>
+              <h3>Planejamento</h3>
+              <p>Definição da abordagem técnica e critérios para execução do MVP.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-2-planning/01-business-plan.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+
+            <article class="journey-card" data-step="Etapa 3" data-title="Conexão" data-description="Integrações com GitHub e provedores para versionamento e publicação contínua." data-image="./screens/01-github-oauth.html.png" data-mockup="../project/phase-3-connection/01-github-oauth.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de conexão">
+                <img src="./screens/01-github-oauth.html.png" alt="Miniatura da tela de conexão com GitHub">
+              </div>
+              <small>Etapa 3</small>
+              <h3>Conexão</h3>
+              <p>Autorização de ferramentas para código, repositório e pipeline.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-3-connection/01-github-oauth.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+
+            <article class="journey-card" data-step="Etapa 4" data-title="Geração" data-description="Execução da geração com status em tempo real e visibilidade de pipeline." data-image="./screens/04-pipeline-running.html.png" data-mockup="../project/phase-4-generation/04-pipeline-running.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de geração">
+                <img src="./screens/04-pipeline-running.html.png" alt="Miniatura da tela de geração em pipeline">
+              </div>
+              <small>Etapa 4</small>
+              <h3>Geração</h3>
+              <p>Código, testes e validações acontecendo com progresso claro.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-4-generation/04-pipeline-running.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+
+            <article class="journey-card" data-step="Etapa 5" data-title="Publicação" data-description="Publicação concluída e aplicação pronta para validação com usuários reais." data-image="./screens/02-deployed.html.png" data-mockup="../project/phase-5-deploy/02-deployed.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de publicação">
+                <img src="./screens/02-deployed.html.png" alt="Miniatura da tela de publicação concluída">
+              </div>
+              <small>Etapa 5</small>
+              <h3>Publicação</h3>
+              <p>Entrega online e pronta para coleta de feedback real de uso.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-5-deploy/02-deployed.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+
+            <article class="journey-card" data-step="Etapa 6" data-title="Iteração" data-description="Produto online com espaço para melhorias e evolução contínua." data-image="./screens/01-project-live.html.png" data-mockup="../project/phase-6-online/01-project-live.html">
+              <div class="journey-thumb" tabindex="0" role="button" aria-label="Abrir miniatura da etapa de iteração">
+                <img src="./screens/01-project-live.html.png" alt="Miniatura da tela de produto online">
+              </div>
+              <small>Etapa 6</small>
+              <h3>Iteração</h3>
+              <p>Evolução orientada por dados, aprendizado e novas prioridades.</p>
+              <div class="journey-actions">
+                <button class="open-btn" type="button">Ampliar</button>
+                <a class="source-link" href="../project/phase-6-online/01-project-live.html" target="_blank" rel="noopener noreferrer">Abrir mockup</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section reveal delay-3">
+          <h2>Diferenciais que explicam o True Coding</h2>
+          <p class="section-intro">
+            Saímos da lógica de “funciona localmente” para uma estrutura de entrega com método e rastreabilidade.
+          </p>
+
+          <div class="diff-grid">
+            <article class="diff-box">
+              <h3>Sem método estruturado</h3>
+              <ul class="diff-list">
+                <li class="diff-item">
+                  <small>Processo</small>
+                  <p>Prompts isolados e pouca previsibilidade de resultado.</p>
+                </li>
+                <li class="diff-item">
+                  <small>Qualidade</small>
+                  <p>Maior chance de regressão e retrabalho após entrega inicial.</p>
+                </li>
+                <li class="diff-item">
+                  <small>Operação</small>
+                  <p>Versionamento e publicação manuais sem trilha clara.</p>
+                </li>
+              </ul>
+            </article>
+
+            <article class="diff-box">
+              <h3>Com True Coding (beta)</h3>
+              <ul class="diff-list">
+                <li class="diff-item">
+                  <small>Processo</small>
+                  <p>Fluxo completo de descoberta, planejamento, geração e publicação.</p>
+                </li>
+                <li class="diff-item">
+                  <small>Qualidade</small>
+                  <p>Base com testes, CI/CD e estrutura pronta para evoluir.</p>
+                </li>
+                <li class="diff-item">
+                  <small>Operação</small>
+                  <p>Status, histórico e iteração com contexto preservado.</p>
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="section reveal delay-3">
+          <h2>Vantagens para entrar no beta agora</h2>
+          <p class="section-intro">A fase inicial permite ajuste rápido de produto com base em casos reais.</p>
+
+          <div class="benefit-grid">
+            <article class="benefit">
+              <h3>Prioridade de suporte</h3>
+              <p>Feedback vira ajuste de produto em ciclos curtos de evolução.</p>
+            </article>
+            <article class="benefit">
+              <h3>Roteiro influenciável</h3>
+              <p>Dores reais dos participantes entram na fila de melhoria.</p>
+            </article>
+            <article class="benefit">
+              <h3>Status claro de execução</h3>
+              <p>Progresso, bloqueios e próximos passos sempre visíveis na jornada.</p>
+            </article>
+            <article class="benefit">
+              <h3>Menos atrito técnico</h3>
+              <p>Mais foco em produto, menos tempo perdido com configuração repetitiva.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section reveal delay-3" id="form-inscricao">
+          <h2>Inscrição para participar do MVP</h2>
+          <p class="section-intro">Formulário para qualificação de entrada na fase beta.</p>
+
+          <form class="full-form">
+            <label>
+              Nome completo
+              <input type="text" placeholder="Seu nome">
+            </label>
+            <label>
+              E-mail de trabalho
+              <input type="email" placeholder="voce@empresa.com">
+            </label>
+            <label>
+              Empresa
+              <input type="text" placeholder="Nome da empresa">
+            </label>
+            <label>
+              Perfil
+              <select>
+                <option>Empreendedor técnico</option>
+                <option>Líder de produto</option>
+                <option>Tech lead</option>
+                <option>Empresa de grande porte</option>
+                <option>Freelancer</option>
+              </select>
+            </label>
+            <label>
+              Faixa de time
+              <select>
+                <option>1 a 3 pessoas</option>
+                <option>4 a 10 pessoas</option>
+                <option>11 a 30 pessoas</option>
+                <option>31+ pessoas</option>
+              </select>
+            </label>
+            <label>
+              Meta principal
+              <select>
+                <option>Validar MVP em menos tempo</option>
+                <option>Reduzir retrabalho técnico</option>
+                <option>Acelerar entregas recorrentes</option>
+                <option>Padronizar execução entre equipes</option>
+              </select>
+            </label>
+            <label class="full">
+              O que você quer construir primeiro?
+              <textarea placeholder="Descreva a ideia, prazo e resultado esperado"></textarea>
+            </label>
+            <button class="full" type="button">Quero minha vaga no beta</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <nav class="footer-nav">
+      <a href="../index.html">Voltar para o índice</a>
+      <a href="02-beta-comparativo.html">Ver opção 2</a>
+      <a href="03-beta-pricing.html">Ver opção 3</a>
+    </nav>
+  </div>
+
+  <div class="modal" id="slide-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal-top">
+        <div>
+          <p class="modal-step" id="modal-step">Etapa</p>
+          <h3 class="modal-title" id="modal-title">Título da tela</h3>
+        </div>
+        <div>
+          <button class="modal-close" id="modal-close" type="button">Fechar</button>
+          <p class="modal-desc" id="modal-desc">Descrição da etapa</p>
+        </div>
+      </header>
+      <div class="modal-view">
+        <div class="modal-image-wrap">
+          <img id="modal-image" src="" alt="Visualização ampliada da tela da jornada">
+        </div>
+      </div>
+      <footer class="modal-controls">
+        <button class="modal-btn" id="modal-prev" type="button">← Anterior</button>
+        <div class="modal-actions">
+          <span class="modal-counter" id="modal-counter">1 de 6</span>
+          <a class="modal-source" id="modal-source" href="#" target="_blank" rel="noopener noreferrer">Abrir mockup original</a>
+        </div>
+        <button class="modal-btn" id="modal-next" type="button">Próxima →</button>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const cards = Array.from(document.querySelectorAll('.journey-card'))
+      const modal = document.getElementById('slide-modal')
+      const modalImage = document.getElementById('modal-image')
+      const modalStep = document.getElementById('modal-step')
+      const modalTitle = document.getElementById('modal-title')
+      const modalDesc = document.getElementById('modal-desc')
+      const modalCounter = document.getElementById('modal-counter')
+      const modalSource = document.getElementById('modal-source')
+      const modalPrev = document.getElementById('modal-prev')
+      const modalNext = document.getElementById('modal-next')
+      const modalClose = document.getElementById('modal-close')
+      const modalBackdrop = document.querySelector('[data-close="true"]')
+
+      if (!cards.length || !modal || !modalImage || !modalStep || !modalTitle || !modalDesc || !modalCounter || !modalSource || !modalPrev || !modalNext || !modalClose || !modalBackdrop) {
+        return
+      }
+
+      const slides = cards.map(function (card) {
+        return {
+          step: card.getAttribute('data-step') || '',
+          title: card.getAttribute('data-title') || '',
+          description: card.getAttribute('data-description') || '',
+          image: card.getAttribute('data-image') || '',
+          mockup: card.getAttribute('data-mockup') || ''
+        }
+      })
+
+      let currentIndex = 0
+
+      function renderSlide(index) {
+        const slide = slides[index]
+        if (!slide) {
+          return
+        }
+
+        modalStep.textContent = slide.step
+        modalTitle.textContent = slide.title
+        modalDesc.textContent = slide.description
+        modalImage.src = slide.image
+        modalImage.alt = 'Visualização ampliada da etapa: ' + slide.title
+        modalCounter.textContent = (index + 1) + ' de ' + slides.length
+        modalSource.href = slide.mockup
+      }
+
+      function openModal(index) {
+        currentIndex = (index + slides.length) % slides.length
+        renderSlide(currentIndex)
+        modal.classList.add('open')
+        modal.setAttribute('aria-hidden', 'false')
+        document.body.style.overflow = 'hidden'
+      }
+
+      function closeModal() {
+        modal.classList.remove('open')
+        modal.setAttribute('aria-hidden', 'true')
+        document.body.style.overflow = ''
+      }
+
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length
+        renderSlide(currentIndex)
+      }
+
+      function prevSlide() {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length
+        renderSlide(currentIndex)
+      }
+
+      cards.forEach(function (card, index) {
+        const thumb = card.querySelector('.journey-thumb')
+        const button = card.querySelector('.open-btn')
+
+        if (thumb) {
+          thumb.addEventListener('click', function () {
+            openModal(index)
+          })
+
+          thumb.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              openModal(index)
+            }
+          })
+        }
+
+        if (button) {
+          button.addEventListener('click', function () {
+            openModal(index)
+          })
+        }
+      })
+
+      modalPrev.addEventListener('click', prevSlide)
+      modalNext.addEventListener('click', nextSlide)
+      modalClose.addEventListener('click', closeModal)
+      modalBackdrop.addEventListener('click', closeModal)
+
+      document.addEventListener('keydown', function (event) {
+        if (!modal.classList.contains('open')) {
+          return
+        }
+
+        if (event.key === 'Escape') {
+          closeModal()
+          return
+        }
+
+        if (event.key === 'ArrowRight') {
+          nextSlide()
+          return
+        }
+
+        if (event.key === 'ArrowLeft') {
+          prevSlide()
+        }
+      })
+    })()
+  </script>
+</body>
+</html>

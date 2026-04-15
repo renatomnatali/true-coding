@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Panel - Falha no Quality Gate</title>
+  <link rel="stylesheet" href="shared.css">
+  <script src="shared.js" defer></script>
+</head>
+<body>
+  <!-- MOCKUP: Falha em Quality Gate
+       Preparacao concluida. Iteracao 1: spec, testes, codigo e revisao concluidos.
+       Quality gate BUILD falhou. Erro inline com acoes de recuperacao.
+       Quality gates UNIT e BDD foram pulados (dependencia do BUILD).
+       Publicacao pendente. -->
+
+  <div class="panel-container">
+
+    <!-- Barra de progresso global - ~40% (pausado, aguardando ação) -->
+    <div class="progress-bar-track" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso geral do pipeline">
+      <div class="progress-bar-fill" style="width: 40%"></div>
+    </div>
+
+    <!-- Cabecalho -->
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <h3>Pipeline Autonomo</h3>
+        <p>Acompanhe a criacao do seu aplicativo em tempo real</p>
+      </div>
+      <span class="badge badge-waiting">Aguardando ação</span>
+    </div>
+
+    <!-- Pipeline Steps -->
+    <div class="pipeline-body" role="list" aria-label="Etapas do pipeline">
+
+      <!-- Grupo: Preparacao - tudo concluido -->
+      <div class="step-group">
+        <div class="step-group-header">
+          <span class="step-group-label">Preparacao</span>
+          <span class="step-group-line"></span>
+          <span class="step-group-detail">3/3</span>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Preparando ambiente</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Criando estrutura do projeto</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Instalando dependencias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 1 - falhou -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-1-steps" aria-label="Expandir Iteracao 1">
+          <span class="iter-group-icon failed" aria-label="Falhou">&#10007;</span>
+          <span class="iter-group-label failed">Iteracao 1</span>
+          <span class="iter-group-count">4/6</span>
+        </div>
+        <div id="iter-1-steps" class="substeps">
+          <!-- Especificacao - concluida -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Escrevendo especificacao</span>
+            </div>
+          </div>
+
+          <!-- Testes - concluidos -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Gerando testes</span>
+            </div>
+          </div>
+
+          <!-- Geracao de codigo - concluida -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="step-label done">Gerando codigo</span>
+                <span class="step-detail">12/12 arquivos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revisao - concluida -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Revisando codigo</span>
+            </div>
+          </div>
+
+          <!-- Quality Gates - FALHOU com detalhes e acoes -->
+          <div class="step" role="listitem">
+            <span class="step-icon failed" aria-label="Falhou">&#10007;</span>
+            <div class="step-content">
+              <span class="step-label failed">Verificando qualidade</span>
+
+              <!-- Detalhes dos gates individuais -->
+              <div class="gate-items">
+                <div class="gate-item">
+                  <span class="gate-item-icon failed" aria-label="Falhou">&#10007;</span>
+                  <span class="gate-item-label failed">BUILD</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon skipped" aria-label="Pulado">&#8856;</span>
+                  <span class="gate-item-label skipped">UNIT (pulado)</span>
+                </div>
+                <div class="gate-item">
+                  <span class="gate-item-icon skipped" aria-label="Pulado">&#8856;</span>
+                  <span class="gate-item-label skipped">BDD (pulado)</span>
+                </div>
+              </div>
+
+              <!-- Erro inline - local unico para erros -->
+              <div class="error-block" role="alert">
+                <p class="error-message">
+                  A verificacao de compilacao encontrou erros no codigo gerado.
+                </p>
+                <button class="error-detail-toggle" aria-expanded="false">
+                  Ver detalhes tecnicos
+                </button>
+                <div class="error-detail">Error: Cannot find module '@/components/ui/button'
+  at resolveModule (webpack/runtime.js:42:15)
+  at Object.&lt;anonymous&gt; (src/app/dashboard/page.tsx:3:1)
+
+Build failed with 1 error in 4.2s</div>
+
+                <div class="error-actions">
+                  <button class="btn btn-primary">Tentar novamente</button>
+                  <button class="btn btn-secondary">Cancelar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Publicacao - pendente (bloqueada) -->
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content">
+              <span class="step-label pending">Publicando no Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 2 - pendente, colapsada -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-2-steps" aria-label="Expandir Iteracao 2">
+          <span class="iter-group-icon pending" aria-label="Pendente">&#9675;</span>
+          <span class="iter-group-label pending">Iteracao 2</span>
+          <span class="iter-group-count">0/6</span>
+        </div>
+        <div id="iter-2-steps" class="substeps" style="display: none;">
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Escrevendo especificacao</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Gerando testes</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Gerando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Revisando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Verificando qualidade</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Publicando no Git</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deploy final - pendente -->
+      <div class="step-group" style="margin-top: 4px;">
+        <div class="step-group-header">
+          <span class="step-group-label">Finalizacao</span>
+          <span class="step-group-line"></span>
+        </div>
+        <div class="step" role="listitem">
+          <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+          <div class="step-content">
+            <span class="step-label pending">Publicando na internet</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer removido: erro já está inline no passo que falhou.
+         Hierarquia clara: 1 único local para erro + ações. -->
+  </div>
+
+  <!-- Mockup navigation -->
+  <nav class="mockup-nav" aria-label="Navegacao entre mockups">
+    <a href="index.html">Hub</a>
+    <a href="01-initial.html">01 Inicial</a>
+    <a href="02-running.html">02 Executando</a>
+    <a href="03-files.html">03 Arquivos</a>
+    <a href="04-failure.html" class="active">04 Falha</a>
+    <a href="05-success.html">05 Sucesso</a>
+    <a href="06-confirmation.html">06 Confirmacao</a>
+  </nav>
+</body>
+</html>

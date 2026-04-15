@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Panel Mockups - Hub de Navegacao</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body {
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 32px;
+    }
+    .hub-header {
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 600px;
+    }
+    .hub-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-slate-900);
+      margin-bottom: 8px;
+    }
+    .hub-header p {
+      font-size: var(--text-sm);
+      color: var(--color-slate-500);
+      line-height: 1.6;
+    }
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      width: 100%;
+    }
+    .hub-card {
+      background: white;
+      border: 1px solid var(--color-slate-200);
+      border-radius: var(--rounded-lg);
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .hub-card:hover {
+      border-color: var(--color-blue-500);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+    .hub-card h2 {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--color-slate-900);
+      margin-bottom: 6px;
+    }
+    .hub-card p {
+      font-size: var(--text-xs);
+      color: var(--color-slate-500);
+      line-height: 1.5;
+    }
+    .hub-card .state-tag {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 8px;
+      border-radius: var(--rounded-full);
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+    .state-tag.initial { background: var(--color-slate-100); color: var(--color-slate-600); }
+    .state-tag.running { background: var(--color-blue-100); color: var(--color-blue-700); }
+    .state-tag.files { background: #dbeafe; color: #1d4ed8; }
+    .state-tag.failure { background: var(--color-red-100); color: var(--color-red-700); }
+    .state-tag.success { background: var(--color-emerald-50); color: var(--color-emerald-700); }
+    .state-tag.confirm { background: var(--color-amber-100); color: var(--color-amber-800); }
+  </style>
+</head>
+<body>
+  <div class="hub-header">
+    <h1>Pipeline Panel - Mockups de Redesign</h1>
+    <p>
+      Mockups navegaveis para o redesign do DevelopmentActivityPanel.
+      Cada pagina demonstra um estado diferente do pipeline autonomo.
+      Clique em qualquer card para visualizar o mockup.
+    </p>
+  </div>
+
+  <div class="hub-grid">
+    <a href="01-initial.html" class="hub-card">
+      <h2>01. Estado Inicial</h2>
+      <p>Pipeline pre-populado com todos os passos visiveis e status pendente. O usuario acabou de iniciar a execucao.</p>
+      <span class="state-tag initial">Pendente</span>
+    </a>
+
+    <a href="02-running.html" class="hub-card">
+      <h2>02. Em Execucao</h2>
+      <p>Sandbox e bootstrap concluidos. Iteracao 1 em andamento com especificacao sendo processada.</p>
+      <span class="state-tag running">Executando</span>
+    </a>
+
+    <a href="03-files.html" class="hub-card">
+      <h2>03. Geracao de Arquivos</h2>
+      <p>Passo de geracao de codigo expandido mostrando nomes dos arquivos sendo criados em tempo real.</p>
+      <span class="state-tag files">Gerando arquivos</span>
+    </a>
+
+    <a href="04-failure.html" class="hub-card">
+      <h2>04. Falha no Quality Gate</h2>
+      <p>Quality gate BUILD falhou. Erro inline no passo com acoes de recuperacao (tentar novamente, cancelar).</p>
+      <span class="state-tag failure">Falhou</span>
+    </a>
+
+    <a href="05-success.html" class="hub-card">
+      <h2>05. Concluido com Sucesso</h2>
+      <p>Todos os passos concluidos com sucesso. Deploy final feito. Mensagem de sucesso no rodape.</p>
+      <span class="state-tag success">Concluido</span>
+    </a>
+
+    <a href="06-confirmation.html" class="hub-card">
+      <h2>06. Aguardando Confirmacao</h2>
+      <p>Usuario reabriu o projeto com run ativa. Banner de confirmacao no topo, pipeline dimmed.</p>
+      <span class="state-tag confirm">Confirmacao</span>
+    </a>
+  </div>
+</body>
+</html>

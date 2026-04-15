@@ -95,13 +95,29 @@ docs/              # Documentacao
 
 Copie `.env.example` para `.env.local` e preencha os valores.
 
-## Specs do Projeto
+## Notion — repositório externo de produto
 
-Leia a pasta `/Spec` para entender a especificacao completa:
-- `00-OVERVIEW.md` - Visao geral do projeto
-- `01-ARCHITECTURE.md` - Arquitetura tecnica
-- `02-DATA-MODEL.md` - Modelo de dados (Prisma)
-- `03-API-SPECIFICATION.md` - Endpoints da API
-- `04-AI-PROMPTS.md` - Prompts para Claude
-- `05-INTEGRATIONS.md` - GitHub, Vercel, Clerk
-- `06-IMPLEMENTATION.md` - Plano de implementacao
+**Página oficial**: https://www.notion.so/True-Coding-3420d9578db3804cb33bcdae2e802a22
+
+Convenção **repo vs Notion**:
+
+- **No repo (`docs/`)**: documentação técnica viva — ADRs, specs Gherkin, runbooks, contratos de agentes, políticas de engenharia. Código e docs técnicos andam juntos.
+- **No Notion (página True Coding)**: documentação de **produto, estratégia e negócio** — roadmap, pricing, modelo financeiro, personas, pesquisa de mercado, decision log de produto, risk log, feature registry.
+
+Ao receber instruções do tipo "leva isso para o Notion", usar as ferramentas MCP Notion para criar/atualizar páginas sob True Coding, escolhendo o database apropriado:
+- **Document Hub** / **Engineering Docs** → documentos longos
+- **Decision Log** → decisões de produto
+- **Risk Log** → riscos mapeados
+- **Feature Registry** → backlog de features
+
+## Fontes de verdade
+
+Não existe mais um documento mestre de especificação. Cada tipo de informação tem seu lugar:
+
+- **Comportamento do sistema** → `docs/specifications/*.feature` (Gherkin, regra 1)
+- **Decisões arquiteturais** → `docs/adr/*.md`
+- **Como a pipeline funciona hoje** → `docs/development/*.md`
+- **Modelo de dados** → `prisma/schema.prisma`
+- **Endpoints e contratos** → código em `src/app/api/**` + testes
+- **Prompts de IA** → `src/lib/ai/prompts/`
+- **Estratégia, roadmap, riscos, features de produto** → Notion (ver seção acima)
