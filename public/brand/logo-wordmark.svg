@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" role="img" aria-label="True Coding">
+  <circle cx="40" cy="40" r="32" fill="none" stroke="#2563eb" stroke-width="2.5"></circle>
+  <path d="M30 28 L44 40 L30 52" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+  <path d="M41 28 L55 40 L41 52" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+  <text x="86" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="-0.4" fill="#111827">true<tspan fill="#2563eb">coding</tspan></text>
+</svg>
