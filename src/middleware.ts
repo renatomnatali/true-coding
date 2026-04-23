@@ -7,6 +7,9 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks(.*)',
+  // TRC-14.1 — pagina de referencia visual dos tokens do design system,
+  // exposta sem auth para inspecao em dev e validacao contra o mockup.
+  '/design-system(.*)',
 ])
 
 const baseMiddleware = clerkMiddleware(async (auth, request) => {
