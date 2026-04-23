@@ -45,6 +45,10 @@
 
     --surface: #ffffff;
     --surface-canvas: #f9fafb;
+    /* surface-muted: fundo de elementos desativados/placeholders.
+       surface-hover: fundo de estado :hover em botoes ghost/links.
+       Mesmo hex por escolha deliberada do mockup (comportamento visual
+       identico), semantica distinta preservada nos nomes. */
     --surface-muted: #f3f4f6;
     --surface-hover: #f3f4f6;
 
