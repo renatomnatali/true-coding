@@ -1,5 +1,14 @@
 import type { Metadata } from 'next'
 
+import {
+  BrandButton,
+  Callout,
+  Chip,
+  Dot,
+  ProgressBar,
+  TypingDots,
+} from '@/components/ui'
+
 import { AnimationPlayground, FocusRingDemo } from './interactive-demos'
 
 /**
@@ -156,21 +165,169 @@ export default function DesignSystemPage() {
       <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-10">
         <header className="flex flex-col gap-2">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-brand-primary-light px-3 py-1 text-xs font-medium text-brand-primary">
-            TRC-14.1
+            TRC-14.1 · TRC-14.3
           </span>
           <h1 className="text-3xl font-semibold tracking-tight text-ink">
             Design System — referência visual
           </h1>
           <p className="max-w-2xl text-sm text-ink-secondary">
-            Esta página expõe os tokens do mockup oficial
+            Esta página expõe os tokens e as primitivas do mockup oficial
             <code className="mx-1 rounded-brand-sm bg-surface-muted px-1.5 py-0.5 text-[12px] text-ink">
               /Spec/Jornada Coleta inicial/prototipo.html
             </code>
-            já disponíveis no Tailwind. Use-a para validar visualmente cores,
-            raios, sombras, animações, foco e scrollbar antes de construir as
-            primitivas em TRC-14.3.
+            já disponíveis no Tailwind e em <code>@/components/ui</code>. Use-a
+            para validar visualmente primitivas, cores, raios, sombras,
+            animações, foco e scrollbar.
           </p>
         </header>
+
+        <Section
+          id="primitivas"
+          title="Primitivas"
+          description="Componentes reutilizáveis (TRC-14.3) consumidos pela sidebar, chat e gates. Cada bloco abaixo mostra as variantes e estados — inspecione visualmente antes de mergear."
+        >
+          <div className="flex flex-col gap-8">
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                BrandButton
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Quatro variantes (primary, secondary, ghost, success) e dois
+                tamanhos (default, sm). Estado disabled via prop.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3 rounded-brand-lg border border-line bg-surface p-4">
+                <BrandButton>Primária</BrandButton>
+                <BrandButton variant="secondary">Secundária</BrandButton>
+                <BrandButton variant="ghost">Fantasma</BrandButton>
+                <BrandButton variant="success">Sucesso</BrandButton>
+                <BrandButton size="sm">Pequena</BrandButton>
+                <BrandButton size="sm" variant="secondary">
+                  Pequena secundária
+                </BrandButton>
+                <BrandButton disabled>Desabilitada</BrandButton>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                Chip
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Rótulos compactos com fundo tingido pela variante. Útil em
+                filtros, status e categorias.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 rounded-brand-lg border border-line bg-surface p-4">
+                <Chip>Neutro</Chip>
+                <Chip variant="primary">Primário</Chip>
+                <Chip variant="success">Sucesso</Chip>
+                <Chip variant="warning">Alerta</Chip>
+                <Chip variant="error">Erro</Chip>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                Dot
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Pontinho 6×6px para indicador de status. Use aria-label quando o
+                estado não estiver comunicado textualmente ao lado.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-6 rounded-brand-lg border border-line bg-surface p-4 text-xs text-ink-secondary">
+                <span className="inline-flex items-center gap-2">
+                  <Dot /> muted
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Dot variant="primary" /> primary
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Dot variant="success" /> success
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Dot variant="warning" /> warning
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Dot variant="error" /> error
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                ProgressBar
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Track 4px com fill que transiciona a largura em 400ms. Variant
+                success quando o valor chega a 100.
+              </p>
+              <div className="mt-3 flex flex-col gap-4 rounded-brand-lg border border-line bg-surface p-4">
+                <div>
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.04em] text-ink-tertiary">
+                    Coleta inicial — 25%
+                  </div>
+                  <ProgressBar value={25} aria-label="Coleta inicial" />
+                </div>
+                <div>
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.04em] text-ink-tertiary">
+                    Especificação — 70%
+                  </div>
+                  <ProgressBar value={70} aria-label="Especificação" />
+                </div>
+                <div>
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.04em] text-ink-tertiary">
+                    Pronto — 100%
+                  </div>
+                  <ProgressBar
+                    value={100}
+                    variant="success"
+                    aria-label="Pronto para publicar"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                TypingDots
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Três pontinhos com bounce staggered. Usado no chat enquanto o
+                agente está pensando.
+              </p>
+              <div className="mt-3 flex items-center gap-3 rounded-brand-lg border border-line bg-surface p-4 text-sm text-ink-secondary">
+                <TypingDots aria-label="True Coding está digitando" />
+                <span>True Coding está digitando…</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+                Callout
+              </h3>
+              <p className="mt-1 text-xs text-ink-tertiary">
+                Bloco destacado para mensagens informativas. Variantes info,
+                warning, success e error. Suporta título e ícone opcionais.
+              </p>
+              <div className="mt-3 flex flex-col gap-3">
+                <Callout title="Tudo certo por aqui" variant="info">
+                  Sua coleta inicial foi salva como rascunho. Você pode voltar
+                  quando quiser.
+                </Callout>
+                <Callout title="Verifique antes de avançar" variant="warning">
+                  Alguns campos obrigatórios ainda precisam ser preenchidos.
+                </Callout>
+                <Callout title="Especificação aprovada" variant="success">
+                  A versão v1 foi congelada. Agora você pode entrar no modo de
+                  gestão.
+                </Callout>
+                <Callout title="Falha na publicação" variant="error">
+                  Não conseguimos publicar seu app. Tente novamente em alguns
+                  minutos.
+                </Callout>
+              </div>
+            </div>
+          </div>
+        </Section>
 
         <Section
           id="cores"
@@ -269,8 +426,8 @@ export default function DesignSystemPage() {
         </Section>
 
         <footer className="pt-2 text-center text-xs text-ink-quaternary">
-          TRC-14.1 · Tokens alinhados ao mockup oficial em{' '}
-          <code>/Spec/Jornada Coleta inicial/prototipo.html</code>
+          TRC-14.1 · TRC-14.3 — Tokens e primitivas alinhados ao mockup oficial
+          em <code>/Spec/Jornada Coleta inicial/prototipo.html</code>
         </footer>
       </div>
     </div>
