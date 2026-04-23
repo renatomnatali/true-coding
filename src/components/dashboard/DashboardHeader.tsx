@@ -2,6 +2,7 @@
 
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
+import { Logo } from '@/components/brand/Logo'
 
 export function DashboardHeader() {
   const { user } = useUser()
@@ -17,9 +18,7 @@ export function DashboardHeader() {
     <header className="flex items-center justify-between border-b bg-white px-8 py-5">
       {/* Logo */}
       <Link href="/dashboard" className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-xl font-bold text-white">
-          TC
-        </div>
+        <Logo variant="mark" size={40} />
         <span className="text-xl font-bold text-blue-600">True Coding</span>
       </Link>
 

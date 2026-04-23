@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
+import { Logo } from '@/components/brand/Logo'
 import { useProjectLayout } from './ProjectLayout'
 
 // Phase configuration matching the mockup
@@ -90,9 +91,7 @@ export function ProjectSidebar({
       <div className="border-b p-5">
         {/* Logo */}
         <div className="mb-4 flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-xs font-bold text-white">
-            TC
-          </div>
+          <Logo variant="mark" size={28} />
           <span className="text-lg font-bold text-blue-600">True Coding</span>
         </div>
 
