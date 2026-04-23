@@ -8,10 +8,14 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   // TRC-14.1 — safelist para classes compostas dinamicamente no /design-system
-  // (ex: `bg-${tokenName}` via template literal). Restrito aos namespaces do
-  // design system; nao afeta classes do shadcn/ui.
+  // (ex: `bg-${tokenName}`, `animate-${key}` via template literal). Restrito aos
+  // namespaces do design system; nao afeta classes do shadcn/ui.
   safelist: [
     { pattern: /^(bg|text)-(brand|feedback|surface|ink|line)(-[a-z-]+)?$/ },
+    {
+      pattern:
+        /^animate-(fade-in|slide-up|slide-in-right|pulse-soft|typing-bounce)$/,
+    },
   ],
   theme: {
     extend: {
@@ -122,7 +126,10 @@ const config: Config = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.5' },
         },
-        bounce: {
+        // TRC-14.1 — keyframe nomeado `typingBounce` (nao `bounce`) para evitar
+        // sobrescrever a keyframe built-in do Tailwind usada por componentes
+        // existentes via `animate-bounce` (WorkspacePanel, ChatPanel, etc.).
+        typingBounce: {
           '0%, 60%, 100%': { transform: 'translateY(0)', opacity: '0.4' },
           '30%': { transform: 'translateY(-4px)', opacity: '1' },
         },
@@ -132,7 +139,7 @@ const config: Config = {
         'slide-up': 'slideUp 300ms ease both',
         'slide-in-right': 'slideInRight 250ms ease both',
         'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
-        'typing-bounce': 'bounce 1.2s infinite ease-in-out',
+        'typing-bounce': 'typingBounce 1.2s infinite ease-in-out',
       },
     },
   },
