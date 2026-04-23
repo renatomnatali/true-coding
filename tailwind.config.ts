@@ -7,6 +7,12 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // TRC-14.1 — safelist para classes compostas dinamicamente no /design-system
+  // (ex: `bg-${tokenName}` via template literal). Restrito aos namespaces do
+  // design system; nao afeta classes do shadcn/ui.
+  safelist: [
+    { pattern: /^(bg|text)-(brand|feedback|surface|ink|line)(-[a-z-]+)?$/ },
+  ],
   theme: {
     extend: {
       colors: {

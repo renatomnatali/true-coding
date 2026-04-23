@@ -22,8 +22,7 @@ export const metadata: Metadata = {
 type Swatch = {
   name: string
   hex: string
-  className: string
-  textClassName?: string
+  textOn: string
 }
 
 type SwatchGroup = {
@@ -32,217 +31,83 @@ type SwatchGroup = {
   swatches: Swatch[]
 }
 
+const swatch = (name: string, hex: string, textOn: string): Swatch => ({
+  name,
+  hex,
+  textOn,
+})
+
 const SWATCH_GROUPS: SwatchGroup[] = [
   {
     title: 'Brand',
     description: 'Cores principais da marca True Coding (azul).',
     swatches: [
-      {
-        name: 'brand-primary',
-        hex: '#2563eb',
-        className: 'bg-brand-primary',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'brand-primary-hover',
-        hex: '#1d4ed8',
-        className: 'bg-brand-primary-hover',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'brand-primary-light',
-        hex: '#dbeafe',
-        className: 'bg-brand-primary-light',
-        textClassName: 'text-brand-primary',
-      },
-      {
-        name: 'brand-primary-lighter',
-        hex: '#eff6ff',
-        className: 'bg-brand-primary-lighter',
-        textClassName: 'text-brand-primary',
-      },
+      swatch('brand-primary', '#2563eb', 'text-white'),
+      swatch('brand-primary-hover', '#1d4ed8', 'text-white'),
+      swatch('brand-primary-light', '#dbeafe', 'text-brand-primary'),
+      swatch('brand-primary-lighter', '#eff6ff', 'text-brand-primary'),
     ],
   },
   {
     title: 'Feedback',
     description: 'Cores semânticas para sucesso, alerta e erro.',
     swatches: [
-      {
-        name: 'feedback-success',
-        hex: '#10b981',
-        className: 'bg-feedback-success',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'feedback-success-hover',
-        hex: '#059669',
-        className: 'bg-feedback-success-hover',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'feedback-success-light',
-        hex: '#d1fae5',
-        className: 'bg-feedback-success-light',
-        textClassName: 'text-feedback-success-hover',
-      },
-      {
-        name: 'feedback-warning',
-        hex: '#f59e0b',
-        className: 'bg-feedback-warning',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'feedback-warning-hover',
-        hex: '#b45309',
-        className: 'bg-feedback-warning-hover',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'feedback-warning-light',
-        hex: '#fef3c7',
-        className: 'bg-feedback-warning-light',
-        textClassName: 'text-feedback-warning-hover',
-      },
-      {
-        name: 'feedback-error',
-        hex: '#ef4444',
-        className: 'bg-feedback-error',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'feedback-error-light',
-        hex: '#fee2e2',
-        className: 'bg-feedback-error-light',
-        textClassName: 'text-feedback-error',
-      },
+      swatch('feedback-success', '#10b981', 'text-white'),
+      swatch('feedback-success-hover', '#059669', 'text-white'),
+      swatch('feedback-success-light', '#d1fae5', 'text-feedback-success-hover'),
+      swatch('feedback-warning', '#f59e0b', 'text-white'),
+      swatch('feedback-warning-hover', '#b45309', 'text-white'),
+      swatch('feedback-warning-light', '#fef3c7', 'text-feedback-warning-hover'),
+      swatch('feedback-error', '#ef4444', 'text-white'),
+      swatch('feedback-error-light', '#fee2e2', 'text-feedback-error'),
     ],
   },
   {
     title: 'Surface',
     description: 'Planos de fundo: app, canvas, áreas neutras e hover.',
     swatches: [
-      {
-        name: 'surface',
-        hex: '#ffffff',
-        className: 'bg-surface',
-        textClassName: 'text-ink',
-      },
-      {
-        name: 'surface-canvas',
-        hex: '#f9fafb',
-        className: 'bg-surface-canvas',
-        textClassName: 'text-ink',
-      },
-      {
-        name: 'surface-muted',
-        hex: '#f3f4f6',
-        className: 'bg-surface-muted',
-        textClassName: 'text-ink',
-      },
-      {
-        name: 'surface-hover',
-        hex: '#f3f4f6',
-        className: 'bg-surface-hover',
-        textClassName: 'text-ink',
-      },
+      swatch('surface', '#ffffff', 'text-ink'),
+      swatch('surface-canvas', '#f9fafb', 'text-ink'),
+      swatch('surface-muted', '#f3f4f6', 'text-ink'),
+      swatch('surface-hover', '#f3f4f6', 'text-ink'),
     ],
   },
   {
     title: 'Ink (texto)',
     description: 'Hierarquia tipográfica do conteúdo textual.',
     swatches: [
-      {
-        name: 'ink',
-        hex: '#111827',
-        className: 'bg-ink',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'ink-secondary',
-        hex: '#4b5563',
-        className: 'bg-ink-secondary',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'ink-tertiary',
-        hex: '#6b7280',
-        className: 'bg-ink-tertiary',
-        textClassName: 'text-white',
-      },
-      {
-        name: 'ink-quaternary',
-        hex: '#9ca3af',
-        className: 'bg-ink-quaternary',
-        textClassName: 'text-white',
-      },
+      swatch('ink', '#111827', 'text-white'),
+      swatch('ink-secondary', '#4b5563', 'text-white'),
+      swatch('ink-tertiary', '#6b7280', 'text-white'),
+      swatch('ink-quaternary', '#9ca3af', 'text-white'),
     ],
   },
   {
     title: 'Line (bordas)',
     description: 'Linhas separadoras e bordas dos componentes.',
     swatches: [
-      {
-        name: 'line',
-        hex: '#e5e7eb',
-        className: 'bg-line',
-        textClassName: 'text-ink',
-      },
-      {
-        name: 'line-strong',
-        hex: '#d1d5db',
-        className: 'bg-line-strong',
-        textClassName: 'text-ink',
-      },
+      swatch('line', '#e5e7eb', 'text-ink'),
+      swatch('line-strong', '#d1d5db', 'text-ink'),
     ],
   },
 ]
 
-const RADIUS_TOKENS: Array<{ name: string; value: string; className: string }> = [
-  { name: 'rounded-brand-sm', value: '4px', className: 'rounded-brand-sm' },
-  { name: 'rounded-brand-md', value: '6px', className: 'rounded-brand-md' },
-  { name: 'rounded-brand-lg', value: '8px', className: 'rounded-brand-lg' },
-  { name: 'rounded-brand-xl', value: '12px', className: 'rounded-brand-xl' },
+type RadiusToken = { name: string; value: string }
+
+const RADIUS_TOKENS: RadiusToken[] = [
+  { name: 'rounded-brand-sm', value: '4px' },
+  { name: 'rounded-brand-md', value: '6px' },
+  { name: 'rounded-brand-lg', value: '8px' },
+  { name: 'rounded-brand-xl', value: '12px' },
 ]
 
-const SHADOW_TOKENS: Array<{ name: string; description: string; className: string }> = [
-  {
-    name: 'shadow-brand-sm',
-    description: 'Sombra discreta para cards e chips elevados.',
-    className: 'shadow-brand-sm',
-  },
-  {
-    name: 'shadow-brand-md',
-    description: 'Sombra padrão para popovers e dropdowns.',
-    className: 'shadow-brand-md',
-  },
-  {
-    name: 'shadow-brand-lg',
-    description: 'Sombra de painel flutuante (ex: tweaks panel).',
-    className: 'shadow-brand-lg',
-  },
-]
+type ShadowToken = { name: string; description: string }
 
-function SectionHeader({
-  id,
-  title,
-  description,
-}: {
-  id: string
-  title: string
-  description: string
-}) {
-  return (
-    <header className="mb-6">
-      <h2
-        id={id}
-        className="text-xl font-semibold tracking-tight text-ink"
-      >
-        {title}
-      </h2>
-      <p className="mt-1 text-sm text-ink-tertiary">{description}</p>
-    </header>
-  )
-}
+const SHADOW_TOKENS: ShadowToken[] = [
+  { name: 'shadow-brand-sm', description: 'Sombra discreta para cards e chips elevados.' },
+  { name: 'shadow-brand-md', description: 'Sombra padrão para popovers e dropdowns.' },
+  { name: 'shadow-brand-lg', description: 'Sombra de painel flutuante (ex: tweaks panel).' },
+]
 
 function Section({
   id,
@@ -260,9 +125,28 @@ function Section({
       aria-labelledby={id}
       className="rounded-brand-xl border border-line bg-surface p-6 shadow-brand-sm"
     >
-      <SectionHeader id={id} title={title} description={description} />
+      <header className="mb-6">
+        <h2 id={id} className="text-xl font-semibold tracking-tight text-ink">
+          {title}
+        </h2>
+        <p className="mt-1 text-sm text-ink-tertiary">{description}</p>
+      </header>
       {children}
     </section>
+  )
+}
+
+function SwatchCard({ swatch: s }: { swatch: Swatch }) {
+  return (
+    <div className="overflow-hidden rounded-brand-lg border border-line">
+      <div className={`flex h-20 items-end bg-${s.name} p-3 ${s.textOn}`}>
+        <span className="text-xs font-semibold">{s.name}</span>
+      </div>
+      <div className="flex items-center justify-between bg-surface px-3 py-2 text-[11px] text-ink-tertiary">
+        <code className="text-ink-secondary">{s.hex}</code>
+        <code>bg-{s.name}</code>
+      </div>
+    </div>
   )
 }
 
@@ -299,29 +183,10 @@ export default function DesignSystemPage() {
                 <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
                   {group.title}
                 </h3>
-                <p className="mt-1 text-xs text-ink-tertiary">
-                  {group.description}
-                </p>
+                <p className="mt-1 text-xs text-ink-tertiary">{group.description}</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {group.swatches.map((swatch) => (
-                    <div
-                      key={swatch.name}
-                      className="overflow-hidden rounded-brand-lg border border-line"
-                    >
-                      <div
-                        className={`flex h-20 items-end p-3 ${swatch.className} ${
-                          swatch.textClassName ?? 'text-ink'
-                        }`}
-                      >
-                        <span className="text-xs font-semibold">
-                          {swatch.name}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between bg-surface px-3 py-2 text-[11px] text-ink-tertiary">
-                        <code className="text-ink-secondary">{swatch.hex}</code>
-                        <code>{swatch.className}</code>
-                      </div>
-                    </div>
+                  {group.swatches.map((s) => (
+                    <SwatchCard key={s.name} swatch={s} />
                   ))}
                 </div>
               </div>
@@ -335,18 +200,15 @@ export default function DesignSystemPage() {
           description="Raios de canto reutilizáveis. shadcn mantém rounded-sm/md/lg; brand-* são do mockup."
         >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {RADIUS_TOKENS.map((radius) => (
+            {RADIUS_TOKENS.map((r) => (
               <div
-                key={radius.name}
+                key={r.name}
                 className="flex flex-col items-center gap-3 rounded-brand-lg border border-line bg-surface p-4"
               >
-                <div
-                  className={`h-20 w-20 bg-brand-primary ${radius.className}`}
-                  aria-hidden
-                />
+                <div className={`h-20 w-20 bg-brand-primary ${r.name}`} aria-hidden />
                 <div className="text-center text-xs">
-                  <div className="font-semibold text-ink">{radius.name}</div>
-                  <div className="text-ink-tertiary">{radius.value}</div>
+                  <div className="font-semibold text-ink">{r.name}</div>
+                  <div className="text-ink-tertiary">{r.value}</div>
                 </div>
               </div>
             ))}
@@ -359,15 +221,13 @@ export default function DesignSystemPage() {
           description="Elevações do design system para cartões e camadas flutuantes."
         >
           <div className="grid gap-4 sm:grid-cols-3">
-            {SHADOW_TOKENS.map((shadow) => (
+            {SHADOW_TOKENS.map((sh) => (
               <div
-                key={shadow.name}
-                className={`flex flex-col gap-2 rounded-brand-lg bg-surface p-5 ${shadow.className}`}
+                key={sh.name}
+                className={`flex flex-col gap-2 rounded-brand-lg bg-surface p-5 ${sh.name}`}
               >
-                <div className="text-sm font-semibold text-ink">
-                  {shadow.name}
-                </div>
-                <p className="text-xs text-ink-tertiary">{shadow.description}</p>
+                <div className="text-sm font-semibold text-ink">{sh.name}</div>
+                <p className="text-xs text-ink-tertiary">{sh.description}</p>
               </div>
             ))}
           </div>
