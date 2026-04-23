@@ -12,6 +12,8 @@ const config: Config = {
   // namespaces do design system; nao afeta classes do shadcn/ui.
   safelist: [
     { pattern: /^(bg|text)-(brand|feedback|surface|ink|line)(-[a-z-]+)?$/ },
+    { pattern: /^rounded-brand-(sm|md|lg|xl)$/ },
+    { pattern: /^shadow-brand-(sm|md|lg)$/ },
     {
       pattern:
         /^animate-(fade-in|slide-up|slide-in-right|pulse-soft|typing-bounce)$/,

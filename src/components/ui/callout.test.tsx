@@ -22,15 +22,15 @@ describe('Callout', () => {
     }> = [
       {
         variant: 'warning',
-        expected: ['border-feedback-warning-light', 'bg-feedback-warning-light'],
+        expected: ['border-feedback-warning', 'bg-feedback-warning-light'],
       },
       {
         variant: 'success',
-        expected: ['border-feedback-success-light', 'bg-feedback-success-light'],
+        expected: ['border-feedback-success', 'bg-feedback-success-light'],
       },
       {
         variant: 'error',
-        expected: ['border-feedback-error-light', 'bg-feedback-error-light'],
+        expected: ['border-feedback-error', 'bg-feedback-error-light'],
       },
     ]
 

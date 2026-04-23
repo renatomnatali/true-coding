@@ -24,13 +24,15 @@ export type CalloutProps = {
   className?: string
 }
 
+// border usa a cor-base (mais saturada) e bg usa a variante -light/-lighter
+// para que a borda fique visivel sobre o fundo (pattern alinhado ao mockup).
 const VARIANT_CLASSES: Record<CalloutVariant, string> = {
   info: 'border-brand-primary-light bg-brand-primary-lighter text-brand-primary',
   warning:
-    'border-feedback-warning-light bg-feedback-warning-light text-feedback-warning-hover',
+    'border-feedback-warning bg-feedback-warning-light text-feedback-warning-hover',
   success:
-    'border-feedback-success-light bg-feedback-success-light text-feedback-success-hover',
-  error: 'border-feedback-error-light bg-feedback-error-light text-feedback-error',
+    'border-feedback-success bg-feedback-success-light text-feedback-success-hover',
+  error: 'border-feedback-error bg-feedback-error-light text-feedback-error',
 }
 
 const BASE_CLASSES = 'flex gap-3 rounded-brand-lg border p-3 text-sm'

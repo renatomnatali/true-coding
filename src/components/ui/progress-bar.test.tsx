@@ -40,6 +40,22 @@ describe('ProgressBar', () => {
     expect(fill).toHaveStyle({ width: '0%' })
   })
 
+  it('trata NaN como 0% (defensivo contra valores invalidos)', () => {
+    const { container } = render(<ProgressBar value={Number.NaN} />)
+    const bar = screen.getByRole('progressbar')
+    const fill = container.querySelector('[role="progressbar"] > div')
+    expect(bar).toHaveAttribute('aria-valuenow', '0')
+    expect(fill).toHaveStyle({ width: '0%' })
+  })
+
+  it('aplica aria-label default "Progresso" quando omitido', () => {
+    render(<ProgressBar value={50} />)
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-label',
+      'Progresso',
+    )
+  })
+
   it('propaga className adicional ao track', () => {
     render(<ProgressBar value={20} className="mt-4" />)
     expect(screen.getByRole('progressbar')).toHaveClass('mt-4')

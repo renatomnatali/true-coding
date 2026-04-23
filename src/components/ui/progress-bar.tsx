@@ -45,7 +45,7 @@ export function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? 'Progresso'}
       className={cn(
         'h-1 w-full overflow-hidden rounded-full bg-line',
         className,
