@@ -28,14 +28,31 @@ model User {
   // Netlify OAuth (long-lived token, no refresh needed)
   netlifyAccessToken String?
 
+  // Platform persona / workspace (TRC-ADR-010)
+  personaTag    PersonaTag?
+  workspaceMode WorkspaceMode @default(SOLO)
+
   // Relations
-  projects Project[]
+  projects       Project[]
+  productContext ProductContext?
+  creditLedger   CreditLedger?
 
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+enum PersonaTag {
+  FOUNDER
+  PM
+  AGENCIA
+}
+
+enum WorkspaceMode {
+  SOLO
+  TEAM
 }
 
 // ============================================================================
@@ -70,11 +87,24 @@ model Project {
   productionUrl String?
   lastDeployAt    DateTime?
 
+  // Spec-as-a-Service (TRC-ADR-008 / ADR-012)
+  phase     ProjectPhase @default(ESPECIFICACAO)
+  stageKey  String       @default("discovery_q1")
+  version   String       @default("v1.0")
+  // Deprecated: JSON blobs antigos preservados para migration TRC-14.6.
+  // Nova estrutura vive em PlanBlock (plan_blocks).
+  legacyPlans Json?
+
   // Relations
-  conversations  Conversation[]
-  generatedFiles GeneratedFile[]
-  deployments    Deployment[]
+  conversations   Conversation[]
+  generatedFiles  GeneratedFile[]
+  deployments     Deployment[]
   developmentRuns DevelopmentRun[]
+  planBlocks      PlanBlock[]
+  decisions       Decision[]
+  decisionDrafts  DecisionDraft[]
+  risks           Risk[]
+  riskDrafts      RiskDraft[]
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -83,6 +113,11 @@ model Project {
   @@index([userId])
   @@index([status])
   @@map("projects")
+}
+
+enum ProjectPhase {
+  ESPECIFICACAO
+  GESTAO
 }
 
 enum ProjectStatus {
@@ -381,4 +416,297 @@ enum RunEventType {
   DEPLOY_STATUS
   ERROR
   INFO
+}
+
+// ============================================================================
+// PRODUCT CONTEXT (POLICY-010)
+// ============================================================================
+// 9 campos obrigatorios que definem o contexto de produto do usuario.
+// 1:1 com User. Reusado entre projetos (Founder-level, nao Project-level).
+
+model ProductContext {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userSegment        String @db.Text
+  // JTBD estruturado: tres slots (situation, motivation, outcome).
+  // Shape: { situation: string, motivation: string, outcome: string }
+  primaryJtbd        Json
+  currentAlternative String @db.Text
+  doNothingImpact    String @db.Text
+  primaryMetric      String
+  stage              ProductStage
+  // 1 a 3 bets, cada um string "Estamos apostando que X".
+  // Shape: string[]
+  strategicBets      Json
+  // >= 3 assumptions. Shape: [{ category: AssumptionCategory, statement: string }]
+  openAssumptions    Json
+  reviewCadence      ReviewCadence @default(QUARTERLY)
+
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // userId ja tem @unique (B-tree index implicito); nao adicionar @@index.
+  @@map("product_contexts")
+}
+
+enum ProductStage {
+  PRE_PRODUCT
+  MVP
+  SCALING
+  MATURE
+}
+
+enum ReviewCadence {
+  MONTHLY
+  QUARTERLY
+}
+
+enum AssumptionCategory {
+  USER
+  PROBLEM
+  SOLUTION
+  BUSINESS
+  FEASIBILITY
+  ADOPTION
+}
+
+// ============================================================================
+// PLAN BLOCK
+// ============================================================================
+// N blocos por (Project, PlanType). Substitui os JSON blobs businessPlan/uxPlan/technicalPlan.
+// Ordem canonica: 6 blocos Negocio, 4 UX, 4 Tecnico (ver Spec/.../data.jsx).
+
+model PlanBlock {
+  id         String      @id @default(cuid())
+  projectId  String
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  planType   PlanType
+  blockId    String
+  order      Int
+  title      String
+  body       String      @db.Text
+  status     BlockStatus @default(DRAFT)
+  approvedAt DateTime?
+  adjustedAt DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([projectId, planType, blockId])
+  @@index([projectId, planType])
+  @@map("plan_blocks")
+}
+
+enum PlanType {
+  NEGOCIO
+  UX
+  TECNICO
+}
+
+enum BlockStatus {
+  DRAFT
+  APPROVED
+  ADJUSTED
+}
+
+// ============================================================================
+// DECISION (POLICY-005) + DECISION DRAFT
+// ============================================================================
+// DecisionDraft: sugestao de IA antes de triagem.
+// Decision: registrada formalmente com Y-Statement, alternatives, consequences.
+
+model DecisionDraft {
+  id          String           @id @default(cuid())
+  projectId   String
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  yStatement  String?          @db.Text
+  context     String?          @db.Text
+  trigger     String?          @db.Text
+  category    DecisionCategory
+  origin      String
+  dismissedAt DateTime?
+  createdAt   DateTime         @default(now())
+
+  @@index([projectId, dismissedAt])
+  @@map("decision_drafts")
+}
+
+model Decision {
+  id           String           @id @default(cuid())
+  projectId    String
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  publicId     String
+  title        String
+  yStatement   String           @db.Text
+  context      String           @db.Text
+  alternatives String           @db.Text
+  consequences String           @db.Text
+  category     DecisionCategory
+  status       DecisionStatus   @default(PROPOSED)
+  reviewDate   DateTime?
+
+  // JTBD/Bet/Assumption linking (POLICY-011).
+  // Apontam para slots dentro de ProductContext do usuario dono do projeto.
+  linkedBetIndex        Int?
+  linkedJtbdId          String?
+  linkedAssumptionIndex Int?
+
+  // Supersede chain (auto-relacao 1:1).
+  supersededById String?   @unique
+  supersededBy   Decision? @relation("DecisionSupersede", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes     Decision? @relation("DecisionSupersede")
+
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([projectId, publicId])
+  @@index([projectId, status])
+  @@map("decisions")
+}
+
+enum DecisionCategory {
+  AUTH
+  PAGAMENTO
+  DADOS_API
+  INFRA
+  LGPD
+  PRODUTO
+  PRICING
+  UX
+}
+
+enum DecisionStatus {
+  PROPOSED
+  ACCEPTED
+  SUPERSEDED
+  REJECTED
+  DEPRECATED
+  OBSOLETE
+}
+
+// ============================================================================
+// RISK (POLICY-003 / POLICY-007) + RISK DRAFT
+// ============================================================================
+// Risk Level (Critical/High/Medium/Low) eh derivado de impact x probability
+// no app code (computeRiskLevel em src/types/product-context.ts), nao no schema.
+
+model RiskDraft {
+  id          String       @id @default(cuid())
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?      @db.Text
+  trigger     String?      @db.Text
+  category    RiskCategory
+  origin      String
+  dismissedAt DateTime?
+  createdAt   DateTime     @default(now())
+
+  @@index([projectId, dismissedAt])
+  @@map("risk_drafts")
+}
+
+model Risk {
+  id            String          @id @default(cuid())
+  projectId     String
+  project       Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  publicId      String
+  title         String
+  description   String          @db.Text
+  trigger       String          @db.Text
+  mitigation    String          @db.Text
+  contingency   String          @db.Text
+  impact        RiskImpact
+  probability   RiskProbability
+  category      RiskCategory
+  status        RiskStatus      @default(MONITORANDO)
+  closeState    RiskCloseState?
+  closeEvidence String?         @db.Text
+  closedAt      DateTime?
+  nextReview    DateTime?
+
+  // JTBD/Bet/Assumption linking (POLICY-011).
+  linkedBetIndex        Int?
+  linkedJtbdId          String?
+  linkedAssumptionIndex Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, publicId])
+  @@index([projectId, status])
+  @@map("risks")
+}
+
+enum RiskCategory {
+  DADOS_API
+  LEGAL_LGPD
+  CONCORRENCIA
+  TECNICO
+  REPUTACAO
+  MERCADO
+  FINANCEIRO
+  SECURITY
+}
+
+enum RiskImpact {
+  ALTO
+  MEDIO
+  BAIXO
+}
+
+enum RiskProbability {
+  ALTA
+  MEDIA
+  BAIXA
+}
+
+// RiskStatus (operacional): enquanto risco esta ativo no ciclo de vida.
+// MONITORANDO -> vigilancia periodica; ACAO_NECESSARIA -> gatilho disparou;
+// MITIGADO/ACEITO tambem aparecem aqui como estados operacionais transitorios.
+enum RiskStatus {
+  MONITORANDO
+  MITIGADO
+  ACAO_NECESSARIA
+  ACEITO
+}
+
+// RiskCloseState (terminal com evidencia): POLICY-007 define 4 saidas fechadas.
+// Difere de RiskStatus: aqui exige-se closeEvidence obrigatoria e closedAt
+// preenchidos; o risco nao pode ser reaberto apos fechar (criar novo que
+// referencia o anterior). MITIGADO/ACEITO compartilham nome com RiskStatus,
+// mas semantica e distinta: "fechou por X" vs "atualmente em X".
+enum RiskCloseState {
+  MITIGADO
+  ACEITO
+  MATERIALIZADO
+  OBSOLETO
+}
+
+// ============================================================================
+// CREDIT LEDGER (stub TRC-ADR-013)
+// ============================================================================
+// Stub visual para exibir saldo e tier no AppShell. Sistema real de creditos
+// (decremento, paywall, compra pay-as-you-go) esta fora do escopo do MVP.
+
+model CreditLedger {
+  id        String       @id @default(cuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Int          @default(60)
+  tier      PlatformTier @default(TRIAL)
+  updatedAt DateTime     @updatedAt
+
+  @@map("credit_ledgers")
+}
+
+enum PlatformTier {
+  TRIAL
+  START
+  PRO
+  SCALE
 }
