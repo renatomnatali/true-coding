@@ -9,6 +9,7 @@
  */
 
 // @vitest-environment node
+import { randomUUID } from 'node:crypto'
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 import type { User, Project } from '@prisma/client'
@@ -40,7 +41,7 @@ describeIfDb('Prisma schema integration', () => {
   })
 
   beforeEach(async () => {
-    const unique = Math.random().toString(36).slice(2, 10)
+    const unique = randomUUID().slice(0, 8)
     const user = await prisma.user.create({
       data: {
         clerkId: `schema-test-clerk-${unique}`,
