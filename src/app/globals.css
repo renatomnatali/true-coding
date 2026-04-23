@@ -24,6 +24,52 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+
+    /* TRC-14.1 — tokens do mockup /Spec/Jornada Coleta inicial/prototipo.html.
+       Mantidos como variaveis CSS independentes (nao HSL) para refletir 1:1 o
+       mockup; o Tailwind expoe os mesmos valores via classes brand-/feedback-/
+       surface/ink/line (ver tailwind.config.ts). */
+    --brand-primary: #2563eb;
+    --brand-primary-hover: #1d4ed8;
+    --brand-primary-light: #dbeafe;
+    --brand-primary-lighter: #eff6ff;
+
+    --feedback-success: #10b981;
+    --feedback-success-hover: #059669;
+    --feedback-success-light: #d1fae5;
+    --feedback-warning: #f59e0b;
+    --feedback-warning-hover: #b45309;
+    --feedback-warning-light: #fef3c7;
+    --feedback-error: #ef4444;
+    --feedback-error-light: #fee2e2;
+
+    --surface: #ffffff;
+    --surface-canvas: #f9fafb;
+    /* surface-muted: fundo de elementos desativados/placeholders.
+       surface-hover: fundo de estado :hover em botoes ghost/links.
+       Mesmo hex por escolha deliberada do mockup (comportamento visual
+       identico), semantica distinta preservada nos nomes. */
+    --surface-muted: #f3f4f6;
+    --surface-hover: #f3f4f6;
+
+    --ink: #111827;
+    --ink-secondary: #4b5563;
+    --ink-tertiary: #6b7280;
+    --ink-quaternary: #9ca3af;
+
+    --line: #e5e7eb;
+    --line-strong: #d1d5db;
+
+    --radius-brand-sm: 4px;
+    --radius-brand-md: 6px;
+    --radius-brand-lg: 8px;
+    --radius-brand-xl: 12px;
+
+    --shadow-brand-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-brand-md: 0 4px 6px -1px rgb(0 0 0 / 0.08),
+      0 2px 4px -2px rgb(0 0 0 / 0.06);
+    --shadow-brand-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.05);
   }
 
   .dark {
@@ -55,5 +101,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* TRC-14.1 — scrollbar customizada do mockup. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--line-strong);
+  }
+
+  /* TRC-14.1 — focus ring do design system. */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
   }
 }
