@@ -191,9 +191,6 @@ CREATE TABLE "credit_ledgers" (
 CREATE UNIQUE INDEX "product_contexts_userId_key" ON "product_contexts"("userId");
 
 -- CreateIndex
-CREATE INDEX "product_contexts_userId_idx" ON "product_contexts"("userId");
-
--- CreateIndex
 CREATE INDEX "plan_blocks_projectId_planType_idx" ON "plan_blocks"("projectId", "planType");
 
 -- CreateIndex

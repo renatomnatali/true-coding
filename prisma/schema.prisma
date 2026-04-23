@@ -448,7 +448,7 @@ model ProductContext {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  @@index([userId])
+  // userId ja tem @unique (B-tree index implicito); nao adicionar @@index.
   @@map("product_contexts")
 }
 
@@ -665,6 +665,9 @@ enum RiskProbability {
   BAIXA
 }
 
+// RiskStatus (operacional): enquanto risco esta ativo no ciclo de vida.
+// MONITORANDO -> vigilancia periodica; ACAO_NECESSARIA -> gatilho disparou;
+// MITIGADO/ACEITO tambem aparecem aqui como estados operacionais transitorios.
 enum RiskStatus {
   MONITORANDO
   MITIGADO
@@ -672,6 +675,11 @@ enum RiskStatus {
   ACEITO
 }
 
+// RiskCloseState (terminal com evidencia): POLICY-007 define 4 saidas fechadas.
+// Difere de RiskStatus: aqui exige-se closeEvidence obrigatoria e closedAt
+// preenchidos; o risco nao pode ser reaberto apos fechar (criar novo que
+// referencia o anterior). MITIGADO/ACEITO compartilham nome com RiskStatus,
+// mas semantica e distinta: "fechou por X" vs "atualmente em X".
 enum RiskCloseState {
   MITIGADO
   ACEITO
