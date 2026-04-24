@@ -374,7 +374,10 @@ export const MARIA_RISK_DRAFTS: MariaRiskDraft[] = [
       'Se a Maria esquecer de atualizar a disponibilidade dos itens no dia (principalmente salgados, que acabam no meio da tarde), clientes vão pedir e pagar por itens que já não existem — gera refund e quebra a confiança na operação.',
     trigger:
       'Pedido pago para item marcado como "disponível" mas já esgotado no balcão · reclamação do cliente chegando por WhatsApp após pagar.',
-    category: RiskCategory.MERCADO,
+    // REPUTACAO: o vetor primário é dano de confiança do cliente (quem paga e
+    // não recebe), não disputa de mercado. Mockup original usava 'Operacional'
+    // (inexistente no enum). Suggestion Code-Reviewer TRC-14.7.
+    category: RiskCategory.REPUTACAO,
     impact: RiskImpact.MEDIO,
     probability: RiskProbability.ALTA,
     origin: 'Plano de UX · Telas principais',

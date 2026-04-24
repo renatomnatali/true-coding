@@ -53,10 +53,7 @@ async function resetMaria(): Promise<void> {
 }
 
 describeIfDb('seed-maria', () => {
-  beforeAll(async () => {
-    await prisma.$connect()
-  })
-
+  // $connect já aconteceu no probe top-level — sem double-connect.
   afterAll(async () => {
     await prisma.$disconnect()
   })

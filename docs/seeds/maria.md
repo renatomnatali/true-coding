@@ -82,5 +82,5 @@ A migração `migrate-plans-to-blocks` (TRC-14.6) converte projetos **existentes
 ## Limitações conhecidas
 
 - **`CB-RISK-001 Category`**: o mockup `data-risks.jsx` marca a categoria como "Pagamentos", que não existe no enum `RiskCategory` do schema. Mapeamos para `TECNICO` (risco técnico de integração). Se o schema ganhar `PAGAMENTOS` como categoria, atualizar fixture.
-- **`CB-RISK-002 Category`**: mockup marca "Operacional", também inexistente no enum. Mapeado para `MERCADO` (reflete a quebra de confiança do cliente).
+- **`CB-RISK-002 Category`**: mockup marca "Operacional", também inexistente no enum. Mapeado para `REPUTACAO` — o vetor primário é dano de confiança do cliente (quem paga e não recebe), não disputa de mercado.
 - Identificadores `CB-DEC-001`, `CB-DEC-002`, `CB-RISK-001`, `CB-RISK-002` ainda não são persistidos — drafts não têm `publicId` no schema, só `Decision`/`Risk` registrados. Os códigos propostos vivem na fixture como `proposedPublicId` para quando forem promovidos.
