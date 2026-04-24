@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { UserButton } from '@clerk/nextjs'
-import { useProjectLayout } from './ProjectLayout'
 
 interface ProjectHeaderProps {
   projectName: string
@@ -29,24 +28,17 @@ const statusLabels: Record<string, string> = {
 }
 
 export function ProjectHeader({ projectName, status }: ProjectHeaderProps) {
-  const { setSidebarOpen, sidebarOpen } = useProjectLayout()
   const currentStepIndex = steps.findIndex((s) => s.id === status)
+
+  // TRC-14.4: removido o botao hamburguer mobile — a sidebar global vive
+  // agora no AppShell, que trata o proprio responsive. ProjectLayout mantem
+  // apenas o drawer de chat.
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
       {/* Top bar */}
       <div className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          {/* Menu button - mobile */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted lg:hidden"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
           {/* Back + Logo */}
           <Link
             href="/dashboard"

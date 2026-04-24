@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Providers } from '@/components/providers/Providers'
+import { AppShell } from '@/components/shell/AppShell'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -26,7 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased" suppressHydrationWarning>
         <Providers>
-          <ClerkWrapper>{children}</ClerkWrapper>
+          <ClerkWrapper>
+            {/* TRC-14.4 — AppShell renderiza sidebar global em rotas autenticadas
+             * e passa direto o `children` nas rotas públicas (ver AppShellClient). */}
+            <AppShell>{children}</AppShell>
+          </ClerkWrapper>
         </Providers>
       </body>
     </html>
