@@ -36,9 +36,23 @@ Para cada `Project` candidato:
 
 ### Campos legados que não têm bloco dedicado
 
-- `businessPlan.niceToHaveFeatures` e `businessPlan.successMetrics` são anexados respectivamente aos blocos `features` e `diferenciais` para não perder informação.
-- `technicalPlan.apiEndpoints` e `technicalPlan.realtime` são anexados ao bloco `integracoes`.
-- `uxPlan.informationArchitecture` é anexado ao bloco `telas`.
+Anexados a blocos existentes (sem perda):
+
+- `businessPlan.niceToHaveFeatures` e `businessPlan.successMetrics` → blocos `features` e `diferenciais` respectivamente.
+- `technicalPlan.apiEndpoints` e `technicalPlan.realtime` → bloco `integracoes`.
+- `uxPlan.informationArchitecture` → bloco `telas`.
+
+### Campos legados NÃO migrados (design deliberado)
+
+Os seguintes campos do shape legacy são **descartados** na migração — ainda ficam preservados no `legacyPlans` cru, mas não aparecem em nenhum `PlanBlock`:
+
+- `technicalPlan.security` — vai virar campo de Risk Log na Fase Gestão (POLICY-003).
+- `technicalPlan.performance` — métricas, melhor modeladas como assumptions do Product Context (POLICY-010).
+- `technicalPlan.testing` — estratégia de testes não é conteúdo de plano; vira playbook.
+- `technicalPlan.deployment` — deploy é responsabilidade de CodeGen congelado (ADR-008).
+- `uxPlan.pages` e `uxPlan.components` — sobrepõem `uxPlan.wireframes` (bloco `telas`).
+
+**Se precisar**: `Project.legacyPlans` mantém o JSON completo por 30 dias — é possível extrair esses campos manualmente pra outro destino antes do drop.
 
 ## Como rodar
 
