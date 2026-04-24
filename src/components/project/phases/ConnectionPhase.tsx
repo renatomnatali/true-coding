@@ -2,16 +2,29 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { AssessmentResult, IterationPlanItem } from '@/types'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 
 // ---------------------------------------------------------------------------
 // Sub-state derivation
 // ---------------------------------------------------------------------------
-// githubRepoUrl === null                          → "github"        (tela 01)
-// githubRepoUrl !== null && productionUrl === null → "repo-created"  (tela 02)
-// productionUrl !== null                          → "connected"     (tela 03)
+// Modo legado (ENABLE_CODE_GENERATION = true):
+//   githubRepoUrl === null                          → "github"        (tela 01)
+//   githubRepoUrl !== null && productionUrl === null → "repo-created"  (tela 02)
+//   productionUrl !== null                          → "connected"     (tela 03)
+//
+// Modo Spec-as-a-Service (ENABLE_CODE_GENERATION = false — TRC-05.2):
+//   - Netlify some do fluxo (não há mais geração de código).
+//   - GitHub é opcional: o usuário pode pular ("Pular conexão") e avançar.
+//   - Sub-estado "skipped" representa o usuário que escolheu não conectar.
+//   - Sub-estado "github-only" substitui "connected" (sem Netlify).
 // ---------------------------------------------------------------------------
 
-type ConnectionSubState = 'github' | 'repo-created' | 'connected'
+type ConnectionSubState =
+  | 'github'
+  | 'repo-created'
+  | 'connected'
+  | 'github-only'
+  | 'skipped'
 
 type AssessmentAgentName = 'AssessmentAgent' | 'IterationPlannerAgent'
 type AssessmentAgentStatus = 'idle' | 'running' | 'succeeded' | 'failed'
@@ -35,7 +48,20 @@ const INITIAL_ASSESSMENT_STEPS: AssessmentAgentStep[] = [
   },
 ]
 
-function deriveSubState(githubRepoUrl: string | null, productionUrl: string | null): ConnectionSubState {
+function deriveSubState(
+  githubRepoUrl: string | null,
+  productionUrl: string | null,
+  options: { codeGenerationEnabled: boolean; skipped: boolean }
+): ConnectionSubState {
+  if (options.skipped) return 'skipped'
+
+  if (!options.codeGenerationEnabled) {
+    // Spec-as-a-Service: Netlify some, GitHub é opcional.
+    if (!githubRepoUrl) return 'github'
+    return 'github-only'
+  }
+
+  // Modo legado.
   if (!githubRepoUrl) return 'github'
   if (!productionUrl) return 'repo-created'
   return 'connected'
@@ -79,8 +105,13 @@ export function ConnectionPhase({
   const [assessmentSteps, setAssessmentSteps] = useState<AssessmentAgentStep[]>(INITIAL_ASSESSMENT_STEPS)
   const [isStartingDevelopment, setIsStartingDevelopment] = useState(false)
   const [startDevelopmentError, setStartDevelopmentError] = useState<string | null>(null)
+  // TRC-05.2: usuário pode pular a conexão quando Generation está OFF.
+  const [skipped, setSkipped] = useState(false)
 
-  const subState = deriveSubState(githubRepoUrl, productionUrl)
+  const subState = deriveSubState(githubRepoUrl, productionUrl, {
+    codeGenerationEnabled: ENABLE_CODE_GENERATION,
+    skipped,
+  })
 
   // Refs to prevent retry loops — each auto-trigger runs exactly once
   const repoAttemptedRef = useRef(false)
@@ -295,6 +326,8 @@ export function ConnectionPhase({
           isCreatingRepo={isCreatingRepo}
           step={checkpointStep}
           onStepChange={setCheckpointStep}
+          allowSkip={!ENABLE_CODE_GENERATION}
+          onSkip={() => setSkipped(true)}
         />
       )
     case 'repo-created':
@@ -311,6 +344,25 @@ export function ConnectionPhase({
             setCopied(true)
             setTimeout(() => setCopied(false), 2000)
           }}
+        />
+      )
+    case 'github-only':
+      return (
+        <GitHubOnlyView
+          githubRepoUrl={githubRepoUrl!}
+          copied={copied}
+          onCopy={() => {
+            navigator.clipboard.writeText(githubRepoUrl!)
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000)
+          }}
+        />
+      )
+    case 'skipped':
+      return (
+        <SkippedView
+          projectName={projectName}
+          onUndoSkip={() => setSkipped(false)}
         />
       )
     case 'connected':
@@ -345,12 +397,17 @@ function GitHubCheckpointFlow({
   isCreatingRepo,
   step,
   onStepChange,
+  allowSkip,
+  onSkip,
 }: {
   projectId: string
   projectName: string
   isCreatingRepo: boolean
   step: CheckpointStep
   onStepChange: (step: CheckpointStep) => void
+  /** TRC-05.2: quando true, exibe ação "Pular conexão". */
+  allowSkip: boolean
+  onSkip: () => void
 }) {
   switch (step) {
     case 'checkpoint':
@@ -359,12 +416,22 @@ function GitHubCheckpointFlow({
           projectName={projectName}
           onHasAccount={() => onStepChange('oauth')}
           onNoAccount={() => onStepChange('create-account')}
+          allowSkip={allowSkip}
+          onSkip={onSkip}
         />
       )
     case 'create-account':
       return <CreateAccountView onContinue={() => onStepChange('oauth')} />
     case 'oauth':
-      return <GitHubOAuthView projectId={projectId} projectName={projectName} isCreatingRepo={isCreatingRepo} />
+      return (
+        <GitHubOAuthView
+          projectId={projectId}
+          projectName={projectName}
+          isCreatingRepo={isCreatingRepo}
+          allowSkip={allowSkip}
+          onSkip={onSkip}
+        />
+      )
   }
 }
 
@@ -375,18 +442,28 @@ function CheckpointView({
   projectName,
   onHasAccount,
   onNoAccount,
+  allowSkip,
+  onSkip,
 }: {
   projectName: string
   onHasAccount: () => void
   onNoAccount: () => void
+  /** TRC-05.2 — exibir ação "Pular conexão" (Generation OFF). */
+  allowSkip: boolean
+  onSkip: () => void
 }) {
+  const optionalLabel = allowSkip ? ' (opcional)' : ''
   return (
     <div className="h-full overflow-y-auto bg-gray-50 p-8">
       <div className="mx-auto max-w-lg">
-        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › Preparação</div>
+        <div className="mb-2 text-xs font-medium text-gray-500">
+          Conexão › Preparação{optionalLabel}
+        </div>
         <h2 className="mb-2 text-2xl font-bold text-gray-900">Hora de guardar seu código</h2>
         <p className="mb-6 text-sm text-gray-600">
-          Precisamos conectar sua conta do GitHub para criar o repositório do projeto <strong>{projectName}</strong>.
+          {allowSkip
+            ? <>Conectar sua conta do GitHub é <strong>opcional</strong>. Se conectar, criamos um repositório vazio para o projeto <strong>{projectName}</strong>. Você pode pular e conectar depois.</>
+            : <>Precisamos conectar sua conta do GitHub para criar o repositório do projeto <strong>{projectName}</strong>.</>}
         </p>
 
         <p className="mb-2 text-sm leading-relaxed text-gray-600">
@@ -426,6 +503,21 @@ function CheckpointView({
             <span className="text-sm text-gray-500">Vou te ajudar a criar uma conta</span>
           </button>
         </div>
+
+        {allowSkip && (
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={onSkip}
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              Pular conexão por enquanto
+            </button>
+            <p className="text-xs text-gray-500">
+              Você pode conectar GitHub depois quando precisar exportar o código.
+            </p>
+          </div>
+        )}
 
         <details className="mt-6 overflow-hidden rounded-lg border border-gray-200">
           <summary className="cursor-pointer bg-gray-50 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100">
@@ -501,7 +593,20 @@ function CreateAccountView({ onContinue }: { onContinue: () => void }) {
 // ---------------------------------------------------------------------------
 // Tela 01: GitHub OAuth CTA
 // ---------------------------------------------------------------------------
-function GitHubOAuthView({ projectId, projectName, isCreatingRepo }: { projectId: string; projectName: string; isCreatingRepo: boolean }) {
+function GitHubOAuthView({
+  projectId,
+  projectName,
+  isCreatingRepo,
+  allowSkip,
+  onSkip,
+}: {
+  projectId: string
+  projectName: string
+  isCreatingRepo: boolean
+  /** TRC-05.2 — também acessível na tela de OAuth (Generation OFF). */
+  allowSkip: boolean
+  onSkip: () => void
+}) {
   const oauthUrl = `/api/auth/github?projectId=${encodeURIComponent(projectId)}`
 
   return (
@@ -560,6 +665,18 @@ function GitHubOAuthView({ projectId, projectName, isCreatingRepo }: { projectId
         <p className="mt-4 text-center text-xs text-gray-400">
           Você será redirecionado para github.com e voltará automaticamente.
         </p>
+
+        {allowSkip && (
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={onSkip}
+              className="text-sm font-medium text-gray-600 underline-offset-2 hover:text-gray-900 hover:underline"
+            >
+              Pular e conectar depois
+            </button>
+          </div>
+        )}
 
         <p className="mt-6 text-center text-xs text-gray-400">
           Você pode revogar o acesso a qualquer momento nas configurações do GitHub.
@@ -741,6 +858,129 @@ function RepoCreatedView({
               Conectar Netlify →
             </a>
           )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// TRC-05.2 — Tela "GitHub conectado" (Generation OFF, sem Netlify)
+// ---------------------------------------------------------------------------
+function GitHubOnlyView({
+  githubRepoUrl,
+  copied,
+  onCopy,
+}: {
+  githubRepoUrl: string
+  copied: boolean
+  onCopy: () => void
+}) {
+  const urlParts = githubRepoUrl.replace('https://github.com/', '').split('/')
+  const repoOwner = urlParts[0] || ''
+  const repoName = urlParts[1] || ''
+
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 p-8">
+      <div className="mx-auto max-w-lg space-y-5">
+        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+          <div className="flex items-center gap-2">
+            <span className="text-green-600">✓</span>
+            <p className="text-sm font-semibold text-green-800">GitHub conectado!</p>
+          </div>
+          <p className="mt-1 text-sm text-green-700">
+            Seu repositório está pronto. A conexão da fase está concluída.
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
+          <h3 className="mb-3 text-sm font-semibold text-gray-900">Repositório</h3>
+          <div className="mb-3 flex items-center gap-2">
+            <code className="flex-1 truncate rounded-md bg-gray-100 px-3 py-1.5 text-xs text-gray-700">
+              {githubRepoUrl}
+            </code>
+            <button
+              type="button"
+              onClick={onCopy}
+              className="rounded-md border px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              {copied ? 'Copiado!' : 'Copiar'}
+            </button>
+          </div>
+
+          <ul className="space-y-1.5 text-sm text-gray-600">
+            <li className="flex items-center gap-2">
+              <span className="w-24 text-xs font-medium text-gray-500">Visibilidade</span>
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">Privado</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-24 text-xs font-medium text-gray-500">Owner</span>
+              <span className="text-xs text-gray-700">{repoOwner}</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-24 text-xs font-medium text-gray-500">Nome</span>
+              <span className="text-xs text-gray-700">{repoName}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="rounded-md border-l-4 border-blue-600 bg-blue-50 p-4">
+          <p className="text-sm text-gray-900">
+            <strong>Próximo passo:</strong> avance para a fase de Especificação. Você poderá exportar o bundle (spec.md + manifest.json) ao final.
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <a
+            href={githubRepoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Ver no GitHub →
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// TRC-05.2 — Tela "Conexão pulada"
+// ---------------------------------------------------------------------------
+function SkippedView({
+  projectName,
+  onUndoSkip,
+}: {
+  projectName: string
+  onUndoSkip: () => void
+}) {
+  return (
+    <div className="h-full overflow-y-auto bg-gray-50 p-8">
+      <div className="mx-auto max-w-lg space-y-5">
+        <div className="mb-2 text-xs font-medium text-gray-500">Conexão › Pulada</div>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900">Conexão dispensada por enquanto</h2>
+        <p className="mb-6 text-sm text-gray-600">
+          Você optou por não conectar GitHub agora para o projeto <strong>{projectName}</strong>. Sem problemas — você pode conectar depois quando precisar exportar o código.
+        </p>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
+          <h3 className="mb-2 text-sm font-semibold text-gray-900">O que muda?</h3>
+          <ul className="space-y-2 text-sm text-gray-600">
+            <li>• A fase de Conexão fica concluída e você pode avançar.</li>
+            <li>• Quando quiser exportar o bundle de especificação, basta conectar GitHub depois.</li>
+            <li>• Nenhum dado do projeto é perdido por pular a conexão.</li>
+          </ul>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onUndoSkip}
+            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            Conectar agora
+          </button>
         </div>
       </div>
     </div>
