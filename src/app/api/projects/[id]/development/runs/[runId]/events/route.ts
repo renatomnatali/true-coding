@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import {
   getDevelopmentRunEvents,
@@ -14,6 +15,11 @@ interface RouteParams {
 const TERMINAL = new Set(['FAILED', 'CANCELED', 'SUCCEEDED'])
 
 export async function GET(request: Request, { params }: RouteParams) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  if (!ENABLE_CODE_GENERATION) {
+    return new Response(null, { status: 404 })
+  }
+
   try {
     const { userId } = await auth()
     if (!userId) {

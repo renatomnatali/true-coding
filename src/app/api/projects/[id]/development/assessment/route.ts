@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 import { prisma } from '@/lib/db/prisma'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import { runAssessmentAgent, runIterationPlannerAgent } from '@/lib/development/agents'
@@ -31,6 +32,11 @@ function mapError(error: unknown) {
 }
 
 export async function POST(_request: Request, { params }: RouteParams) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  if (!ENABLE_CODE_GENERATION) {
+    return new Response(null, { status: 404 })
+  }
+
   try {
     const { userId } = await auth()
     if (!userId) {
