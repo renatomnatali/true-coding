@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ProjectLayout } from '@/components/project/ProjectLayout'
-import { ProjectSidebar } from '@/components/project/ProjectSidebar'
 import { ChatPanel } from '@/components/project/ChatPanel'
 import { WorkspacePanel } from '@/components/project/WorkspacePanel'
 import { DevelopmentActivityPanel } from '@/components/project/DevelopmentActivityPanel'
@@ -183,19 +182,13 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
     }
   }
 
+  // TRC-14.4: a navegação global vive agora no AppShell (sidebar 56/224).
+  // Aqui permanecem apenas workspace + chat.
+  void hasGitHub
+  void hasNetlify
+
   return (
     <ProjectLayout
-      sidebar={
-        <ProjectSidebar
-          projectId={project.id}
-          projectName={project.name}
-          status={status}
-          hasGitHub={hasGitHub}
-          hasNetlify={hasNetlify}
-          repoUrl={project.githubRepoUrl}
-          deployUrl={project.productionUrl}
-        />
-      }
       chat={
         <ChatPanel
           projectId={project.id}

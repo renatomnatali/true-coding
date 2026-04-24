@@ -10,6 +10,7 @@ import {
 } from '@/components/ui'
 
 import { AnimationPlayground, FocusRingDemo } from './interactive-demos'
+import { ShellShowcase } from './shell-showcase'
 
 /**
  * TRC-14.1 — Página de referência visual dos tokens do design system.
@@ -327,6 +328,14 @@ export default function DesignSystemPage() {
               </div>
             </div>
           </div>
+        </Section>
+
+        <Section
+          id="shell"
+          title="Shell"
+          description="Sidebar global 56/224px + primitivas auxiliares (TierBadge, CreditsChip, UserChip) do AppShell (TRC-14.4)."
+        >
+          <ShellShowcase />
         </Section>
 
         <Section
