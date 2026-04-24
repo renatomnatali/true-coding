@@ -1,4 +1,3 @@
-export { DashboardHeader } from './DashboardHeader'
 export { DashboardContent } from './DashboardContent'
 export { StatsRow } from './StatsRow'
 export { FilterTabs } from './FilterTabs'

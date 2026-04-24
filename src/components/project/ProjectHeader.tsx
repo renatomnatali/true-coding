@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { UserButton } from '@clerk/nextjs'
 
 interface ProjectHeaderProps {
   projectName: string
@@ -67,17 +66,13 @@ export function ProjectHeader({ projectName, status }: ProjectHeaderProps) {
           </span>
         </div>
 
-        {/* User */}
-        <div className="flex items-center gap-3">
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: {
-                avatarBox: 'h-8 w-8',
-              },
-            }}
-          />
-        </div>
+        {/*
+          TRC-346: usuario logado vive apenas no footer da sidebar global
+          (UserChip, TRC-14.4). Mantemos um spacer invisivel com largura
+          equivalente ao antigo avatar (h-8 w-8) para preservar o
+          balanceamento visual do justify-between em tres colunas.
+        */}
+        <div aria-hidden className="h-8 w-8" />
       </div>
 
       {/* Progress bar */}
