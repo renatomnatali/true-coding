@@ -72,4 +72,20 @@ describe('ViewportGate', () => {
     const cta = screen.getByRole('link', { name: 'Voltar pra landing' })
     expect(cta).toHaveAttribute('href', '/')
   })
+
+  it('aria-labelledby aponta para elemento real com id correto', () => {
+    viewportMock.mockReturnValue({
+      width: 1024,
+      isAppSized: false,
+      hasMeasured: true,
+    })
+    const { container } = render(<ViewportGate />)
+
+    const dialog = screen.getByRole('dialog')
+    const labelId = dialog.getAttribute('aria-labelledby')
+    expect(labelId).toBeTruthy()
+    const labelEl = container.querySelector(`#${labelId}`)
+    expect(labelEl).not.toBeNull()
+    expect(labelEl?.textContent).toBeTruthy()
+  })
 })

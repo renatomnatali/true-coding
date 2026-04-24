@@ -16,6 +16,10 @@ import { APP_MIN_WIDTH_PX, useViewport } from '@/hooks/use-viewport'
  *
  * Decisão client-side (SSR não sabe a largura do cliente). O primeiro render
  * devolve `null` para evitar flash antes da primeira medição.
+ *
+ * **Sem focus trap intencional**: aviso é não-bloqueante (usuário pode ignorar
+ * e continuar operando o app em tela pequena, só não garantimos UX). Trap
+ * quebraria fluxos de navegação por teclado em rotas já carregadas.
  */
 export function ViewportGate() {
   const { isAppSized, hasMeasured } = useViewport()
