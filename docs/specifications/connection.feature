@@ -2,30 +2,92 @@
 # encoding: utf-8
 
 @connection @fase-3
-Funcionalidade: Fase de Conexão (GitHub + Netlify)
+Funcionalidade: Fase de Conexão (GitHub opcional; Netlify dormente)
   Como usuário do True Coding
-  Eu quero conectar meu projeto ao GitHub e Netlify
-  Para que o código gerado seja publicado automaticamente
+  Eu quero poder conectar meu projeto ao GitHub (opcional)
+  Para que eu possa exportar o bundle de especificação no meu repositório
+
+  # TRC-05.2 — Pivô Spec-as-a-Service (TRC-ADR-008 + TRC-ADR-026):
+  # - GitHub é opcional. O usuário pode pular a conexão e avançar.
+  # - Netlify saiu do fluxo obrigatório porque a Generation foi congelada.
+  #   Cenários marcados @netlify @legado @generation-on só são válidos
+  #   quando ENABLE_CODE_GENERATION está ON (modo legado de retomada v2).
+  # - Em produção, ENABLE_CODE_GENERATION=false: o passo Netlify não
+  #   aparece e a rota /api/projects/[id]/connect rejeita Netlify (410).
 
   Contexto:
     Dado que estou logado no sistema
     E tenho um projeto "Meu App Delivery" com todos os planos aprovados
     E o projeto está no status "CONNECTING"
+    E ENABLE_CODE_GENERATION está OFF (default em produção)
 
   # ==========================================================================
   # SUB-ESTADO: github — Checkpoint (triagem pré-OAuth)
-  # githubRepoUrl === null
+  # ENABLE_CODE_GENERATION=false (default): GitHub é opcional, Netlify some.
   # ==========================================================================
 
-  @github @checkpoint @visualizacao
-  Cenário: Exibir checkpoint "Você já tem GitHub?" (estado inicial)
+  @github @opcional @visualizacao @trc-05-2
+  Cenário: Checkpoint exibe GitHub como opcional e oferece "Pular conexão"
     Dado que o projeto não tem githubRepoUrl
+    E ENABLE_CODE_GENERATION está OFF
+    Quando eu acesso a página do projeto
+    Então o workspace exibe o checkpoint "Hora de guardar seu código"
+    E vejo o cabeçalho "Conexão › Preparação (opcional)"
+    E vejo a copy enfatizando que GitHub é opcional
+    E vejo o botão "Pular conexão por enquanto"
+    E vejo a explicação "Você pode conectar GitHub depois quando precisar exportar o código."
+    E NÃO vejo nenhum step ou botão de Netlify
+
+  @github @opcional @skip @trc-05-2
+  Cenário: Pular a conexão a partir do checkpoint avança para o sub-estado "skipped"
+    Dado que estou no checkpoint de GitHub
+    E ENABLE_CODE_GENERATION está OFF
+    Quando clico em "Pular conexão por enquanto"
+    Então o workspace exibe a tela "Conexão dispensada por enquanto"
+    E vejo botão "Conectar agora" para desfazer o skip
+    E NÃO ocorre redirecionamento para github.com
+
+  @github @opcional @skip @trc-05-2
+  Cenário: Pular a conexão também é oferecido na tela de OAuth
+    Dado que estou na tela de OAuth "Conectar com GitHub"
+    E ENABLE_CODE_GENERATION está OFF
+    Então vejo o link "Pular e conectar depois"
+    Quando clico em "Pular e conectar depois"
+    Então o workspace exibe a tela "Conexão dispensada por enquanto"
+
+  @github @opcional @undo-skip @trc-05-2
+  Cenário: Desfazer skip volta ao checkpoint
+    Dado que estou na tela "Conexão dispensada por enquanto"
+    Quando clico em "Conectar agora"
+    Então o workspace volta para o checkpoint "Hora de guardar seu código"
+
+  @github @opcional @repo-created @trc-05-2
+  Cenário: Após criar repositório, sub-estado "github-only" substitui "connected"
+    Dado que ENABLE_CODE_GENERATION está OFF
+    E o projeto tem githubRepoUrl
+    Quando o workspace renderiza o estado pós-OAuth
+    Então vejo alert verde "GitHub conectado!"
+    E vejo o card do repositório com URL e botão "Copiar"
+    E NÃO vejo card "Próximo Passo" sobre Netlify
+    E NÃO vejo botão "Conectar Netlify"
+    E vejo dica "Próximo passo: avance para a fase de Especificação."
+
+  # ==========================================================================
+  # CHECKPOINT LEGADO (modo Generation ON — retomada v2)
+  # ENABLE_CODE_GENERATION=true habilita o fluxo legado GitHub + Netlify.
+  # ==========================================================================
+
+  @github @checkpoint @legado @generation-on
+  Cenário: Checkpoint legado "Você já tem GitHub?" (modo Generation ON)
+    Dado que o projeto não tem githubRepoUrl
+    E ENABLE_CODE_GENERATION está ON
     Quando eu acesso a página do projeto
     Então o workspace exibe o checkpoint "Hora de guardar seu código"
     E vejo texto "Você já tem uma conta no GitHub?"
     E vejo botão "Sim, já tenho" com ícone GitHub
     E vejo botão "Ainda não tenho" com ícone de criação
     E vejo detalhes expansíveis "O que é GitHub?"
+    E NÃO vejo botão "Pular conexão por enquanto"
 
   @github @checkpoint @caminho-sim
   Cenário: Clicar "Sim, já tenho" avança para OAuth
@@ -149,36 +211,42 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     E Netlify exibe como pendente
 
   # ==========================================================================
-  # SUB-ESTADO: repo-created — Conectar Netlify (OAuth real)
+  # SUB-ESTADO: repo-created — Conectar Netlify (LEGADO — Generation ON)
   # githubRepoUrl !== null && productionUrl === null
+  # Em produção (ENABLE_CODE_GENERATION=false) este sub-estado é ocultado
+  # pelo componente; os cenários abaixo só correm com a flag ON.
   # ==========================================================================
 
-  @netlify @oauth @visualizacao
-  Cenário: Botão "Conectar Netlify" redireciona para OAuth da Netlify
-    Dado que o projeto tem githubRepoUrl
+  @netlify @oauth @visualizacao @legado @generation-on
+  Cenário: Botão "Conectar Netlify" redireciona para OAuth da Netlify (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E o projeto tem githubRepoUrl
     E o projeto não tem productionUrl
     Quando o usuário clica "Conectar Netlify →"
     Então o sistema salva o projectId em cookie "netlify_oauth_project_id"
     E redireciona para a URL de autorização da Netlify
 
-  @netlify @oauth @callback
-  Cenário: Callback OAuth Netlify bem-sucedido salva token
-    Dado que a Netlify retornou com code e state válidos
+  @netlify @oauth @callback @legado @generation-on
+  Cenário: Callback OAuth Netlify bem-sucedido salva token (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E a Netlify retornou com code e state válidos
     E o cookie "netlify_oauth_project_id" contém o ID do projeto
     Quando o callback processa a troca do code por token
     Então o token é salvo no usuário (encrypted)
     E o sistema redireciona para "/project/[id]?netlify=connected"
 
-  @netlify @oauth @callback
-  Cenário: Callback OAuth Netlify sem cookie redireciona para dashboard
-    Dado que a Netlify retornou com code e state válidos
+  @netlify @oauth @callback @legado @generation-on
+  Cenário: Callback OAuth Netlify sem cookie redireciona para dashboard (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E a Netlify retornou com code e state válidos
     E o cookie "netlify_oauth_project_id" NÃO existe
     Quando o callback processa a troca do code por token
     Então o sistema redireciona para "/dashboard?netlify=connected"
 
-  @netlify @connect @criacao
-  Cenário: Criar site Netlify após OAuth bem-sucedido
-    Dado que o usuário retornou à página com "?netlify=connected"
+  @netlify @connect @criacao @legado @generation-on
+  Cenário: Criar site Netlify após OAuth bem-sucedido (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E o usuário retornou à página com "?netlify=connected"
     E o projeto tem githubRepoUrl mas não tem productionUrl
     Quando o sistema chama POST /api/projects/[id]/connect com { service: "netlify" }
     Então o sistema decriptografa o token do usuário
@@ -187,14 +255,24 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     E mantém o status do projeto em "CONNECTING"
     E retorna os dados do site criado
 
+  @netlify @api @gate @trc-05-2
+  Cenário: Endpoint /connect rejeita Netlify quando ENABLE_CODE_GENERATION está OFF
+    Dado que ENABLE_CODE_GENERATION está OFF
+    E estou logado como dono do projeto
+    Quando faço POST /api/projects/[id]/connect com { service: "netlify" }
+    Então recebo 410 NETLIFY_DISABLED
+    E a mensagem orienta a continuar sem Netlify ou exportar o bundle
+    E nenhum site é criado na Netlify
+
   # ==========================================================================
-  # SUB-ESTADO: connected — Tudo conectado
+  # SUB-ESTADO: connected — Tudo conectado (LEGADO — Generation ON)
   # productionUrl !== null
   # ==========================================================================
 
-  @netlify @visualizacao
-  Cenário: Visualizar tela de tudo conectado
-    Dado que o projeto tem productionUrl
+  @netlify @visualizacao @legado @generation-on
+  Cenário: Visualizar tela de tudo conectado (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E o projeto tem productionUrl
     Quando o workspace renderiza o sub-estado "connected"
     Então vejo alert verde "Tudo Conectado!"
     E vejo cards GitHub ✓ e Netlify ✓
@@ -332,6 +410,7 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     Dado que estou logado como dono do projeto
     Quando faço POST /api/projects/[id]/connect com { service: "invalid" }
     Então recebo 400 VALIDATION_ERROR
+    E a mensagem lista os valores aceitos: "github", "netlify" e "skip"
 
   @guard @prerequisito
   Cenário: Endpoint /connect GitHub rejeita quando token não existe
@@ -339,14 +418,25 @@ Funcionalidade: Fase de Conexão (GitHub + Netlify)
     Quando faço POST /api/projects/[id]/connect com { service: "github" }
     Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre conectar GitHub primeiro
 
-  @guard @prerequisito
-  Cenário: Endpoint /connect Netlify rejeita quando GitHub não está conectado
-    Dado que o projeto não tem githubRepoUrl
+  @guard @skip @trc-05-2
+  Cenário: Endpoint /connect aceita "skip" como no-op idempotente
+    Dado que estou logado como dono do projeto
+    E o projeto não tem githubRepoUrl
+    Quando faço POST /api/projects/[id]/connect com { service: "skip" }
+    Então recebo 200 com payload { skipped: true }
+    E o status do projeto continua "CONNECTING"
+    E nenhum repositório ou site é criado
+
+  @guard @prerequisito @legado @generation-on
+  Cenário: Endpoint /connect Netlify rejeita quando GitHub não está conectado (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E o projeto não tem githubRepoUrl
     Quando faço POST /api/projects/[id]/connect com { service: "netlify" }
     Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre criar repositório primeiro
 
-  @guard @prerequisito
-  Cenário: Endpoint /connect Netlify rejeita quando token Netlify não existe
-    Dado que o usuário não tem netlifyAccessToken
+  @guard @prerequisito @legado @generation-on
+  Cenário: Endpoint /connect Netlify rejeita quando token Netlify não existe (legado)
+    Dado que ENABLE_CODE_GENERATION está ON
+    E o usuário não tem netlifyAccessToken
     Quando faço POST /api/projects/[id]/connect com { service: "netlify" }
     Então recebo 409 PREREQUISITE_NOT_MET com mensagem sobre conectar Netlify primeiro
