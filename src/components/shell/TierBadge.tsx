@@ -25,7 +25,7 @@ const TIER_META: Record<PlatformTier, TierMeta> = {
   TRIAL: { label: 'Trial', initial: 'T', variant: 'neutral' },
   START: { label: 'Start', initial: 'S', variant: 'primary' },
   PRO: { label: 'Pro', initial: 'P', variant: 'success' },
-  SCALE: { label: 'Scale', initial: 'E', variant: 'warning' },
+  SCALE: { label: 'Scale', initial: 'S', variant: 'warning' },
 }
 
 export type TierBadgeProps = {
