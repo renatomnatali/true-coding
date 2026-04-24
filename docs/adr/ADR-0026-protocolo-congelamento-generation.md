@@ -1,5 +1,7 @@
 # ADR-0026 — Protocolo de congelamento da pipeline de Generation
 
+> **Nota de numeração:** ADRs 0009–0025 existem no Notion Decision Log da TC e não foram espelhados neste repositório. A numeração local retoma em 0026 para alinhar com o próximo slot do Notion.
+
 **Status:** Aceito
 **Data:** 2026-04-24
 **Referências no código:** `src/lib/development/*`, `src/lib/codegen/*`, `src/lib/ai/prompts/codegen.ts`, `docs/v2-roadmap/generation-pipeline.md`
