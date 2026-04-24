@@ -109,15 +109,20 @@ describeIfDb('seed-maria', () => {
       where: { projectId: result.projectId },
     })
     expect(decisionDrafts).toHaveLength(2)
-    const draftTitles = decisionDrafts.map((d) => d.title).sort()
-    expect(draftTitles).toEqual(MARIA_DECISION_DRAFTS.map((d) => d.title).sort())
+    const byLocale = (a: string, b: string) => a.localeCompare(b, 'pt-BR')
+    const draftTitles = decisionDrafts.map((d) => d.title).sort(byLocale)
+    expect(draftTitles).toEqual(
+      MARIA_DECISION_DRAFTS.map((d) => d.title).sort(byLocale),
+    )
 
     const riskDrafts = await prisma.riskDraft.findMany({
       where: { projectId: result.projectId },
     })
     expect(riskDrafts).toHaveLength(2)
-    const riskTitles = riskDrafts.map((r) => r.title).sort()
-    expect(riskTitles).toEqual(MARIA_RISK_DRAFTS.map((r) => r.title).sort())
+    const riskTitles = riskDrafts.map((r) => r.title).sort(byLocale)
+    expect(riskTitles).toEqual(
+      MARIA_RISK_DRAFTS.map((r) => r.title).sort(byLocale),
+    )
 
     // Estado pós-export deliberado: drafts na Inbox; nenhum Decision/Risk registrado.
     const decisions = await prisma.decision.count({ where: { projectId: result.projectId } })
