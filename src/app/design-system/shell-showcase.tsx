@@ -1,11 +1,14 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 
 import { CreditsChip } from '@/components/shell/CreditsChip'
 import { Sidebar } from '@/components/shell/Sidebar'
 import { TierBadge, type PlatformTier } from '@/components/shell/TierBadge'
 import { UserChip } from '@/components/shell/UserChip'
+import { Callout } from '@/components/ui/callout'
+import { APP_MIN_WIDTH_PX } from '@/hooks/use-viewport'
 
 /**
  * TRC-14.4 — Showcase da Sidebar + auxiliares no /design-system.
@@ -87,6 +90,67 @@ export function ShellShowcase() {
           {TIERS.map((tier) => (
             <SidebarPreview key={tier} tier={tier} />
           ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold uppercase tracking-[0.04em] text-ink-tertiary">
+          ViewportGate
+        </h3>
+        <p className="mt-1 text-xs text-ink-tertiary">
+          Overlay exibido em viewports abaixo de {APP_MIN_WIDTH_PX}px dentro do
+          app autenticado (ADR-016 / TRC-14.8). Preview inline abaixo — em
+          produção o container é <code>fixed inset-0</code>.
+        </p>
+        <ViewportGatePreview />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * TRC-14.8 — Preview inline do ViewportGate.
+ *
+ * Reproduz visualmente o overlay sem depender do hook useViewport. Ficou
+ * aqui (e não dentro de `ViewportGate.tsx`) para manter o componente real
+ * simples: ele só renderiza quando o viewport é pequeno de verdade.
+ */
+function ViewportGatePreview() {
+  return (
+    <div className="mt-3 overflow-hidden rounded-brand-lg border border-line bg-surface">
+      <div className="relative h-[320px] bg-surface-canvas">
+        {/* Conteúdo fantasma ao fundo para simular a rota autenticada. */}
+        <div className="absolute inset-0 p-6 text-xs text-ink-quaternary">
+          <div className="mb-2 h-4 w-40 rounded bg-surface-muted" />
+          <div className="mb-2 h-4 w-64 rounded bg-surface-muted" />
+          <div className="h-4 w-52 rounded bg-surface-muted" />
+        </div>
+        {/* Overlay: mesma estrutura do ViewportGate real, porém absolute. */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="viewport-gate-preview-title"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-surface-canvas/95 p-6 backdrop-blur-sm"
+        >
+          <Callout
+            variant="warning"
+            title="Melhor em desktop"
+            className="max-w-md"
+          >
+            <p id="viewport-gate-preview-title" className="sr-only">
+              Aviso de tamanho de tela
+            </p>
+            <p className="mb-3 text-sm">
+              A True Coding é otimizada pra telas a partir de {APP_MIN_WIDTH_PX}
+              px. Em telas menores, alguns elementos podem ficar comprimidos.
+            </p>
+            <Link
+              href="/"
+              className="inline-block rounded-brand-md bg-brand-primary px-3.5 py-1.5 text-sm font-medium text-white hover:bg-brand-primary-hover"
+            >
+              Voltar pra landing
+            </Link>
+          </Callout>
         </div>
       </div>
     </div>

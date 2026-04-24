@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 
 import { Sidebar } from './Sidebar'
 import type { PlatformTier } from './TierBadge'
+import { ViewportGate } from './ViewportGate'
 
 /**
  * TRC-14.4 — Wrapper client que decide se a sidebar global deve ser renderizada.
@@ -65,6 +66,9 @@ export function AppShellClient({
         riskCount={riskCount}
         decisionCount={decisionCount}
       />
+      {/* TRC-14.8 — gate desktop-first (ADR-016). Só renderiza em <1280px e
+       * apenas dentro do shell autenticado (rotas públicas saíram acima). */}
+      <ViewportGate />
       {/* Sidebar flutua (fixed) e ocupa 56px base; expande em hover por cima.
        * Mantemos `pl-14` fixo para que o conteúdo nunca se desloque. */}
       <main className="pl-14">{children}</main>
