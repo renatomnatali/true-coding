@@ -12,7 +12,9 @@ import { TierBadge, type PlatformTier } from './TierBadge'
 import { UserChip } from './UserChip'
 
 /**
- * TRC-14.4 — Sidebar global 56/224px (modelo Linear/Notion).
+ * TRC-14.4 / TRC-14.9 — ProductSidebar: nav global de produto 56/224px
+ * (modelo Linear/Notion). Nome explícito pra deixar claro que é a nav do app
+ * autenticado — não uma primitiva genérica de UI.
  *
  * Espelha 1:1 `Spec/Jornada Coleta inicial/src/sidebar.jsx`:
  *   - 56px colapsada (default), 224px expandida no hover (200ms ease).
@@ -22,13 +24,12 @@ import { UserChip } from './UserChip'
  *   - Footer com CreditsChip + UserChip.
  *   - Active indicator: barra vertical 3px brand-primary à esquerda do item.
  *
- * A Sidebar flutua sobre o conteúdo: quando expande, cobre temporariamente sem
- * empurrar o `<main>` (AppShell mantém `ml-14` fixo).
+ * Flutua sobre o conteúdo: quando expande, cobre temporariamente sem empurrar
+ * o `<main>` (AppShellClient mantém `pl-14` fixo).
  */
 
-export type SidebarProps = {
+export type ProductSidebarProps = {
   userName: string
-  userInitial?: string
   tier: PlatformTier
   credits: number
   inboxCount?: number
@@ -153,16 +154,15 @@ function isItemActive(item: NavItem, pathname: string | null): boolean {
   return pathname === item.href || pathname.startsWith(`${item.href}/`)
 }
 
-export function Sidebar({
+export function ProductSidebar({
   userName,
-  userInitial,
   tier,
   credits,
   inboxCount = 0,
   riskCount = 0,
   decisionCount = 0,
   className,
-}: SidebarProps) {
+}: ProductSidebarProps) {
   const pathname = usePathname()
   const [hover, setHover] = React.useState(false)
 
@@ -254,7 +254,6 @@ export function Sidebar({
         </div>
         <UserChip
           name={userName}
-          initial={userInitial}
           tier={tier}
           compact={!expanded}
         />

@@ -2,15 +2,11 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import type { NextFetchEvent, NextRequest } from 'next/server'
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)',
-  // TRC-14.1 — pagina de referencia visual dos tokens do design system,
-  // exposta sem auth para inspecao em dev e validacao contra o mockup.
-  '/design-system(.*)',
-])
+import { MIDDLEWARE_PUBLIC_PATTERNS } from '@/lib/routes'
+
+// TRC-14.9 — padrões das rotas públicas centralizados em `src/lib/routes.ts`
+// pra manter em sincronia com o filtro client-side do `AppShellClient`.
+const isPublicRoute = createRouteMatcher([...MIDDLEWARE_PUBLIC_PATTERNS])
 
 const baseMiddleware = clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {

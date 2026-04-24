@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
-import { Sidebar } from './Sidebar'
+import { ProductSidebar } from './ProductSidebar'
 
 const pathnameMock = vi.fn<[], string>(() => '/dashboard')
 
@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
   usePathname: () => pathnameMock(),
 }))
 
-describe('Sidebar', () => {
+describe('ProductSidebar', () => {
   beforeEach(() => {
     pathnameMock.mockReset()
     pathnameMock.mockReturnValue('/dashboard')
@@ -17,7 +17,7 @@ describe('Sidebar', () => {
 
   it('renderiza por padrão em modo colapsado (data-expanded="false")', () => {
     render(
-      <Sidebar userName="Maria Silva" tier="TRIAL" credits={60} />,
+      <ProductSidebar userName="Maria Silva" tier="TRIAL" credits={60} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     expect(aside).toHaveAttribute('data-expanded', 'false')
@@ -28,7 +28,7 @@ describe('Sidebar', () => {
 
   it('expande em hover (mouseEnter troca data-expanded para true)', () => {
     render(
-      <Sidebar userName="Maria Silva" tier="TRIAL" credits={60} />,
+      <ProductSidebar userName="Maria Silva" tier="TRIAL" credits={60} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -41,7 +41,7 @@ describe('Sidebar', () => {
   it('mostra apenas "Projetos" em rotas fora de /project', () => {
     pathnameMock.mockReturnValue('/dashboard')
     render(
-      <Sidebar userName="Maria" tier="TRIAL" credits={60} />,
+      <ProductSidebar userName="Maria" tier="TRIAL" credits={60} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -55,7 +55,7 @@ describe('Sidebar', () => {
   it('adiciona itens contextuais em rotas /project/:id', () => {
     pathnameMock.mockReturnValue('/project/abc123')
     render(
-      <Sidebar userName="Maria" tier="PRO" credits={60} />,
+      <ProductSidebar userName="Maria" tier="PRO" credits={60} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -68,7 +68,7 @@ describe('Sidebar', () => {
   it('renderiza active indicator no item cuja rota bate com pathname', () => {
     pathnameMock.mockReturnValue('/project/abc123/riscos')
     render(
-      <Sidebar userName="Maria" tier="PRO" credits={60} riskCount={2} />,
+      <ProductSidebar userName="Maria" tier="PRO" credits={60} riskCount={2} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -88,7 +88,7 @@ describe('Sidebar', () => {
   it('exibe badge numérico destacado quando inboxCount > 0', () => {
     pathnameMock.mockReturnValue('/project/abc123')
     render(
-      <Sidebar userName="Maria" tier="PRO" credits={60} inboxCount={3} />,
+      <ProductSidebar userName="Maria" tier="PRO" credits={60} inboxCount={3} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -102,7 +102,7 @@ describe('Sidebar', () => {
   it('não renderiza badge numérico quando o contador é zero', () => {
     pathnameMock.mockReturnValue('/project/abc123')
     render(
-      <Sidebar userName="Maria" tier="PRO" credits={60} riskCount={0} />,
+      <ProductSidebar userName="Maria" tier="PRO" credits={60} riskCount={0} />,
     )
     const aside = screen.getByTestId('app-sidebar')
     fireEvent.mouseEnter(aside)
@@ -110,7 +110,7 @@ describe('Sidebar', () => {
   })
 
   it('expõe nav wrapper com aria-label principal de navegação', () => {
-    render(<Sidebar userName="Maria" tier="TRIAL" credits={60} />)
+    render(<ProductSidebar userName="Maria" tier="TRIAL" credits={60} />)
     const nav = screen.getByLabelText('Navegação principal')
     expect(nav).toBeInTheDocument()
   })

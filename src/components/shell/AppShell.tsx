@@ -18,7 +18,6 @@ import { AppShellClient } from './AppShellClient'
 
 type ShellData = {
   userName: string
-  userInitial: string | undefined
   tier: PlatformTier
   credits: number
 }
@@ -26,7 +25,6 @@ type ShellData = {
 async function loadShellData(): Promise<ShellData> {
   const fallback: ShellData = {
     userName: 'Você',
-    userInitial: undefined,
     tier: 'TRIAL',
     credits: 0,
   }
@@ -60,7 +58,6 @@ async function loadShellData(): Promise<ShellData> {
 
     return {
       userName: name ?? fallback.userName,
-      userInitial: undefined,
       tier: (user?.creditLedger?.tier ?? 'TRIAL') as PlatformTier,
       credits: user?.creditLedger?.balance ?? 0,
     }
@@ -78,7 +75,6 @@ export async function AppShell({ children }: { children: ReactNode }) {
   return (
     <AppShellClient
       userName={data.userName}
-      userInitial={data.userInitial}
       tier={data.tier}
       credits={data.credits}
     >

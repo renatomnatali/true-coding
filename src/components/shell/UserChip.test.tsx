@@ -18,9 +18,8 @@ describe('UserChip', () => {
     expect(screen.queryByText('Free · Pro')).not.toBeInTheDocument()
   })
 
-  it('usa a prop `initial` quando fornecida em vez da primeira letra do nome', () => {
-    render(<UserChip name="renato natali" initial="RN" tier="START" />)
-    // Avatar exibe apenas primeiro caractere de initial, uppercase.
+  it('deriva a inicial do nome (uppercase) mesmo quando escrito em minúsculas', () => {
+    render(<UserChip name="renato natali" tier="START" />)
     expect(screen.getByText('R')).toBeInTheDocument()
   })
 
