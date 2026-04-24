@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import type { PlatformTier } from './TierBadge'
 import { AppShellClient } from './AppShellClient'
 
@@ -70,7 +72,7 @@ async function loadShellData(): Promise<ShellData> {
   }
 }
 
-export async function AppShell({ children }: { children: React.ReactNode }) {
+export async function AppShell({ children }: { children: ReactNode }) {
   const data = await loadShellData()
 
   return (

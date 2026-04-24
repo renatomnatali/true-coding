@@ -8,10 +8,11 @@ import { cn } from '@/lib/utils'
  * TRC-14.4 — Chip de saldo de créditos no footer da sidebar global.
  *
  * Duas moedas distintas (TRC-ADR-013): este chip representa o saldo de créditos
- * consumíveis — independente do tier da plataforma. Cor varia por faixa:
- *   - neutral  (balance > 40)
- *   - warning  (10 <= balance <= 40)
- *   - error    (balance < 10)
+ * consumíveis — independente do tier da plataforma. Faixas alinhadas ao mockup
+ * `Spec/Jornada Coleta inicial/src/sidebar.jsx`:
+ *   - neutral  (balance >= 13)
+ *   - warning  (7 <= balance < 13)
+ *   - error    (balance < 7)
  *
  * Expandida: mostra `{balance} créditos`. Colapsada: só ponto colorido + número.
  */
@@ -19,8 +20,8 @@ import { cn } from '@/lib/utils'
 type CreditsTone = 'neutral' | 'warning' | 'error'
 
 function toneFromBalance(balance: number): CreditsTone {
-  if (balance < 10) return 'error'
-  if (balance <= 40) return 'warning'
+  if (balance < 7) return 'error'
+  if (balance < 13) return 'warning'
   return 'neutral'
 }
 

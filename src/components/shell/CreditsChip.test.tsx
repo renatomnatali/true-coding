@@ -17,17 +17,23 @@ describe('CreditsChip', () => {
     expect(label.textContent).not.toMatch(/créditos/)
   })
 
-  it('usa variante warning (fundo âmbar) quando o saldo está entre 10 e 40', () => {
-    render(<CreditsChip balance={20} />)
+  it('usa variante warning (fundo âmbar) quando o saldo está entre 7 e 12', () => {
+    render(<CreditsChip balance={10} />)
     const label = screen.getByTestId('credits-balance')
     // O Chip wrapper (span pai) carrega as classes de variante.
     expect(label.parentElement).toHaveClass('bg-feedback-warning-light')
   })
 
-  it('usa variante error (fundo vermelho) quando o saldo cai abaixo de 10', () => {
+  it('usa variante error (fundo vermelho) quando o saldo cai abaixo de 7', () => {
     render(<CreditsChip balance={3} />)
     const label = screen.getByTestId('credits-balance')
     expect(label.parentElement).toHaveClass('bg-feedback-error-light')
+  })
+
+  it('usa variante neutral quando o saldo é >= 13', () => {
+    render(<CreditsChip balance={13} />)
+    const label = screen.getByTestId('credits-balance')
+    expect(label.parentElement).toHaveClass('bg-surface-muted')
   })
 
   it('protege contra saldos negativos exibindo zero', () => {

@@ -93,7 +93,6 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const effectiveNetlifyConnected = connectionError ? false : netlifyJustConnected
 
   const hasGitHub = !!project.user.githubUsername
-  const hasNetlify = !!project.productionUrl
 
   // STATE RESTORATION: Derive initial state from database (per docs/ux/STATES.md)
   const discoveryConversation = project.conversations?.[0] || null
@@ -184,8 +183,6 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
 
   // TRC-14.4: a navegação global vive agora no AppShell (sidebar 56/224).
   // Aqui permanecem apenas workspace + chat.
-  void hasGitHub
-  void hasNetlify
 
   return (
     <ProjectLayout
