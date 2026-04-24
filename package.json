@@ -15,7 +15,8 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:migrate:plans-to-blocks": "tsx prisma/migrations/scripts/migrate-plans-to-blocks.ts"
+    "db:migrate:plans-to-blocks": "tsx prisma/migrations/scripts/migrate-plans-to-blocks.ts",
+    "db:seed:maria": "tsx prisma/seed-maria.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
