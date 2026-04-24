@@ -51,6 +51,17 @@ Nao abrir PR B enquanto PR A nao esta mergado, a menos que sejam verdadeiramente
 **Regra 6 — Todo texto visível ao utilizador deve estar em português brasileiro com acentuação correta.**
 Nunca gerar texto em português sem acentos (ex: "Nao" em vez de "Não", "voce" em vez de "você"). Isso inclui: conteúdo HTML, strings de UI, mensagens de chat, labels, placeholders, títulos e botões. Nomes de arquivos, classes CSS, variáveis JS e URLs podem permanecer sem acentos (ASCII-safe).
 
+**Regra 7 — Story-Goals-Antigoals + rigor de prioridade em Epic/Story.**
+Formalizada em TRC-307 ([CHORE] Revisar épicos SPEDITE com Story-Goals-Antigoals). Três sub-regras obrigatórias:
+
+1. **Nenhum Epic ou Story novo entra no board sem Story-Goals-Antigoals preenchido.** Exceção: épico puramente técnico pode ser marcado `⚙ Tech-only epic (no user story)` com callout explícito + justificativa de por que é "não-derivável". Formato do bloco em `docs/story-goals-antigoals.md`.
+
+2. **Status SPEDITE exige link explícito para impacto no usuário.** Épico tech-only SPEDITE só se justifica como "habilitador" de épicos SPEDITE com user story real — dizer isso no corpo. SPEDITE sem impacto de usuário = priority errada.
+
+3. **Sub-task referencia o épico pai via campo `Épico`.** Task órfã (sem épico associado) = red flag em review. Sub-task Chore que faz parte de épico tech-only pode não ter user story individual, mas tem que estar linkada ao épico.
+
+Regra aplicável a **todo PR que cria novo Epic/Story** a partir de 2026-04-24. Epics pré-existentes (ex: TRC-05/06/07) foram retrofitados no mesmo ticket TRC-307.
+
 ## Fluxo de PR (OBRIGATORIO)
 
 1. Criar branch e fazer commits
