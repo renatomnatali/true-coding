@@ -14,28 +14,24 @@ import { tierLabel, type PlatformTier } from './TierBadge'
 
 export type UserChipProps = {
   name: string
-  /** Inicial exibida no avatar; default é o primeiro caractere de `name`. */
-  initial?: string
   tier: PlatformTier
   /** Modo colapsado: só o avatar. */
   compact?: boolean
   className?: string
 }
 
-function resolveInitial(name: string, initial?: string): string {
-  if (initial && initial.trim()) return initial.trim().charAt(0).toUpperCase()
+function resolveInitial(name: string): string {
   const trimmed = name.trim()
   return trimmed ? trimmed.charAt(0).toUpperCase() : '?'
 }
 
 export function UserChip({
   name,
-  initial,
   tier,
   compact = false,
   className,
 }: UserChipProps) {
-  const avatarInitial = resolveInitial(name, initial)
+  const avatarInitial = resolveInitial(name)
   const planLabel = `Free · ${tierLabel(tier)}`
 
   return (

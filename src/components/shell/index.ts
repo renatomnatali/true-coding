@@ -4,8 +4,8 @@
 
 export { AppShell } from './AppShell'
 export { AppShellClient } from './AppShellClient'
-export { Sidebar } from './Sidebar'
-export type { SidebarProps } from './Sidebar'
+export { ProductSidebar } from './ProductSidebar'
+export type { ProductSidebarProps } from './ProductSidebar'
 export { TierBadge, tierLabel } from './TierBadge'
 export type { PlatformTier, TierBadgeProps } from './TierBadge'
 export { CreditsChip } from './CreditsChip'

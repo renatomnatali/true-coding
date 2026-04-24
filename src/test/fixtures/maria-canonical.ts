@@ -22,8 +22,6 @@ import {
   ProjectPhase,
   ReviewCadence,
   RiskCategory,
-  RiskImpact,
-  RiskProbability,
 } from '@prisma/client'
 
 // ----------------------------------------------------------------------------
@@ -349,8 +347,6 @@ export interface MariaRiskDraft {
   description: string
   trigger: string
   category: RiskCategory
-  impact: RiskImpact
-  probability: RiskProbability
   origin: string
 }
 
@@ -363,8 +359,6 @@ export const MARIA_RISK_DRAFTS: MariaRiskDraft[] = [
     trigger:
       'Webhook do MP atrasar > 30s · resposta 4xx/5xx do endpoint /api/mp/webhook · diferença entre pedidos no painel e extrato MP do dia.',
     category: RiskCategory.TECNICO,
-    impact: RiskImpact.ALTO,
-    probability: RiskProbability.MEDIA,
     origin: 'Plano Técnico · Integrações',
   },
   {
@@ -378,8 +372,6 @@ export const MARIA_RISK_DRAFTS: MariaRiskDraft[] = [
     // não recebe), não disputa de mercado. Mockup original usava 'Operacional'
     // (inexistente no enum). Suggestion Code-Reviewer TRC-14.7.
     category: RiskCategory.REPUTACAO,
-    impact: RiskImpact.MEDIO,
-    probability: RiskProbability.ALTA,
     origin: 'Plano de UX · Telas principais',
   },
 ]

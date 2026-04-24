@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 
 /**
- * TRC-14.8 — Largura mínima da aplicação autenticada (ADR-016).
+ * TRC-14.8 — Largura mínima da aplicação autenticada (ver Decision Log no
+ * Notion).
  *
  * Abaixo deste ponto, rotas do app devem exibir o banner `ViewportGate`.
  * Landing, onboarding, checkout, emails e status view seguem responsivos e

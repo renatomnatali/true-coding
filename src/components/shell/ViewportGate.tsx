@@ -8,11 +8,11 @@ import { APP_MIN_WIDTH_PX, useViewport } from '@/hooks/use-viewport'
 /**
  * TRC-14.8 — Gate visual para viewports abaixo de {@link APP_MIN_WIDTH_PX}.
  *
- * Segue a ADR-016 (desktop-first app ≥ 1280px). Renderiza um overlay com
- * `role="dialog"` cobrindo as rotas autenticadas quando o usuário abre o app
- * numa tela pequena. O `AppShellClient` já filtra rotas públicas, então este
- * componente só aparece dentro do shell — landing/sign-in/design-system ficam
- * de fora por construção.
+ * Segue decisão de desktop-first (≥ 1280px, ver Decision Log no Notion).
+ * Renderiza um overlay com `role="dialog"` cobrindo as rotas autenticadas
+ * quando o usuário abre o app numa tela pequena. O `AppShellClient` já filtra
+ * rotas públicas, então este componente só aparece dentro do shell —
+ * landing/sign-in/design-system ficam de fora por construção.
  *
  * Decisão client-side (SSR não sabe a largura do cliente). O primeiro render
  * devolve `null` para evitar flash antes da primeira medição.

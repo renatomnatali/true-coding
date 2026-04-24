@@ -4,7 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 
 import { CreditsChip } from '@/components/shell/CreditsChip'
-import { Sidebar } from '@/components/shell/Sidebar'
+import { ProductSidebar } from '@/components/shell/ProductSidebar'
 import { TierBadge, type PlatformTier } from '@/components/shell/TierBadge'
 import { UserChip } from '@/components/shell/UserChip'
 import { Callout } from '@/components/ui/callout'
@@ -47,8 +47,7 @@ export function ShellShowcase() {
           CreditsChip
         </h3>
         <p className="mt-1 text-xs text-ink-tertiary">
-          Cor varia por faixa: neutral (&gt;40), warning (10–40), error
-          (&lt;10).
+          Cor varia por faixa: neutral (≥13), warning (7–12), error (&lt;7).
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3 rounded-brand-lg border border-line bg-surface p-4">
           <CreditsChip balance={60} />
@@ -99,8 +98,9 @@ export function ShellShowcase() {
         </h3>
         <p className="mt-1 text-xs text-ink-tertiary">
           Overlay exibido em viewports abaixo de {APP_MIN_WIDTH_PX}px dentro do
-          app autenticado (ADR-016 / TRC-14.8). Preview inline abaixo — em
-          produção o container é <code>fixed inset-0</code>.
+          app autenticado (desktop-first; ver TRC-14 / Decision Log no Notion).
+          Preview inline abaixo — em produção o container é{' '}
+          <code>fixed inset-0</code>.
         </p>
         <ViewportGatePreview />
       </div>
@@ -183,11 +183,11 @@ function SidebarPreview({ tier }: { tier: PlatformTier }) {
   )
 }
 
-/** Variante da Sidebar confinada ao preview (não `fixed` global). */
+/** Variante da ProductSidebar confinada ao preview (não `fixed` global). */
 function ScopedSidebar({ tier }: { tier: PlatformTier }) {
   return (
     <div className="absolute inset-y-0 left-0">
-      <Sidebar
+      <ProductSidebar
         userName="Maria Silva"
         tier={tier}
         credits={tier === 'TRIAL' ? 60 : 40}
