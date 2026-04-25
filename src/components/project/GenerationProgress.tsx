@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 import { Button } from '@/components/ui/button'
 import {
   Loader2,
@@ -65,7 +66,17 @@ function mapGenerateErrorMessage(codeOrMessage: string): string {
   return known[trimmed] ?? trimmed
 }
 
-export function GenerationProgress({
+export function GenerationProgress(props: GenerationProgressProps) {
+  // TRC-05.1: master switch da pipeline de Code Generation. Quando OFF
+  // (MVP Spec-as-a-Service), o componente não renderiza nem dispara fetch.
+  if (!ENABLE_CODE_GENERATION) {
+    return null
+  }
+
+  return <GenerationProgressInner {...props} />
+}
+
+function GenerationProgressInner({
   projectId,
   onComplete,
   onError,

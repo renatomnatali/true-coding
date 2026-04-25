@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { FEATURES } from '@/config/features'
+import { ENABLE_CODE_GENERATION, FEATURES } from '@/config/features'
 import type { DevelopmentEvent, DevelopmentRunStatus } from '@/types'
 import { getRetryBoundarySequence } from '@/lib/development/retry-boundary'
 
@@ -301,7 +301,19 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
   return fallback
 }
 
-export function DevelopmentActivityPanel({
+export function DevelopmentActivityPanel(props: DevelopmentActivityPanelProps) {
+  // TRC-05.1: master switch da pipeline de Code Generation. Quando OFF
+  // (MVP Spec-as-a-Service), o painel desaparece silenciosamente — sem
+  // hooks, sem fetches, sem placeholder. Guard antes dos hooks para evitar
+  // efeitos colaterais (polling, EventSource, etc).
+  if (!ENABLE_CODE_GENERATION) {
+    return null
+  }
+
+  return <DevelopmentActivityPanelInner {...props} />
+}
+
+function DevelopmentActivityPanelInner({
   projectId,
   projectStatus,
   projectName,

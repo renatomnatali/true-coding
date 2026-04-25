@@ -57,7 +57,39 @@ export const FEATURES = {
    * Benefits: Avoids truncation, respects rate limits, uses prompt caching
    */
   PIPELINE_V2: process.env.PIPELINE_V2 === 'true',
+
+  /**
+   * Code Generation Pipeline (TRC-05.1, ADR-008 + ADR-026)
+   *
+   * Master switch para toda a pipeline de Code Generation (assessment,
+   * iterações, geração de arquivos, gates, release). MVP do True Coding
+   * pivotou para Spec-as-a-Service em 2026-04-14 — entregamos download de
+   * spec.md + manifest.json, sem executar Generation.
+   *
+   * O código permanece dormente para retomada v2 via MCP delegation.
+   *
+   * Default: false (desativado em produção quando a env var não estiver
+   * setada). Ambientes de dev/test podem habilitar via env var.
+   *
+   * Quando OFF:
+   * - Componentes de Generation retornam null (não renderizam).
+   * - Rotas /api/projects/[id]/development/* retornam 404.
+   */
+  ENABLE_CODE_GENERATION:
+    process.env.NEXT_PUBLIC_ENABLE_CODE_GENERATION === 'true',
 } as const
+
+/**
+ * Atalho top-level para a flag de Code Generation (TRC-05.1).
+ *
+ * Existe como nomeada para uso direto em rotas/serviços que não
+ * dependem do objeto FEATURES inteiro:
+ *
+ *   import { ENABLE_CODE_GENERATION } from '@/config/features'
+ *
+ * Tem o mesmo valor de FEATURES.ENABLE_CODE_GENERATION.
+ */
+export const ENABLE_CODE_GENERATION = FEATURES.ENABLE_CODE_GENERATION
 
 /**
  * Type-safe feature flag checker

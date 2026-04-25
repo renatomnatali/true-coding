@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { codegenFlagGuard } from '@/lib/features/code-generation-guard'
 import { prisma } from '@/lib/db/prisma'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import { createDevelopmentRun, isDevelopmentRunActiveInWorker } from '@/lib/development/run-control'
@@ -154,6 +155,10 @@ function mapError(error: unknown) {
 }
 
 export async function POST(_request: Request, { params }: RouteParams) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  const guard = codegenFlagGuard()
+  if (guard) return guard
+
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -202,6 +207,10 @@ export async function POST(_request: Request, { params }: RouteParams) {
 }
 
 export async function GET(_request: Request, { params }: RouteParams) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  const guard = codegenFlagGuard()
+  if (guard) return guard
+
   try {
     const { userId } = await auth()
     if (!userId) {

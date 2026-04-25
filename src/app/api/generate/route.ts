@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
+import { codegenFlagGuard } from '@/lib/features/code-generation-guard'
 import { prisma } from '@/lib/db/prisma'
 import { generateProject, GenerationEvent } from '@/lib/codegen/generator'
 import { TechnicalPlan } from '@/lib/ai/prompts/planning'
@@ -11,6 +12,10 @@ import {
 import { decrypt } from '@/lib/crypto'
 
 export async function POST(request: Request) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  const guard = codegenFlagGuard()
+  if (guard) return guard
+
   try {
     const { userId } = await auth()
     if (!userId) {
