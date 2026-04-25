@@ -16,7 +16,7 @@ Para cada `Project` candidato:
    - **Negócio (6 blocos):** `visao`, `problema`, `publico`, `features`, `diferenciais`, `monetizacao`
    - **UX (4 blocos):** `personas`, `jornadas`, `telas`, `tokens`
    - **Técnico (4 blocos):** `stack`, `arquitetura`, `dados`, `integracoes`
-3. Cria os `PlanBlock` correspondentes com `status = APPROVED` e `approvedAt = Project.updatedAt`. Planos antigos são considerados já aprovados porque o produto só permite avançar de fase após aprovação explícita.
+3. Cria os `PlanBlock` correspondentes com `status = APPROVED` e `approvedAt = Project.updatedAt`. Planos antigos são considerados já aprovados porque, no modelo legado, o produto só permitia avançar após aprovação explícita (no modelo atual TRC-ADR-025, a aprovação dos 3 planos é o que move o projeto de `stage=BOOTSTRAP` para `stage=ACTIVE`).
 4. Preserva o JSON original em `Project.legacyPlans` com um `migratedAt`:
    ```json
    {
@@ -46,7 +46,7 @@ Anexados a blocos existentes (sem perda):
 
 Os seguintes campos do shape legacy são **descartados** na migração — ainda ficam preservados no `legacyPlans` cru, mas não aparecem em nenhum `PlanBlock`:
 
-- `technicalPlan.security` — vai virar campo de Risk Log na Fase Gestão (POLICY-003).
+- `technicalPlan.security` — vai virar campo de Risk Log (POLICY-003), que vive permanentemente desde `stage=BOOTSTRAP` (TRC-ADR-025).
 - `technicalPlan.performance` — métricas, melhor modeladas como assumptions do Product Context (POLICY-010).
 - `technicalPlan.testing` — estratégia de testes não é conteúdo de plano; vira playbook.
 - `technicalPlan.deployment` — deploy é responsabilidade de CodeGen congelado (ADR-008).
