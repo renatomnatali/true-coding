@@ -5,7 +5,12 @@ import { DevelopmentActivityPanel } from './DevelopmentActivityPanel'
 vi.mock('@/config/features', () => ({
   FEATURES: {
     AUTONOMOUS_DEVELOPMENT_V1: true,
+    ENABLE_CODE_GENERATION: true,
   },
+  // TRC-05.1: tests rodam com a pipeline de Code Generation habilitada
+  // para exercitar o caminho completo. O cenário flag=false é coberto
+  // pelo arquivo dedicado DevelopmentActivityPanel.flag-off.test.tsx.
+  ENABLE_CODE_GENERATION: true,
 }))
 
 class MockEventSource {

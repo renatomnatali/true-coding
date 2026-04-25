@@ -385,4 +385,59 @@ describe('POST /api/projects/[id]/connect', () => {
     expect(response.status).toBe(500)
     expect(data.error).toBe('INTERNAL_ERROR')
   })
+
+  // ========================================================================
+  // TRC-05.2 — service=skip (no-op idempotente)
+  // ========================================================================
+
+  it('should accept service=skip as a no-op and return { skipped: true }', async () => {
+    setupProject({ githubRepoUrl: null })
+
+    const response = await POST(createRequest({ service: 'skip' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual({ skipped: true })
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
+    expect(mockCreateRepository).not.toHaveBeenCalled()
+    expect(mockCreateNetlifySite).not.toHaveBeenCalled()
+  })
+
+  it('should accept skip even when GitHub is already connected (still no-op)', async () => {
+    setupProject({
+      githubRepoUrl: 'https://github.com/testuser/my-delivery-app',
+      githubRepoOwner: 'testuser',
+      githubRepoName: 'my-delivery-app',
+    })
+
+    const response = await POST(createRequest({ service: 'skip' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual({ skipped: true })
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
+  })
+
+  it('should still enforce auth on skip', async () => {
+    mockAuth.mockResolvedValue({ userId: null } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
+
+    const response = await POST(createRequest({ service: 'skip' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(401)
+    expect(data.error).toBe('UNAUTHORIZED')
+  })
+
+  it('should mention all three accepted services in validation error', async () => {
+    setupProject()
+
+    const response = await POST(createRequest({ service: 'invalid' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('VALIDATION_ERROR')
+    expect(data.message).toMatch(/github/)
+    expect(data.message).toMatch(/netlify/)
+    expect(data.message).toMatch(/skip/)
+  })
 })

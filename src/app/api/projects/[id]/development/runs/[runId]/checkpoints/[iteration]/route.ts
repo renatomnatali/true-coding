@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import { checkpointAction } from '@/lib/development/run-control'
 
@@ -13,6 +14,11 @@ const checkpointSchema = z.object({
 })
 
 export async function POST(request: Request, { params }: RouteParams) {
+  // TRC-05.1: pipeline de Code Generation desligada no MVP Spec-as-a-Service.
+  if (!ENABLE_CODE_GENERATION) {
+    return new Response(null, { status: 404 })
+  }
+
   try {
     const { userId } = await auth()
     if (!userId) {

@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { decrypt } from '@/lib/crypto'
+import { ENABLE_CODE_GENERATION } from '@/config/features'
 import {
   createGitHubClient,
   createRepository,
@@ -45,7 +46,13 @@ function isRepositoryNotFound(error: unknown): boolean {
 }
 
 // POST /api/projects/[id]/connect
-// Body: { service: 'github' | 'netlify' }
+// Body: { service: 'github' | 'netlify' | 'skip' }
+//
+// TRC-05.2 — Spec-as-a-Service:
+// - 'github'  : continua disponível (cria/vincula repositório).
+// - 'netlify' : retorna 410 GONE quando ENABLE_CODE_GENERATION está OFF
+//               (rota mantida dormente; código preservado pra retomada v2).
+// - 'skip'    : marca a fase de Conexão como dispensada (no-op idempotente).
 export async function POST(request: Request, { params }: ConnectParams) {
   try {
     const { userId } = await auth()
@@ -62,8 +69,14 @@ export async function POST(request: Request, { params }: ConnectParams) {
     }
 
     const { service } = body
-    if (service !== 'github' && service !== 'netlify') {
-      return NextResponse.json({ error: 'VALIDATION_ERROR', message: 'service must be "github" or "netlify"' }, { status: 400 })
+    if (service !== 'github' && service !== 'netlify' && service !== 'skip') {
+      return NextResponse.json(
+        {
+          error: 'VALIDATION_ERROR',
+          message: 'service must be "github", "netlify" or "skip"',
+        },
+        { status: 400 }
+      )
     }
 
     // Fetch project with owner
@@ -82,6 +95,27 @@ export async function POST(request: Request, { params }: ConnectParams) {
 
     if (service === 'github') {
       return await connectGitHub(project)
+    }
+
+    if (service === 'skip') {
+      // TRC-05.2 — pular conexão é sempre permitido. Sem efeitos colaterais
+      // no banco por enquanto (status segue em CONNECTING). Persistir essa
+      // intenção é escopo de tickets posteriores.
+      return NextResponse.json({ skipped: true })
+    }
+
+    // service === 'netlify'
+    if (!ENABLE_CODE_GENERATION) {
+      // Netlify saiu do fluxo obrigatório com o pivô Spec-as-a-Service.
+      // Mantemos o handler dormente conforme ADR-0026.
+      return NextResponse.json(
+        {
+          error: 'NETLIFY_DISABLED',
+          message:
+            'Conexão com Netlify está desativada nesta fase. Continue sem Netlify ou exporte o bundle de especificação.',
+        },
+        { status: 410 }
+      )
     }
 
     return await connectNetlify(project)
