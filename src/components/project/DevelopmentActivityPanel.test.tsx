@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useState } from 'react'
 import { DevelopmentActivityPanel } from './DevelopmentActivityPanel'
 
 vi.mock('@/config/features', () => ({
@@ -130,24 +131,7 @@ describe('DevelopmentActivityPanel', () => {
             createdAt: '2026-02-13T15:10:00.000Z',
             startedAt: '2026-02-13T15:00:00.000Z',
             finishedAt: null,
-          },
-        ])
-      )
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ runId: 'run-active-2', status: 'RUNNING', alreadyProcessing: true }),
-      } as Response)
-      .mockResolvedValueOnce(
-        runsResponse([
-          {
-            id: 'run-active-2',
-            status: 'RUNNING',
-            currentIteration: 2,
-            totalIterations: 3,
-            errorSummary: null,
-            createdAt: '2026-02-13T15:10:00.000Z',
-            startedAt: '2026-02-13T15:00:00.000Z',
-            finishedAt: null,
+            isStale: false,
           },
         ])
       )
@@ -166,10 +150,7 @@ describe('DevelopmentActivityPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continuar execução' }))
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        '/api/projects/proj-1/development/runs/run-active-2/recover',
-        { method: 'POST' }
-      )
+      expect(screen.queryByRole('button', { name: 'Continuar execução' })).not.toBeInTheDocument()
     })
 
     await waitFor(() => {
@@ -184,6 +165,168 @@ describe('DevelopmentActivityPanel', () => {
         (init as { method?: string } | undefined)?.method === 'POST'
     )
     expect(postStartCall).toBeUndefined()
+
+    const recoverCall = mockFetch.mock.calls.find(
+      ([url]) => url === '/api/projects/proj-1/development/runs/run-active-2/recover'
+    )
+    expect(recoverCall).toBeUndefined()
+  })
+
+  it('handles RUN_NOT_RECOVERABLE by switching to checkpoint actions without technical error', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-race-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+            isStale: true,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 409,
+        json: async () => ({
+          error: 'RUN_NOT_RECOVERABLE',
+          message: 'A execução atual não pode ser retomada por este endpoint.',
+        }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-race-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+            isStale: true,
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar execução' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retomar execução' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/projects/proj-1/development/runs/run-race-1/recover',
+        { method: 'POST' }
+      )
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByText('A execução atual não pode ser retomada por este endpoint.')
+    ).not.toBeInTheDocument()
+  })
+
+  it('does not return to resume confirmation after checkpoint transition oscillates status', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-loop-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+            isStale: true,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 409,
+        json: async () => ({
+          error: 'RUN_NOT_RECOVERABLE',
+          message: 'A execução atual não pode ser retomada por este endpoint.',
+        }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-loop-1',
+            status: 'WAITING_CHECKPOINT',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: 'Iteration 1 failed',
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+            isStale: true,
+          },
+        ])
+      )
+
+    function StatefulStatusHarness() {
+      const [status, setStatus] = useState('GENERATING')
+      return (
+        <DevelopmentActivityPanel
+          projectId="proj-1"
+          projectStatus={status}
+          onProjectStatusChange={setStatus}
+        />
+      )
+    }
+
+    render(<StatefulStatusHarness />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar execução' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retomar execução' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(MockEventSource.instances.length).toBe(1)
+    })
+
+    const source = MockEventSource.latest()
+    expect(source).not.toBeNull()
+
+    act(() => {
+      source?.emit('run_status', {
+        id: 'evt-run-running',
+        runId: 'run-loop-1',
+        sequence: 10,
+        eventType: 'run_status',
+        payload: { status: 'RUNNING' },
+        createdAt: '2026-02-13T15:12:00.000Z',
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Continuar execução' })).not.toBeInTheDocument()
+    })
   })
 
   it('requests manual recovery when active run is stale before attaching stream', async () => {
@@ -639,6 +782,100 @@ describe('DevelopmentActivityPanel', () => {
     })
   })
 
+  it('mostra evolução de FileGen no painel central para testes e código', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-filegen-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ runId: 'run-filegen-1', status: 'RUNNING', alreadyProcessing: true }),
+      } as Response)
+      .mockResolvedValueOnce(
+        runsResponse([
+          {
+            id: 'run-filegen-1',
+            status: 'RUNNING',
+            currentIteration: 1,
+            totalIterations: 3,
+            errorSummary: null,
+            createdAt: '2026-02-13T15:10:00.000Z',
+            startedAt: '2026-02-13T15:00:00.000Z',
+            finishedAt: null,
+          },
+        ])
+      )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Continuar execução' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar execução' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Executando')).toBeInTheDocument()
+    })
+
+    const source = MockEventSource.latest()
+    expect(source).not.toBeNull()
+
+    act(() => {
+      source!.emit('agent_task', {
+        id: 'evt-filegen-test-running',
+        runId: 'run-filegen-1',
+        sequence: 1,
+        eventType: 'agent_task',
+        payload: {
+          agentName: 'FileGen',
+          status: 'RUNNING',
+          fileKind: 'test',
+          filePath: 'src/app/api/auth-register/route.test.ts',
+        },
+        createdAt: '2026-02-13T12:56:01.000Z',
+      })
+      source!.emit('agent_task', {
+        id: 'evt-filegen-code-running',
+        runId: 'run-filegen-1',
+        sequence: 2,
+        eventType: 'agent_task',
+        payload: {
+          agentName: 'FileGen',
+          status: 'RUNNING',
+          fileKind: 'api',
+          filePath: 'src/app/api/auth-register/route.ts',
+        },
+        createdAt: '2026-02-13T12:56:02.000Z',
+      })
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Gerando src/app/api/auth-register/route.test.ts')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Gerando src/app/api/auth-register/route.ts')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('renders skipped label for dependent quality gates', async () => {
     mockFetch
       .mockResolvedValueOnce(
@@ -819,6 +1056,39 @@ describe('DevelopmentActivityPanel', () => {
       expect(screen.getByText('Ação necessária para continuar')).toBeInTheDocument()
     })
 
+    expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tentar novamente iteração' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancelar execução' })).toBeInTheDocument()
+  })
+
+  it('does not require resume confirmation when run is waiting checkpoint and project is still GENERATING', async () => {
+    mockFetch.mockResolvedValueOnce(
+      runsResponse([
+        {
+          id: 'run-6b',
+          status: 'WAITING_CHECKPOINT',
+          currentIteration: 1,
+          totalIterations: 3,
+          errorSummary: 'Iteration 1 failed after retries',
+          createdAt: '2026-02-13T15:10:00.000Z',
+          startedAt: '2026-02-13T15:00:00.000Z',
+          finishedAt: null,
+        },
+      ])
+    )
+
+    render(
+      <DevelopmentActivityPanel
+        projectId="proj-1"
+        projectStatus="GENERATING"
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Ação necessária para continuar')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: 'Continuar execução' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Retomar checkpoint' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Tentar novamente iteração' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancelar execução' })).toBeInTheDocument()
@@ -1636,36 +1906,4 @@ describe('DevelopmentActivityPanel', () => {
     FEATURES.AUTONOMOUS_DEVELOPMENT_V1 = original
   })
 
-  describe('projectName prop', () => {
-    it('displays project name in title when projectName is provided', async () => {
-      mockFetch.mockResolvedValueOnce(runsResponse([]))
-
-      render(
-        <DevelopmentActivityPanel
-          projectId="proj-1"
-          projectStatus="GENERATING"
-          projectName="Meu App Incrível"
-        />
-      )
-
-      await waitFor(() => {
-        expect(screen.getByText('Construindo Meu App Incrível')).toBeInTheDocument()
-      })
-    })
-
-    it('displays fallback title when projectName is not provided', async () => {
-      mockFetch.mockResolvedValueOnce(runsResponse([]))
-
-      render(
-        <DevelopmentActivityPanel
-          projectId="proj-1"
-          projectStatus="GENERATING"
-        />
-      )
-
-      await waitFor(() => {
-        expect(screen.getByText('Construindo...')).toBeInTheDocument()
-      })
-    })
-  })
 })

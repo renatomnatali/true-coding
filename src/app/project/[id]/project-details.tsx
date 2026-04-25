@@ -190,6 +190,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         <ChatPanel
           projectId={project.id}
           projectName={project.name}
+          projectStatus={status}
           initialMessages={initialMessages}
           initialPlanReady={initialPlanReady}
           initialQuestionProgress={initialQuestionProgress}

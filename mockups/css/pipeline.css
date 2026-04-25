@@ -1,0 +1,530 @@
+/**
+ * Pipeline CSS - True Coding
+ * Componentes para o pipeline autonomo de desenvolvimento
+ * Estados: pendente, executando, concluido, falhou, pulado
+ */
+
+/* ============================================================================
+   PROGRESS BAR GLOBAL (barra fina no topo do pipeline)
+   ============================================================================ */
+
+/* Progress wrapper with percentage label */
+.pipeline-progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.pipeline-progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Fallback: when track is used without wrapper, keep bottom margin */
+.card-body > .pipeline-progress-track {
+  margin-bottom: var(--space-5);
+}
+
+.pipeline-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #818cf8);
+  border-radius: var(--border-radius-full);
+  transition: width 700ms ease;
+  min-width: 0;
+}
+
+.pipeline-progress-fill.complete {
+  background: linear-gradient(90deg, var(--color-success), #4ade80);
+}
+
+.pipeline-progress-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ============================================================================
+   PIPELINE HEADER
+   ============================================================================ */
+
+.pipeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.pipeline-header-left {
+  flex: 1;
+}
+
+.pipeline-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.pipeline-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================================
+   STATUS BADGES (para o cabecalho do pipeline)
+   ============================================================================ */
+
+.pipeline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.pipeline-badge-queued {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.pipeline-badge-running {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.pipeline-badge-success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.pipeline-badge-failed {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+/* ============================================================================
+   STEP GROUPS (Preparacao, Iteracao N, Finalizacao)
+   ============================================================================ */
+
+.pipeline-group {
+  margin-bottom: var(--space-5);
+}
+
+.pipeline-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.pipeline-group-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pipeline-group-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+.pipeline-group-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   ITERATION GROUPS (colapsaveis)
+   ============================================================================ */
+
+.pipeline-iter-group {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.pipeline-iter-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.pipeline-iter-header:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.pipeline-iter-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.pipeline-iter-icon.pending {
+  border: 2px solid var(--color-gray-300);
+  color: var(--color-gray-300);
+}
+
+.pipeline-iter-icon.running {
+  background: var(--color-primary);
+  color: white;
+  animation: pipelinePulse 2s ease-in-out infinite;
+}
+
+.pipeline-iter-icon.completed {
+  background: var(--color-success);
+  color: white;
+}
+
+.pipeline-iter-icon.failed {
+  background: var(--color-error);
+  color: white;
+}
+
+.pipeline-iter-label {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.pipeline-iter-label.pending {
+  color: var(--color-text-tertiary);
+}
+
+.pipeline-iter-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-right: var(--space-2);
+}
+
+.pipeline-iter-expand {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.pipeline-iter-group.expanded .pipeline-iter-expand {
+  transform: rotate(180deg);
+}
+
+.pipeline-iter-steps {
+  display: none;
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.pipeline-iter-group.expanded .pipeline-iter-steps {
+  display: block;
+}
+
+/* ============================================================================
+   INDIVIDUAL STEPS
+   ============================================================================ */
+
+.pipeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  position: relative;
+}
+
+/* Vertical connector between steps */
+.pipeline-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 28px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--color-gray-200);
+}
+
+.pipeline-step.completed:not(:last-child)::after {
+  background: var(--color-success-light);
+}
+
+/* Step Icon */
+.pipeline-step-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.pipeline-step-icon.pending {
+  border: 2px solid var(--color-gray-300);
+  background: var(--color-bg-primary);
+  color: transparent;
+}
+
+.pipeline-step-icon.running {
+  background: var(--color-primary);
+  color: white;
+  animation: pipelinePulse 2s ease-in-out infinite;
+}
+
+.pipeline-step-icon.completed {
+  background: var(--color-success);
+  color: white;
+}
+
+.pipeline-step-icon.failed {
+  background: var(--color-error);
+  color: white;
+}
+
+.pipeline-step-icon.skipped {
+  border: 2px solid var(--color-gray-300);
+  background: var(--color-bg-primary);
+  color: var(--color-gray-300);
+}
+
+@keyframes pipelinePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Step Content */
+.pipeline-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pipeline-step-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 20px;
+}
+
+.pipeline-step-label.pending {
+  color: var(--color-text-tertiary);
+}
+
+.pipeline-step-label.running {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.pipeline-step-label.completed {
+  color: var(--color-text-tertiary);
+}
+
+.pipeline-step-label.failed {
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+}
+
+.pipeline-step-label.skipped {
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+/* ============================================================================
+   FILE LIST (durante geracao de codigo)
+   ============================================================================ */
+
+.pipeline-file-list {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-md);
+}
+
+.pipeline-file-list-header {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.pipeline-file-item {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: var(--space-1) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pipeline-file-item::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-success);
+  flex-shrink: 0;
+}
+
+.pipeline-file-more {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-1);
+}
+
+/* ============================================================================
+   ERROR BLOCK (inline no passo que falhou)
+   ============================================================================ */
+
+.pipeline-error-block {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-error-light);
+  border: 1px solid #fca5a5;
+  border-radius: var(--border-radius-md);
+}
+
+.pipeline-error-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-2);
+}
+
+.pipeline-error-details-toggle {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  margin-bottom: var(--space-3);
+  font-family: var(--font-family);
+}
+
+.pipeline-error-details-toggle:hover {
+  color: var(--color-error-hover);
+}
+
+.pipeline-error-details {
+  display: none;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-sm);
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pipeline-error-details.visible {
+  display: block;
+}
+
+.pipeline-error-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ============================================================================
+   CONFIRMATION BANNER (retomada de execucao)
+   ============================================================================ */
+
+.pipeline-confirm-banner {
+  padding: var(--space-4);
+  background: var(--color-warning-light);
+  border: 1px solid #fcd34d;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.pipeline-confirm-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.pipeline-confirm-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.pipeline-confirm-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ============================================================================
+   PIPELINE PAUSED STATE (overlay cinza)
+   ============================================================================ */
+
+.pipeline-body.paused {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   FINAL MESSAGE (sucesso / cancelado / falha final)
+   ============================================================================ */
+
+.pipeline-final-message {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-success);
+  border-radius: var(--border-radius-xl);
+  margin-top: var(--space-4);
+}
+
+.pipeline-final-message.failed {
+  border-color: var(--color-error);
+}
+
+.pipeline-final-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-3);
+}
+
+.pipeline-final-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.pipeline-final-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}

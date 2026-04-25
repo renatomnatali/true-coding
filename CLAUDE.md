@@ -8,6 +8,19 @@ Instrucoes para o Claude Code neste projeto.
 
 Stack: Next.js 15, React 19, TypeScript, Tailwind, Prisma, Clerk, Claude API.
 
+## Papéis e camadas
+
+Quatro papéis distintos que o Claude Code deve manter separados ao raciocinar sobre este projeto:
+
+1. **Renato** é quem gerencia TC.
+2. **Notion + Claude Code** são ferramentas que Renato usa pra exercer essa gestão.
+3. **TC** é o produto em construção — não gerencia nada, nem a si mesmo.
+4. **Usuário-final** (ex.: Maria/Cafeteria Beta, no mockup `/Spec`) vai usar TC pra gerenciar o próprio produto.
+
+Conteúdo no Notion (ADRs, Risks, Policies, Playbooks) é autoria de Renato sobre como TC deve operar — não é TC se documentando. **Policies são invariantes, não sugestões**: antes de desenhar UI de captura (Risk/Decision/Discovery), consultar as Policies relevantes.
+
+Para detalhe: memórias `project_four_layer_model.md` e `project_current_state.md`, e página Notion True Coding (ver `notion_truecoding.md` pra IDs dos databases).
+
 ## Comandos
 
 ```bash
@@ -33,8 +46,18 @@ Leia `docs/trunk-based-development.md` para detalhes completos.
 
 ### Regras obrigatorias (aprendidas na prática)
 
-**Regra 1 — Gherkin é a fonte de verdade para comportamento.**
-Antes de implementar ou alterar qualquer comportamento, ler o `.feature` correspondente em `docs/specifications/`. Se o codigo diverge do Gherkin, o Gherkin define o que está correto. Se o Gherkin está outdated, atualizar o Gherkin PRIMEIRO, depois o codigo. Exemplo do que não fazer: remover emojis das quick replies sem verificar que `discovery.feature` os exigia.
+**Regra 1 — Ordem canônica de especificação: Story → Jornada → Gherkin.**
+Ao especificar comportamento do sistema, seguir esta ordem:
+
+1. **User Story** — objetivo (o quê, para quem, porquê)
+2. **Jornada detalhada / Critérios de aceite** — passo a passo do fluxo, com microcopy, estados, exceções, canal de interação e ações por tela/feature
+3. **Gherkin** — tradução formal/testável em `docs/specifications/*.feature` (Dado/Quando/Então)
+
+Jornada é a fonte de entendimento. Gherkin é a tradução testável. Ambos devem permanecer alinhados: quando a jornada mudar, o Gherkin correspondente deve ser atualizado no mesmo ciclo (sem deixar drift prolongado).
+
+Para correção de código que **não** muda comportamento: código reflete o Gherkin existente. Se há drift (Gherkin desatualizado vs produto real), primeiro alinhar Jornada + Gherkin, depois mexer no código. Exemplo do que não fazer: remover emojis das quick replies sem verificar que `discovery.feature` os exigia.
+
+*Atualizada em 2026-04-15. Substitui versão anterior "Gherkin é a fonte de verdade" (Gherkin-first), que não refletia a prática real de UX e criava conflito com o trabalho em jornada que precede qualquer formalização. Ver Decision Log no Notion.*
 
 **Regra 2 — Não trocar de branch no meio de uma tarefa.**
 Se um PR externo precisa de atencao (review pendente, CI falhou), anotar e voltar depois. Nunca fazer stash → checkout outra branch → trabalho → push → voltar. Isso multiplica contexto e gasta creditos sem valor.
@@ -106,13 +129,29 @@ docs/              # Documentacao
 
 Copie `.env.example` para `.env.local` e preencha os valores.
 
-## Specs do Projeto
+## Notion — repositório externo de produto
 
-Leia a pasta `/Spec` para entender a especificacao completa:
-- `00-OVERVIEW.md` - Visao geral do projeto
-- `01-ARCHITECTURE.md` - Arquitetura tecnica
-- `02-DATA-MODEL.md` - Modelo de dados (Prisma)
-- `03-API-SPECIFICATION.md` - Endpoints da API
-- `04-AI-PROMPTS.md` - Prompts para Claude
-- `05-INTEGRATIONS.md` - GitHub, Vercel, Clerk
-- `06-IMPLEMENTATION.md` - Plano de implementacao
+**Página oficial**: https://www.notion.so/True-Coding-3420d9578db3804cb33bcdae2e802a22
+
+Convenção **repo vs Notion**:
+
+- **No repo (`docs/`)**: documentação técnica viva — ADRs, specs Gherkin, runbooks, contratos de agentes, políticas de engenharia. Código e docs técnicos andam juntos.
+- **No Notion (página True Coding)**: documentação de **produto, estratégia e negócio** — roadmap, pricing, modelo financeiro, personas, pesquisa de mercado, decision log de produto, risk log, feature registry.
+
+Ao receber instruções do tipo "leva isso para o Notion", usar as ferramentas MCP Notion para criar/atualizar páginas sob True Coding, escolhendo o database apropriado:
+- **Document Hub** / **Engineering Docs** → documentos longos
+- **Decision Log** → decisões de produto
+- **Risk Log** → riscos mapeados
+- **Feature Registry** → backlog de features
+
+## Fontes de verdade
+
+Não existe mais um documento mestre de especificação. Cada tipo de informação tem seu lugar:
+
+- **Comportamento do sistema** → `docs/specifications/*.feature` (Gherkin, regra 1)
+- **Decisões arquiteturais** → `docs/adr/*.md`
+- **Como a pipeline funciona hoje** → `docs/development/*.md`
+- **Modelo de dados** → `prisma/schema.prisma`
+- **Endpoints e contratos** → código em `src/app/api/**` + testes
+- **Prompts de IA** → `src/lib/ai/prompts/`
+- **Estratégia, roadmap, riscos, features de produto** → Notion (ver seção acima)

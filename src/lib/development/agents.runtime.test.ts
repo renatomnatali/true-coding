@@ -96,6 +96,12 @@ describe('agents runtime mode', () => {
     const result = await runTestAgent(context, iteration)
 
     expect(runClaudeAgentMock).toHaveBeenCalledTimes(1)
+    expect(runClaudeAgentMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        agentName: 'TestAgent',
+        phase: 'planning',
+      })
+    )
     expect(result.output.redStateConfirmed).toBe(true)
   })
 })

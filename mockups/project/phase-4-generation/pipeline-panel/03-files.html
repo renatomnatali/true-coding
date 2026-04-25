@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Panel - Geracao de Arquivos</title>
+  <link rel="stylesheet" href="shared.css">
+  <script src="shared.js" defer></script>
+</head>
+<body>
+  <!-- MOCKUP: Geracao de Arquivos
+       Preparacao concluida. Iteracao 1: especificacao e testes concluidos.
+       Geracao de codigo em andamento com lista de arquivos sendo criados.
+       Mostra 5 de 12 arquivos gerados ate agora. -->
+
+  <div class="panel-container">
+
+    <!-- Barra de progresso global - ~35% -->
+    <div class="progress-bar-track" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso geral do pipeline">
+      <div class="progress-bar-fill" style="width: 35%"></div>
+    </div>
+
+    <!-- Cabecalho -->
+    <div class="panel-header">
+      <div class="panel-header-left">
+        <h3>Pipeline Autonomo</h3>
+        <p>Acompanhe a criacao do seu aplicativo em tempo real</p>
+      </div>
+      <span class="badge badge-running">Executando</span>
+    </div>
+
+    <!-- Pipeline Steps -->
+    <div class="pipeline-body" role="list" aria-label="Etapas do pipeline">
+
+      <!-- Grupo: Preparacao - tudo concluido -->
+      <div class="step-group">
+        <div class="step-group-header">
+          <span class="step-group-label">Preparacao</span>
+          <span class="step-group-line"></span>
+          <span class="step-group-detail">3/3</span>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Preparando ambiente</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Criando estrutura do projeto</span>
+          </div>
+        </div>
+
+        <div class="step" role="listitem">
+          <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+          <div class="step-content">
+            <span class="step-label done">Instalando dependencias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 1 - gerando codigo -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-1-steps" aria-label="Expandir Iteracao 1">
+          <span class="iter-group-icon running" aria-label="Executando">&#9679;</span>
+          <span class="iter-group-label running">Iteracao 1</span>
+          <span class="iter-group-count">2/6</span>
+        </div>
+        <div id="iter-1-steps" class="substeps">
+          <!-- Especificacao - concluida -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Escrevendo especificacao</span>
+            </div>
+          </div>
+
+          <!-- Testes - concluidos -->
+          <div class="step" role="listitem">
+            <span class="step-icon done" aria-label="Concluido">&#10003;</span>
+            <div class="step-content">
+              <span class="step-label done">Gerando testes</span>
+            </div>
+          </div>
+
+          <!-- Geracao de codigo - EXECUTANDO com lista de arquivos -->
+          <div class="step" role="listitem">
+            <span class="step-icon running" aria-label="Executando">&#9679;</span>
+            <div class="step-content">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="step-label running">Gerando codigo</span>
+                <span class="step-detail" aria-live="polite">5/12 arquivos</span>
+              </div>
+
+              <!-- Lista de arquivos gerados em tempo real -->
+              <div class="file-list" role="list" aria-label="Arquivos sendo gerados">
+                <div class="file-item" role="listitem">
+                  <span class="file-item-icon" aria-label="Concluido">&#10003;</span>
+                  <span class="file-item-name">package.json</span>
+                </div>
+                <div class="file-item" role="listitem">
+                  <span class="file-item-icon" aria-label="Concluido">&#10003;</span>
+                  <span class="file-item-name">tailwind.config.ts</span>
+                </div>
+                <div class="file-item" role="listitem">
+                  <span class="file-item-icon" aria-label="Concluido">&#10003;</span>
+                  <span class="file-item-name">layout.tsx</span>
+                </div>
+                <div class="file-item" role="listitem">
+                  <span class="file-item-icon" aria-label="Concluido">&#10003;</span>
+                  <span class="file-item-name">page.tsx</span>
+                </div>
+                <div class="file-item" role="listitem">
+                  <span class="file-item-icon pending" aria-label="Gerando">&#9679;</span>
+                  <span class="file-item-name active">dashboard.tsx</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revisao - pendente -->
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content">
+              <span class="step-label pending">Revisando codigo</span>
+            </div>
+          </div>
+
+          <!-- Quality Gates - pendente -->
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content">
+              <span class="step-label pending">Verificando qualidade</span>
+            </div>
+          </div>
+
+          <!-- Publicacao - pendente -->
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content">
+              <span class="step-label pending">Publicando no Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grupo: Iteracao 2 - pendente, colapsada -->
+      <div class="iter-group">
+        <div class="iter-group-header" data-toggle-group="iter-2-steps" aria-label="Expandir Iteracao 2">
+          <span class="iter-group-icon pending" aria-label="Pendente">&#9675;</span>
+          <span class="iter-group-label pending">Iteracao 2</span>
+          <span class="iter-group-count">0/6</span>
+        </div>
+        <div id="iter-2-steps" class="substeps" style="display: none;">
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Escrevendo especificacao</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Gerando testes</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Gerando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Revisando codigo</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Verificando qualidade</span></div>
+          </div>
+          <div class="step" role="listitem">
+            <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+            <div class="step-content"><span class="step-label pending">Publicando no Git</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deploy final - pendente -->
+      <div class="step-group" style="margin-top: 4px;">
+        <div class="step-group-header">
+          <span class="step-group-label">Finalizacao</span>
+          <span class="step-group-line"></span>
+        </div>
+        <div class="step" role="listitem">
+          <span class="step-icon pending" aria-label="Pendente">&#9675;</span>
+          <div class="step-content">
+            <span class="step-label pending">Publicando na internet</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mockup navigation -->
+  <nav class="mockup-nav" aria-label="Navegacao entre mockups">
+    <a href="index.html">Hub</a>
+    <a href="01-initial.html">01 Inicial</a>
+    <a href="02-running.html">02 Executando</a>
+    <a href="03-files.html" class="active">03 Arquivos</a>
+    <a href="04-failure.html">04 Falha</a>
+    <a href="05-success.html">05 Sucesso</a>
+    <a href="06-confirmation.html">06 Confirmacao</a>
+  </nav>
+</body>
+</html>

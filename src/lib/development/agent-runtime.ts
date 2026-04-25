@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { chat, type ContentBlock } from '@/lib/ai/claude'
 import { extractJSON } from '@/lib/ai/parsers'
 import type { ModelPhase } from '@/lib/ai/config'
+import { isAIProviderConfigured } from '@/lib/ai/provider-config'
 import type { AgentExecutionResult } from './types'
 
 export interface ClaudeAgentRunOptions<TSchema extends z.ZodTypeAny> {
@@ -26,6 +27,18 @@ interface AgentUsage {
   outputTokens: number
 }
 
+interface TruncationContext {
+  agentName: string
+  phase: ModelPhase
+  stopReason?: string
+  provider?: string
+  model?: string
+  maxTokens?: number
+  usage?: AgentUsage
+  responseChars: number
+  jsonRepaired?: boolean
+}
+
 function estimateTokenUsage(rawText: string): number {
   return Math.max(1, Math.ceil(rawText.length / 4))
 }
@@ -46,43 +59,99 @@ function truncate(text: string, max = 220): string {
   return `${normalized.slice(0, max)}...`
 }
 
+function buildTruncationError(ctx: TruncationContext): Error {
+  const details = [
+    `phase=${ctx.phase}`,
+    `stopReason=${ctx.stopReason ?? 'unknown'}`,
+    `provider=${ctx.provider ?? 'unknown'}`,
+    `model=${ctx.model ?? 'unknown'}`,
+    `maxTokens=${ctx.maxTokens ?? 'unknown'}`,
+    `inputTokens=${ctx.usage?.inputTokens ?? 'unknown'}`,
+    `outputTokens=${ctx.usage?.outputTokens ?? 'unknown'}`,
+    `responseChars=${ctx.responseChars}`,
+    `jsonRepaired=${ctx.jsonRepaired ? 'true' : 'false'}`,
+  ].join(';')
+
+  console.warn('[agent-runtime] resposta truncada', {
+    agentName: ctx.agentName,
+    phase: ctx.phase,
+    stopReason: ctx.stopReason ?? 'unknown',
+    provider: ctx.provider ?? 'unknown',
+    model: ctx.model ?? 'unknown',
+    maxTokens: ctx.maxTokens ?? 'unknown',
+    inputTokens: ctx.usage?.inputTokens ?? null,
+    outputTokens: ctx.usage?.outputTokens ?? null,
+    responseChars: ctx.responseChars,
+    jsonRepaired: Boolean(ctx.jsonRepaired),
+  })
+
+  return new Error(`AGENT_RESPONSE_TRUNCATED:${ctx.agentName}:${details}`)
+}
+
 export function isClaudeAgentRuntimeEnabled(): boolean {
   return (
     process.env.AUTONOMOUS_DEV_LLM_AGENTS === 'true' &&
-    Boolean(process.env.ANTHROPIC_API_KEY)
+    isAIProviderConfigured()
   )
 }
 
-export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
-  options: ClaudeAgentRunOptions<TSchema>
-): Promise<AgentExecutionResult<z.infer<TSchema>>> {
-  const { text, stopReason, usage } = await chat({
-    phase: options.phase ?? 'codegen',
-    systemPrompt: options.systemPrompt,
-    messages: [{ role: 'user', content: options.userPrompt }],
+type UserMessageContent = string | ContentBlock[]
+
+async function runAgentCore<TSchema extends z.ZodTypeAny>(params: {
+  agentName: string
+  systemPrompt: string
+  userContent: UserMessageContent
+  schema: TSchema
+  phase: ModelPhase
+}): Promise<AgentExecutionResult<z.infer<TSchema>>> {
+  const { agentName, systemPrompt, userContent, schema, phase } = params
+  const { text, stopReason, usage, provider, model, maxTokens } = await chat({
+    phase,
+    systemPrompt,
+    messages: [{ role: 'user', content: userContent }],
   })
 
   if (stopReason === 'max_tokens') {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: false,
+    })
   }
 
   const { data, repaired } = extractJSON<unknown>(text)
 
   if (!data) {
-    throw new Error(`AGENT_RESPONSE_INVALID_JSON:${options.agentName}`)
+    throw new Error(`AGENT_RESPONSE_INVALID_JSON:${agentName}`)
   }
 
   if (repaired) {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
+    throw buildTruncationError({
+      agentName,
+      phase,
+      stopReason,
+      provider,
+      model,
+      maxTokens,
+      usage,
+      responseChars: text.length,
+      jsonRepaired: true,
+    })
   }
 
-  const parsed = options.schema.safeParse(data)
+  const parsed = schema.safeParse(data)
   if (!parsed.success) {
     const issue = parsed.error.issues[0]
     const path = issue?.path?.length ? issue.path.join('.') : 'root'
     const reason = issue?.message ?? 'invalid output'
     throw new Error(
-      `AGENT_CONTRACT_INVALID:${options.agentName}:${path}:${truncate(reason)}`
+      `AGENT_CONTRACT_INVALID:${agentName}:${path}:${truncate(reason)}`
     )
   }
 
@@ -96,50 +165,29 @@ export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
     tokenUsage,
     cost: estimateUsdCost(usage),
   }
+}
+
+export async function runClaudeAgent<TSchema extends z.ZodTypeAny>(
+  options: ClaudeAgentRunOptions<TSchema>
+): Promise<AgentExecutionResult<z.infer<TSchema>>> {
+  return runAgentCore({
+    agentName: options.agentName,
+    systemPrompt: options.systemPrompt,
+    userContent: options.userPrompt,
+    schema: options.schema,
+    phase: options.phase ?? 'codegen',
+  })
 }
 
 // PR2: Run Claude agent with content blocks supporting cache_control
 export async function runClaudeAgentWithCache<TSchema extends z.ZodTypeAny>(
   options: CachedAgentOptions<TSchema>
 ): Promise<AgentExecutionResult<z.infer<TSchema>>> {
-  const { text, stopReason, usage } = await chat({
-    phase: options.phase ?? 'codegen',
+  return runAgentCore({
+    agentName: options.agentName,
     systemPrompt: options.systemPrompt,
-    messages: [{ role: 'user', content: options.contentBlocks }],
+    userContent: options.contentBlocks,
+    schema: options.schema,
+    phase: options.phase ?? 'codegen',
   })
-
-  if (stopReason === 'max_tokens') {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
-  }
-
-  const { data, repaired } = extractJSON<unknown>(text)
-
-  if (!data) {
-    throw new Error(`AGENT_RESPONSE_INVALID_JSON:${options.agentName}`)
-  }
-
-  if (repaired) {
-    throw new Error(`AGENT_RESPONSE_TRUNCATED:${options.agentName}`)
-  }
-
-  const parsed = options.schema.safeParse(data)
-  if (!parsed.success) {
-    const issue = parsed.error.issues[0]
-    const path = issue?.path?.length ? issue.path.join('.') : 'root'
-    const reason = issue?.message ?? 'invalid output'
-    throw new Error(
-      `AGENT_CONTRACT_INVALID:${options.agentName}:${path}:${truncate(reason)}`
-    )
-  }
-
-  const tokenUsage =
-    usage && usage.inputTokens >= 0 && usage.outputTokens >= 0
-      ? usage.inputTokens + usage.outputTokens
-      : estimateTokenUsage(text)
-
-  return {
-    output: parsed.data,
-    tokenUsage,
-    cost: estimateUsdCost(usage),
-  }
 }

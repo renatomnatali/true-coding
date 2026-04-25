@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Construindo App Delivery Pro | True Coding</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <link rel="stylesheet" href="../../css/pipeline.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo"><div class="logo-icon">TC</div><span>True Coding</span></div>
+        <div class="project-name">App Delivery Pro</div>
+        <a href="../../dashboard/list.html" class="back-link">&larr; Dashboard</a>
+        <div class="journey-progress">
+          <div class="journey-progress-header">
+            <span class="journey-label">JORNADA</span>
+            <span class="journey-count">Fase 4/6</span>
+          </div>
+          <div class="journey-dots">
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot completed"></div>
+            <div class="journey-dot current"></div>
+            <div class="journey-dot"></div>
+            <div class="journey-dot"></div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">FASES</div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Ideação</span></div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Planejamento</span></div>
+          <div class="nav-item completed"><span class="phase-icon"></span><span>Conexão</span></div>
+          <div class="nav-item in-progress"><span class="phase-icon"></span><span>Geração</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Deploy</span></div>
+          <div class="nav-item blocked"><span class="phase-icon"></span><span>Online</span></div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">RN</div>
+          <div class="user-details">
+            <div class="user-name">Renato Natali</div>
+            <div class="user-email">renato@email.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="workspace">
+        <div class="workspace-header">
+          <div class="workspace-breadcrumb">Geração &gt; Construindo App Delivery Pro</div>
+          <h2 class="workspace-title">Construindo App Delivery Pro</h2>
+          <p class="workspace-subtitle">Acompanhe a criação do seu app em tempo real</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <!-- Progress bar -->
+            <div class="pipeline-progress-wrapper">
+              <div class="pipeline-progress-track">
+                <div class="pipeline-progress-fill" style="width: 0%"></div>
+              </div>
+              <span class="pipeline-progress-label">0%</span>
+            </div>
+
+            <!-- Header -->
+            <div class="pipeline-header">
+              <div class="pipeline-header-left">
+                <div class="pipeline-title" style="font-size: var(--font-size-lg);">Preparando execução</div>
+                <div class="pipeline-subtitle">3 iterações planejadas</div>
+              </div>
+              <span class="pipeline-badge pipeline-badge-queued">Na fila</span>
+            </div>
+
+            <!-- Grupo: Preparação -->
+            <div class="pipeline-group">
+              <div class="pipeline-group-header">
+                <span class="pipeline-group-label">Preparação</span>
+                <span class="pipeline-group-line"></span>
+                <span class="pipeline-group-count">0/4</span>
+              </div>
+
+              <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Preparando ambiente</span></div></div>
+              <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Criando estrutura do projeto</span></div></div>
+              <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Instalando dependências</span></div></div>
+              <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Configurando banco de dados</span></div></div>
+            </div>
+
+            <!-- Grupo: Iteração 1 -->
+            <div class="pipeline-iter-group">
+              <div class="pipeline-iter-header">
+                <div class="pipeline-iter-icon pending">&#9675;</div>
+                <span class="pipeline-iter-label pending">Iteração 1: Fundação</span>
+                <span class="pipeline-iter-count">0/6</span>
+                <span class="pipeline-iter-expand">&#9660;</span>
+              </div>
+              <div class="pipeline-iter-steps">
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Escrevendo especificação</span></div></div>
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Gerando testes</span></div></div>
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Gerando código</span></div></div>
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Revisando código</span></div></div>
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Verificando qualidade</span></div></div>
+                <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Publicando no Git</span></div></div>
+              </div>
+            </div>
+
+            <!-- Grupo: Iteração 2 -->
+            <div class="pipeline-iter-group">
+              <div class="pipeline-iter-header">
+                <div class="pipeline-iter-icon pending">&#9675;</div>
+                <span class="pipeline-iter-label pending">Iteração 2: Pedidos</span>
+                <span class="pipeline-iter-count">0/6</span>
+                <span class="pipeline-iter-expand">&#9660;</span>
+              </div>
+            </div>
+
+            <!-- Grupo: Iteração 3 -->
+            <div class="pipeline-iter-group">
+              <div class="pipeline-iter-header">
+                <div class="pipeline-iter-icon pending">&#9675;</div>
+                <span class="pipeline-iter-label pending">Iteração 3: Pagamentos</span>
+                <span class="pipeline-iter-count">0/6</span>
+                <span class="pipeline-iter-expand">&#9660;</span>
+              </div>
+            </div>
+
+            <!-- Grupo: Finalização -->
+            <div class="pipeline-group" style="margin-top: var(--space-4);">
+              <div class="pipeline-group-header">
+                <span class="pipeline-group-label">Finalização</span>
+                <span class="pipeline-group-line"></span>
+              </div>
+              <div class="pipeline-step"><div class="pipeline-step-icon pending"></div><div class="pipeline-step-content"><span class="pipeline-step-label pending">Publicando na internet (Netlify)</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Navigation -->
+        <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-tertiary); border-radius: var(--border-radius-lg);">
+          <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-tertiary); margin-bottom: var(--space-3);">DEMO: Simular Estados</div>
+          <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="location.href='../phase-4-assessment/01-complexity-analysis.html'">&larr; Plano</button>
+            <button class="btn btn-primary" onclick="location.href='04-pipeline-running.html'">Executando &rarr;</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="chat-collapsed">
+        <button class="expand-btn" aria-label="Abrir chat">AI</button>
+        <span class="chat-label">CHAT</span>
+      </aside>
+    </main>
+  </div>
+
+  <div style="position: fixed; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 1000;">
+    <a href="../../index.html" style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); text-decoration: none; color: var(--color-text-secondary); font-size: var(--font-size-sm); box-shadow: var(--shadow-md);">Hub de Mockups</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('.pipeline-iter-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.closest('.pipeline-iter-group').classList.toggle('expanded');
+      });
+    });
+  </script>
+</body>
+</html>

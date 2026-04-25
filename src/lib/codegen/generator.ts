@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { TechnicalPlan } from '@/lib/ai/prompts/planning'
 import { CODEGEN_SYSTEM_PROMPT, CODEGEN_PROMPTS } from '@/lib/ai/prompts/codegen'
+import { resolveAIProviderConfig } from '@/lib/ai/provider-config'
 import {
   loadBaseTemplates,
   TemplateContext,
@@ -131,11 +132,12 @@ function buildTemplateContext(project: ProjectData): TemplateContext {
 
 async function generateFileWithAI(
   client: Anthropic,
+  model: string,
   prompt: string,
   context: string
 ): Promise<GeneratedFile[]> {
   const message = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model,
     max_tokens: 4096,
     temperature: 0.2,
     system: CODEGEN_SYSTEM_PROMPT,
@@ -157,6 +159,7 @@ async function generateFileWithAI(
 
 async function generatePageWithAI(
   client: Anthropic,
+  model: string,
   page: NonNullable<TechnicalPlan['pages']>[0],
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
@@ -169,11 +172,12 @@ async function generatePageWithAI(
 
   const contextStr = `Projeto: ${context.projectName}\nDescricao: ${context.description}`
 
-  return generateFileWithAI(client, prompt, contextStr)
+  return generateFileWithAI(client, model, prompt, contextStr)
 }
 
 async function generateComponentWithAI(
   client: Anthropic,
+  model: string,
   component: NonNullable<TechnicalPlan['components']>[0],
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
@@ -184,7 +188,7 @@ async function generateComponentWithAI(
 
   const contextStr = `Projeto: ${context.projectName}\nDescricao: ${context.description}`
 
-  return generateFileWithAI(client, prompt, contextStr)
+  return generateFileWithAI(client, model, prompt, contextStr)
 }
 
 // Helper type for flat endpoint (extracted from grouped structure)
@@ -209,6 +213,7 @@ function flattenApiEndpoints(
 
 async function generateAPIRouteWithAI(
   client: Anthropic,
+  model: string,
   endpoint: FlatEndpoint,
   context: TemplateContext
 ): Promise<GeneratedFile[]> {
@@ -221,13 +226,18 @@ async function generateAPIRouteWithAI(
 
   const contextStr = `Projeto: ${context.projectName}\nDescricao: ${context.description}`
 
-  return generateFileWithAI(client, prompt, contextStr)
+  return generateFileWithAI(client, model, prompt, contextStr)
 }
 
 export async function* generateProject(
   project: ProjectData
 ): AsyncGenerator<GenerationEvent> {
-  const client = new Anthropic()
+  const providerConfig = resolveAIProviderConfig('codegen')
+  const client = new Anthropic({
+    apiKey: providerConfig.apiKey,
+    ...(providerConfig.baseURL ? { baseURL: providerConfig.baseURL } : {}),
+  })
+  const model = providerConfig.model
   const context = buildTemplateContext(project)
   const allFiles: GeneratedFile[] = []
 
@@ -248,7 +258,7 @@ export async function* generateProject(
     for (const page of project.technicalPlan.pages ?? []) {
       if (page.path === '/') continue // Already generated from template
 
-      const pageFiles = await generatePageWithAI(client, page, context)
+      const pageFiles = await generatePageWithAI(client, model, page, context)
       for (const file of pageFiles) {
         allFiles.push(file)
         yield { type: 'file_generated', file }
@@ -259,6 +269,7 @@ export async function* generateProject(
     for (const component of project.technicalPlan.components ?? []) {
       const componentFiles = await generateComponentWithAI(
         client,
+        model,
         component,
         context
       )
@@ -271,7 +282,12 @@ export async function* generateProject(
     // Generate API routes (flatten grouped endpoints)
     const flatEndpoints = flattenApiEndpoints(project.technicalPlan.apiEndpoints)
     for (const endpoint of flatEndpoints) {
-      const routeFiles = await generateAPIRouteWithAI(client, endpoint, context)
+      const routeFiles = await generateAPIRouteWithAI(
+        client,
+        model,
+        endpoint,
+        context
+      )
       for (const file of routeFiles) {
         allFiles.push(file)
         yield { type: 'file_generated', file }

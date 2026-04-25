@@ -4,8 +4,8 @@ import { prisma } from '@/lib/db/prisma'
 import { assertProjectOwnership } from '@/lib/development/auth'
 import { createDevelopmentRun, isDevelopmentRunActiveInWorker } from '@/lib/development/run-control'
 import { assertAutonomousDevelopmentSchemaReady } from '@/lib/development/schema-health'
+import { isAssessmentResult, isIterationPlanItem } from '@/lib/development/plan-snapshot'
 import type { ApprovedDevelopmentPlan } from '@/lib/development/types'
-import type { AssessmentResult, IterationPlanItem } from '@/types/development'
 
 const STALE_RUN_THRESHOLD_MS = 60_000
 
@@ -21,46 +21,6 @@ interface StartRunRequestBody {
 
 function isExecutionEnabled() {
   return process.env.AUTONOMOUS_DEV_EXECUTE_GATES === 'true'
-}
-
-function isAssessmentResult(value: unknown): value is AssessmentResult {
-  if (!value || typeof value !== 'object') return false
-
-  const candidate = value as Partial<AssessmentResult>
-  if (typeof candidate.complexityScore !== 'number') return false
-  if (!['simple', 'medium', 'complex'].includes(String(candidate.complexityLevel))) return false
-  if (typeof candidate.recommendedIterations !== 'number') return false
-  if (!Array.isArray(candidate.factors)) return false
-
-  return candidate.factors.every((factor) => (
-    factor &&
-    typeof factor === 'object' &&
-    typeof factor.name === 'string' &&
-    typeof factor.score === 'number' &&
-    typeof factor.maxScore === 'number' &&
-    typeof factor.detail === 'string'
-  ))
-}
-
-function isIterationPlanItem(value: unknown): value is IterationPlanItem {
-  if (!value || typeof value !== 'object') return false
-
-  const candidate = value as Partial<IterationPlanItem>
-  if (typeof candidate.index !== 'number') return false
-  if (typeof candidate.name !== 'string') return false
-  if (typeof candidate.slug !== 'string') return false
-  if (typeof candidate.gherkinPath !== 'string') return false
-  if (!candidate.scope || typeof candidate.scope !== 'object') return false
-
-  const scope = candidate.scope as Partial<IterationPlanItem['scope']>
-  return (
-    Array.isArray(scope.goals) &&
-    scope.goals.every((goal) => typeof goal === 'string') &&
-    Array.isArray(scope.featureTags) &&
-    scope.featureTags.every((tag) => typeof tag === 'string') &&
-    Array.isArray(scope.risks) &&
-    scope.risks.every((risk) => typeof risk === 'string')
-  )
 }
 
 function parseApprovedPlan(body: StartRunRequestBody): ApprovedDevelopmentPlan | undefined {
@@ -228,16 +188,42 @@ export async function GET(_request: Request, { params }: RouteParams) {
       },
     })
 
+    const runIds = runs.map((run) => run.id)
+    const latestEventByRunId = new Map<string, Date>()
+
+    if (runIds.length > 0) {
+      const grouped = await prisma.runEvent.groupBy({
+        by: ['runId'],
+        where: {
+          runId: { in: runIds },
+        },
+        _max: {
+          createdAt: true,
+        },
+      })
+
+      for (const group of grouped) {
+        if (group._max.createdAt) {
+          latestEventByRunId.set(group.runId, group._max.createdAt)
+        }
+      }
+    }
+
     const now = Date.now()
     const mappedRuns = runs.map((run) => {
       const isActiveLifecycleStatus = run.status === 'QUEUED' || run.status === 'RUNNING'
       const workerActive = isActiveLifecycleStatus
         ? isDevelopmentRunActiveInWorker(run.id)
         : false
+      const latestEventAt = latestEventByRunId.get(run.id)
+      const lastActivityAtMs = Math.max(
+        run.updatedAt.getTime(),
+        latestEventAt?.getTime() ?? 0
+      )
       const staleByInactivity =
         isActiveLifecycleStatus &&
         !workerActive &&
-        now - run.updatedAt.getTime() > STALE_RUN_THRESHOLD_MS
+        now - lastActivityAtMs > STALE_RUN_THRESHOLD_MS
 
       return {
         id: run.id,

@@ -31,3 +31,9 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Vercel
+.vercel/
+
+# Diretório local de arquivos a triar (não vai pro repo)
+Revisar/

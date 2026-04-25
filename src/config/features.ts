@@ -49,6 +49,15 @@ export const FEATURES = {
     process.env.NEXT_PUBLIC_FEATURE_AUTONOMOUS_DEVELOPMENT_V1 !== 'false',
 
   /**
+   * Execution Chat Feed
+   *
+   * Enables the "Execução" tab in ChatPanel with real-time
+   * run events (SSE) and verbosity filters.
+   */
+  EXECUTION_CHAT_FEED:
+    process.env.NEXT_PUBLIC_FEATURE_EXECUTION_CHAT_FEED !== 'false',
+
+  /**
    * Pipeline V2 (File-by-File Generation)
    *
    * When enabled: CodeAgent generates files one-by-one using file-generator

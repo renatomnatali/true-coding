@@ -187,24 +187,26 @@ export async function executeGitCliRelease(
   const runner = input.runCommand ?? defaultRunCommand
 
   try {
+    // Embed token directly in the askpass script (single-quoted, safe-escaped)
+    // so it is not exposed to child process env inheritance.
+    const escapedToken = input.accessToken.replace(/'/g, `'\\''`)
     await fs.writeFile(
       askPassPath,
       [
         '#!/bin/sh',
         'case "$1" in',
         '  *Username*) echo "x-access-token" ;;',
-        '  *) echo "$GIT_PASSWORD" ;;',
+        `  *) printf '%s\\n' '${escapedToken}' ;;`,
         'esac',
       ].join('\n'),
       'utf-8'
     )
-    await fs.chmod(askPassPath, 0o700)
+    await fs.chmod(askPassPath, 0o600)
 
     const gitEnv: NodeJS.ProcessEnv = {
       ...process.env,
       GIT_TERMINAL_PROMPT: '0',
       GIT_ASKPASS: askPassPath,
-      GIT_PASSWORD: input.accessToken,
       GCM_INTERACTIVE: 'never',
     }
 

@@ -302,6 +302,64 @@ describe('POST /api/chat', () => {
       expect(fullOutput).toContain('Hello, ')
       expect(fullOutput).toContain('event: done')
     })
+
+    it('should emit SSE error when AI provider configuration is invalid', async () => {
+      mockAuth.mockResolvedValue({ userId: 'user_123' } as ReturnType<typeof auth> extends Promise<infer T> ? T : never)
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'db-user-1',
+        clerkId: 'user_123',
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      mockPrisma.project.findUnique.mockResolvedValue({
+        id: 'proj-1',
+        name: 'My Project',
+        userId: 'db-user-1',
+        status: 'IDEATION',
+        productionUrl: null,
+        businessPlan: null,
+        githubRepo: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        conversations: [],
+      } as unknown as Awaited<ReturnType<typeof prisma.project.findUnique>>)
+      mockPrisma.conversation.create.mockResolvedValue({
+        id: 'conv-1',
+        projectId: 'proj-1',
+        phase: 'DISCOVERY',
+        status: 'ACTIVE',
+        currentQuestion: 1,
+        completedQuestions: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        messages: [],
+      } as unknown as Awaited<ReturnType<typeof prisma.conversation.create>>)
+      mockPrisma.message.create.mockResolvedValue({
+        id: 'msg-1',
+        conversationId: 'conv-1',
+        role: 'USER',
+        content: 'Hello',
+        createdAt: new Date(),
+      })
+
+      async function* failingStream() {
+        throw new Error('AI_PROVIDER_MISCONFIGURED:ZAI_API_KEY_MISSING')
+      }
+      mockStreamChat.mockReturnValue(failingStream())
+
+      const request = createRequest({
+        projectId: 'proj-1',
+        message: 'Hello',
+        phase: 'discovery',
+      })
+
+      const response = await POST(request)
+      const output = await drainStream(response)
+
+      expect(output).toContain('event: error')
+      expect(output).toContain('AI_PROVIDER_MISCONFIGURED:ZAI_API_KEY_MISSING')
+    })
   })
 
   describe('Question progress (off-by-one regression)', () => {

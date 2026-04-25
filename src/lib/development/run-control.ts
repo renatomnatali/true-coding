@@ -1,13 +1,45 @@
 import { prisma } from '@/lib/db/prisma'
 import { Prisma } from '@prisma/client'
-import { appendRunEvent, getLatestRetryBoundarySequence, listRunEvents } from './events'
+import {
+  appendRunEvent,
+  getLatestRetryBoundarySequence,
+  listRunEvents,
+  mapRunEventType,
+} from './events'
+import type { DevelopmentEvent } from '@/types/development'
 import { isRunActive } from './worker-registry'
-import { TERMINAL_RUN_STATUSES } from './utils'
+import { MAX_ITERATION_ATTEMPTS, TERMINAL_RUN_STATUSES } from './utils'
 import { cleanupSandbox } from './workspace'
 import { enqueueDevelopmentRun } from './orchestrator'
 import type { ApprovedDevelopmentPlan } from './types'
 
-const MAX_ITERATION_ATTEMPTS = 3
+const RUN_ACTIVITY_HEARTBEAT_MS = 120_000
+
+interface RecentRunActivity {
+  hasRecentActivity: boolean
+  lastEventType: string | null
+}
+
+async function getRecentRunActivity(runId: string, runUpdatedAt: Date): Promise<RecentRunActivity> {
+  const latestEvent = await prisma.runEvent.findFirst({
+    where: { runId },
+    orderBy: { sequence: 'desc' },
+    select: {
+      createdAt: true,
+      eventType: true,
+    },
+  })
+
+  const latestActivityMs = Math.max(
+    runUpdatedAt.getTime(),
+    latestEvent?.createdAt.getTime() ?? 0
+  )
+
+  return {
+    hasRecentActivity: Date.now() - latestActivityMs <= RUN_ACTIVITY_HEARTBEAT_MS,
+    lastEventType: latestEvent?.eventType ?? null,
+  }
+}
 
 export async function createDevelopmentRun(
   projectId: string,
@@ -112,6 +144,45 @@ export async function getDevelopmentRunEvents(runId: string, afterSequence = 0) 
   return listRunEvents(runId, afterSequence)
 }
 
+/**
+ * Consolidates run status lookup + event polling into a single Prisma query.
+ * Used by the SSE stream to avoid N+1 queries per poll tick.
+ */
+export async function getRunStatusAndEvents(
+  runId: string,
+  afterSequence: number
+): Promise<{ status: string; events: DevelopmentEvent[] } | null> {
+  const run = await prisma.developmentRun.findUnique({
+    where: { id: runId },
+    select: {
+      status: true,
+      events: {
+        where: { sequence: { gt: afterSequence } },
+        orderBy: { sequence: 'asc' },
+        take: 200,
+      },
+    },
+  })
+
+  if (!run) return null
+
+  const events = run.events.map((event): DevelopmentEvent => ({
+    id: event.id,
+    runId: event.runId,
+    iterationId: event.iterationId ?? undefined,
+    sequence: event.sequence,
+    eventType: mapRunEventType(event.eventType),
+    message: event.message ?? undefined,
+    payload:
+      event.payload && typeof event.payload === 'object'
+        ? (event.payload as Record<string, unknown>)
+        : undefined,
+    createdAt: event.createdAt.toISOString(),
+  }))
+
+  return { status: run.status, events }
+}
+
 export function isDevelopmentRunActiveInWorker(runId: string): boolean {
   return isRunActive(runId)
 }
@@ -131,6 +202,7 @@ export async function recoverDevelopmentRun(projectId: string, runId: string) {
       status: true,
       startedAt: true,
       currentIteration: true,
+      updatedAt: true,
     },
   })
 
@@ -142,7 +214,10 @@ export async function recoverDevelopmentRun(projectId: string, runId: string) {
     throw new Error('RUN_NOT_RECOVERABLE')
   }
 
-  if (isRunActive(run.id)) {
+  const workerActive = isRunActive(run.id)
+  const recentActivity = await getRecentRunActivity(run.id, run.updatedAt)
+
+  if (workerActive || recentActivity.hasRecentActivity) {
     return {
       run,
       alreadyProcessing: true,
@@ -287,6 +362,10 @@ export async function checkpointAction(input: {
   }
 
   if (input.action === 'pause') {
+    if (run.status !== 'RUNNING' && run.status !== 'QUEUED') {
+      throw new Error('RUN_NOT_PAUSABLE')
+    }
+
     const updated = await prisma.developmentRun.update({
       where: { id: run.id },
       data: {
@@ -304,6 +383,14 @@ export async function checkpointAction(input: {
     })
 
     return updated
+  }
+
+  if (run.status !== 'WAITING_CHECKPOINT' && run.status !== 'FAILED') {
+    throw new Error('RUN_NOT_RESUMABLE')
+  }
+
+  if (isRunActive(run.id)) {
+    throw new Error('RUN_ALREADY_ACTIVE')
   }
 
   await cleanupSandbox(run.id)
@@ -341,7 +428,7 @@ export async function checkpointAction(input: {
 export async function retryDevelopmentRun(projectId: string, runId: string) {
   const run = await prisma.developmentRun.findFirst({
     where: { id: runId, projectId },
-    select: { id: true, status: true, currentIteration: true },
+    select: { id: true, status: true, currentIteration: true, updatedAt: true },
   })
 
   if (!run) {
@@ -350,6 +437,11 @@ export async function retryDevelopmentRun(projectId: string, runId: string) {
 
   if (run.status !== 'WAITING_CHECKPOINT' && run.status !== 'FAILED') {
     throw new Error('RUN_NOT_RETRYABLE')
+  }
+
+  const recentActivity = await getRecentRunActivity(run.id, run.updatedAt)
+  if (isRunActive(run.id) || (recentActivity.hasRecentActivity && recentActivity.lastEventType !== 'RUN_STATUS')) {
+    throw new Error('RUN_ALREADY_ACTIVE')
   }
 
   await cleanupSandbox(run.id)
