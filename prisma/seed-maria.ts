@@ -185,7 +185,7 @@ export async function seedMaria(options: SeedOptions = {}): Promise<SeedResult> 
               userId: user.id,
               name: MARIA_PROJECT.name,
               description: MARIA_PROJECT.description,
-              phase: MARIA_PROJECT.phase,
+              stage: MARIA_PROJECT.stage,
               stageKey: MARIA_PROJECT.stageKey,
               version: MARIA_PROJECT.version,
             },
