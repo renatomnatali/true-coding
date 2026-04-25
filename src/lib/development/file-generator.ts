@@ -8,6 +8,7 @@
 import { z } from 'zod'
 import type { IterationPlanItem } from '@/types/development'
 import type { ContentBlock } from '@/lib/ai/claude'
+import type { ModelPhase } from '@/lib/ai/config'
 import type { FileManifest, FileManifestEntry, PlanSnapshot } from './types'
 import { OutputTokenRateLimiter } from '@/lib/ai/rate-limiter'
 import { runClaudeAgentWithCache } from './agent-runtime'
@@ -16,6 +17,7 @@ import {
   serializeInterfaceMap,
   type InterfaceMap,
 } from './interface-map'
+import { validateGeneratedFileContract } from './file-contract-validator'
 import { appendRunEvent } from './events'
 
 export interface FileGeneratorOptions {
@@ -103,7 +105,44 @@ function buildFilePrompt(
     parts.push(`\n## Exports dos ficheiros já gerados\n${interfaceMapStr}`)
   }
 
+  if (entry.kind === 'test') {
+    parts.push(
+      'Priorize uma suíte enxuta: cubra cenários críticos do arquivo alvo e evite casos redundantes.'
+    )
+  }
+
   return parts.join('\n')
+}
+
+function resolvePrimaryPhase(entry: FileManifestEntry): ModelPhase {
+  // Test files frequently exceed codegen output window; planning provides a safer cap.
+  return entry.kind === 'test' ? 'planning' : 'codegen'
+}
+
+function isTruncationError(error: unknown): boolean {
+  return error instanceof Error && error.message.includes('AGENT_RESPONSE_TRUNCATED')
+}
+
+function buildContractViolationBlock(
+  filePath: string,
+  violations: string[]
+): ContentBlock {
+  const lines = [
+    `## Violações de contrato detectadas para ${filePath}`,
+    ...violations.map((violation, index) => `${index + 1}. ${violation}`),
+    '',
+    'Regenere o arquivo corrigindo exatamente as violações listadas.',
+    'Não altere contratos globais já definidos no arquivo de tipos da iteração.',
+  ]
+
+  return { type: 'text', text: lines.join('\n') }
+}
+
+function formatContractViolationError(
+  filePath: string,
+  violations: string[]
+): Error {
+  return new Error(`FILE_CONTRACT_VIOLATION:${filePath}:${violations.join(' | ')}`)
 }
 
 /**
@@ -153,18 +192,128 @@ export async function generateFilesFromManifest(
       { type: 'text', text: filePrompt },
     ]
 
-    const result = await runClaudeAgentWithCache({
-      agentName: `FileGen:${entry.path}`,
-      systemPrompt: FILE_GEN_SYSTEM_PROMPT,
-      contentBlocks,
-      schema: FILE_GEN_RESPONSE_SCHEMA,
-      phase: 'codegen',
+    const primaryPhase = resolvePrimaryPhase(entry)
+    let content = ''
+    let consumedTokens = 0
+
+    await appendRunEvent({
+      runId,
+      iterationId,
+      eventType: 'AGENT_TASK',
+      message: `FileGen: ${entry.path} em execução`,
+      payload: {
+        agentName: 'FileGen',
+        status: 'RUNNING',
+        filePath: entry.path,
+        fileKind: entry.kind,
+      },
     })
 
-    const content = result.output.content
-    const outputTokens = result.tokenUsage ?? entry.estimatedTokens
-    totalTokensUsed += outputTokens
-    rateLimiter.recordUsage(outputTokens)
+    try {
+      try {
+        const result = await runClaudeAgentWithCache({
+          agentName: `FileGen:${entry.path}`,
+          systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+          contentBlocks,
+          schema: FILE_GEN_RESPONSE_SCHEMA,
+          phase: primaryPhase,
+        })
+
+        content = result.output.content
+        consumedTokens = result.tokenUsage ?? entry.estimatedTokens
+      } catch (error) {
+        if (!isTruncationError(error) || primaryPhase === 'planning') {
+          throw error
+        }
+
+        await appendRunEvent({
+          runId,
+          iterationId,
+          eventType: 'INFO',
+          message: `Retry FileGen por truncamento: ${entry.path}`,
+          payload: {
+            filePath: entry.path,
+            fromPhase: primaryPhase,
+            toPhase: 'planning',
+          },
+        })
+
+        const retryResult = await runClaudeAgentWithCache({
+          agentName: `FileGen:${entry.path}`,
+          systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+          contentBlocks,
+          schema: FILE_GEN_RESPONSE_SCHEMA,
+          phase: 'planning',
+        })
+
+        content = retryResult.output.content
+        consumedTokens =
+          (retryResult.tokenUsage ?? entry.estimatedTokens) + entry.estimatedTokens
+      }
+
+      const contractViolations = validateGeneratedFileContract(
+        { path: entry.path, kind: entry.kind },
+        content,
+        files
+      )
+
+      if (contractViolations.length > 0) {
+        await appendRunEvent({
+          runId,
+          iterationId,
+          eventType: 'INFO',
+          message: `Retry FileGen por inconsistência de contrato: ${entry.path}`,
+          payload: {
+            filePath: entry.path,
+            violations: contractViolations,
+            strategy: 'single_retry_with_contract_feedback',
+          },
+        })
+
+        const repairResult = await runClaudeAgentWithCache({
+          agentName: `FileGen:${entry.path}`,
+          systemPrompt: FILE_GEN_SYSTEM_PROMPT,
+          contentBlocks: [
+            ...contentBlocks,
+            buildContractViolationBlock(entry.path, contractViolations),
+          ],
+          schema: FILE_GEN_RESPONSE_SCHEMA,
+          phase: 'planning',
+        })
+
+        content = repairResult.output.content
+        consumedTokens += repairResult.tokenUsage ?? entry.estimatedTokens
+
+        const remainingViolations = validateGeneratedFileContract(
+          { path: entry.path, kind: entry.kind },
+          content,
+          files
+        )
+
+        if (remainingViolations.length > 0) {
+          throw formatContractViolationError(entry.path, remainingViolations)
+        }
+      }
+    } catch (error) {
+      await appendRunEvent({
+        runId,
+        iterationId,
+        eventType: 'AGENT_TASK',
+        message: `FileGen: ${entry.path} falhou`,
+        payload: {
+          agentName: 'FileGen',
+          status: 'FAILED',
+          filePath: entry.path,
+          fileKind: entry.kind,
+          error: error instanceof Error ? error.message : 'FileGen failed',
+        },
+      })
+
+      throw error
+    }
+
+    totalTokensUsed += consumedTokens
+    rateLimiter.recordUsage(consumedTokens)
 
     files.push({ path: entry.path, content })
 
@@ -186,7 +335,7 @@ export async function generateFilesFromManifest(
         status: 'SUCCEEDED',
         filePath: entry.path,
         fileKind: entry.kind,
-        tokensUsed: outputTokens,
+        tokensUsed: consumedTokens,
       },
     })
   }

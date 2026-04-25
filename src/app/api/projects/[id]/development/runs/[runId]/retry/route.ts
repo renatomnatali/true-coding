@@ -42,6 +42,16 @@ export async function POST(_request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'RUN_NOT_RETRYABLE' }, { status: 409 })
     }
 
+    if (message === 'RUN_ALREADY_ACTIVE') {
+      return NextResponse.json(
+        {
+          error: 'RUN_ALREADY_ACTIVE',
+          message: 'Já existe processamento ativo para esta execução.',
+        },
+        { status: 409 }
+      )
+    }
+
     return NextResponse.json({ error: 'INTERNAL_ERROR' }, { status: 500 })
   }
 }

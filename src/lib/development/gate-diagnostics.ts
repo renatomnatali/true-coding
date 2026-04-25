@@ -1,5 +1,7 @@
 import type { GateRunOutput } from './types'
 
+const MAX_DIAGNOSTIC_SNIPPET_CHARS = 1500
+
 const ROOT_CAUSE_PATTERNS = [
   /failed to resolve import/i,
   /cannot find module/i,
@@ -12,6 +14,12 @@ const ROOT_CAUSE_PATTERNS = [
 ]
 
 const NOISY_LINE_PATTERNS = [
+  /^▲\s+next\.js/i,
+  /^-\s+environments:/i,
+  /^creating an optimized production build/i,
+  /^collecting page data/i,
+  /^generating static pages/i,
+  /^finalizing page optimization/i,
   /^>\s/,
   /^run\s+v/i,
   /^test files\s+/i,
@@ -47,14 +55,23 @@ function pickFallbackLine(lines: string[]): string | null {
   return null
 }
 
-export function extractPrimaryGateFailureDetail(gate: GateRunOutput): string | null {
-  if (gate.passed || !gate.report) return null
+function getReportReason(gate: GateRunOutput): string | null {
+  if (!gate.report) return null
+  return typeof gate.report.reason === 'string' ? gate.report.reason : null
+}
 
-  const report = gate.report
-  const reason = typeof report.reason === 'string' ? report.reason : null
+function getReportSnippet(gate: GateRunOutput): string | null {
+  if (!gate.report) return null
+  return typeof gate.report.snippet === 'string' ? gate.report.snippet : null
+}
+
+export function extractPrimaryGateFailureDetail(gate: GateRunOutput): string | null {
+  if (gate.passed) return null
+
+  const reason = getReportReason(gate)
   if (reason) return reason
 
-  const snippet = typeof report.snippet === 'string' ? report.snippet : null
+  const snippet = getReportSnippet(gate)
   if (!snippet) return null
 
   const lines = normalizeLines(snippet)
@@ -69,14 +86,45 @@ export function extractPrimaryGateFailureDetail(gate: GateRunOutput): string | n
   return lines[0].slice(0, 220)
 }
 
+export function extractGateFailureDiagnosticSnippet(gate: GateRunOutput): string | null {
+  if (gate.passed) return null
+
+  const snippet = getReportSnippet(gate)
+  if (!snippet) return null
+
+  const normalized = snippet.trim()
+  if (!normalized) return null
+
+  if (normalized.length <= MAX_DIAGNOSTIC_SNIPPET_CHARS) {
+    return normalized
+  }
+
+  return normalized.slice(-MAX_DIAGNOSTIC_SNIPPET_CHARS)
+}
+
+export function buildGateEventDiagnostics(gate: GateRunOutput): {
+  summary?: string
+  reason?: string
+  diagnosticSnippet?: string
+} {
+  if (gate.passed) return {}
+
+  const summary = extractPrimaryGateFailureDetail(gate)
+  const reason = getReportReason(gate)
+  const diagnosticSnippet = extractGateFailureDiagnosticSnippet(gate)
+
+  return {
+    ...(summary ? { summary } : {}),
+    ...(reason ? { reason } : {}),
+    ...(diagnosticSnippet ? { diagnosticSnippet } : {}),
+  }
+}
+
 export function buildFailedGateSummary(gates: GateRunOutput[]): string {
   return gates
     .filter((gate) => {
       if (gate.passed) return false
-      const reason =
-        gate.report && typeof gate.report.reason === 'string'
-          ? gate.report.reason
-          : null
+      const reason = getReportReason(gate)
       return reason !== 'skipped_due_to_previous_failure'
     })
     .map((gate) => {

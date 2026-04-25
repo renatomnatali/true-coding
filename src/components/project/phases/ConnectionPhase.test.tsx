@@ -172,3 +172,82 @@ describe('ConnectionPhase - assessment journey', () => {
     })
   })
 })
+
+describe('ConnectionPhase - @github @checkpoint', () => {
+  it('exibe botoes "Sim, ja tenho" e "Ainda nao tenho" no checkpoint inicial', () => {
+    render(
+      <ConnectionPhase
+        projectId="proj-1"
+        projectName="Projeto 1"
+        githubRepoUrl={null}
+        productionUrl={null}
+        hasGitHubToken={false}
+        githubJustConnected={false}
+      />
+    )
+
+    expect(screen.getByText('Sim, já tenho')).toBeInTheDocument()
+    expect(screen.getByText('Ainda não tenho')).toBeInTheDocument()
+  })
+
+  it('clicar em "Sim, ja tenho" avanca para o passo OAuth (nao exibe mais o checkpoint)', () => {
+    render(
+      <ConnectionPhase
+        projectId="proj-1"
+        projectName="Projeto 1"
+        githubRepoUrl={null}
+        productionUrl={null}
+        hasGitHubToken={false}
+        githubJustConnected={false}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Sim, já tenho'))
+
+    // A pergunta inicial do checkpoint nao deve mais estar presente
+    expect(
+      screen.queryByText('Você já tem uma conta no GitHub?')
+    ).not.toBeInTheDocument()
+  })
+
+  it('clicar em "Ainda nao tenho" avanca para tutorial de criacao de conta', () => {
+    render(
+      <ConnectionPhase
+        projectId="proj-1"
+        projectName="Projeto 1"
+        githubRepoUrl={null}
+        productionUrl={null}
+        hasGitHubToken={false}
+        githubJustConnected={false}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Ainda não tenho'))
+
+    expect(
+      screen.queryByText('Você já tem uma conta no GitHub?')
+    ).not.toBeInTheDocument()
+  })
+})
+
+describe('ConnectionPhase - @erro @github (hasOAuthError)', () => {
+  it('com hasOAuthError=true exibe card "Erro na Conexão com GitHub" e botao "Reconectar GitHub"', () => {
+    render(
+      <ConnectionPhase
+        projectId="proj-1"
+        projectName="Projeto 1"
+        githubRepoUrl={null}
+        productionUrl={null}
+        hasGitHubToken={false}
+        githubJustConnected={false}
+        hasOAuthError
+      />
+    )
+
+    expect(screen.getByText('Erro na Conexão com GitHub')).toBeInTheDocument()
+
+    const reconnect = screen.getByText('Reconectar GitHub') as HTMLAnchorElement
+    expect(reconnect).toBeInTheDocument()
+    expect(reconnect.getAttribute('href')).toBe('/api/auth/github?projectId=proj-1')
+  })
+})

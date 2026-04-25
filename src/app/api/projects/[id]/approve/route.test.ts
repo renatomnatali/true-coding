@@ -261,6 +261,20 @@ describe('POST /api/projects/[id]/approve', () => {
     expect(mockPrisma.project.update).not.toHaveBeenCalled()
   })
 
+  it('should return 503 when AI provider is misconfigured', async () => {
+    setupProject()
+    mockChat.mockRejectedValue(
+      new Error('AI_PROVIDER_MISCONFIGURED:ZAI_API_KEY_MISSING')
+    )
+
+    const response = await POST(createRequest({ planType: 'business' }), createMockParams())
+    const data = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(data.error).toBe('AI_PROVIDER_MISCONFIGURED')
+    expect(mockPrisma.project.update).not.toHaveBeenCalled()
+  })
+
   it('should return 500 when Claude returns unparseable JSON', async () => {
     setupProject()
     mockChat.mockResolvedValue({

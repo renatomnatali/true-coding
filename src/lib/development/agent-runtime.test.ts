@@ -14,9 +14,13 @@ import { isClaudeAgentRuntimeEnabled, runClaudeAgent } from './agent-runtime'
 describe('agent runtime', () => {
   const originalLlmFlag = process.env.AUTONOMOUS_DEV_LLM_AGENTS
   const originalApiKey = process.env.ANTHROPIC_API_KEY
+  const originalProvider = process.env.AI_PROVIDER
+  const originalZaiApiKey = process.env.ZAI_API_KEY
 
   beforeEach(() => {
     vi.clearAllMocks()
+    process.env.AI_PROVIDER = 'anthropic'
+    delete process.env.ZAI_API_KEY
   })
 
   afterEach(() => {
@@ -30,6 +34,18 @@ describe('agent runtime', () => {
       delete process.env.ANTHROPIC_API_KEY
     } else {
       process.env.ANTHROPIC_API_KEY = originalApiKey
+    }
+
+    if (typeof originalProvider === 'undefined') {
+      delete process.env.AI_PROVIDER
+    } else {
+      process.env.AI_PROVIDER = originalProvider
+    }
+
+    if (typeof originalZaiApiKey === 'undefined') {
+      delete process.env.ZAI_API_KEY
+    } else {
+      process.env.ZAI_API_KEY = originalZaiApiKey
     }
   })
 
@@ -76,16 +92,29 @@ describe('agent runtime', () => {
     chatMock.mockResolvedValue({
       text: '```json\n{"approved":true}\n```',
       stopReason: 'max_tokens',
+      usage: { inputTokens: 111, outputTokens: 4096 },
+      model: 'glm-5',
+      provider: 'zai',
+      maxTokens: 4096,
     })
 
-    await expect(
-      runClaudeAgent({
+    try {
+      await runClaudeAgent({
         agentName: 'ReviewAgent',
         systemPrompt: 'system',
         userPrompt: 'user',
         schema: z.object({ approved: z.boolean() }),
       })
-    ).rejects.toThrow('AGENT_RESPONSE_TRUNCATED:ReviewAgent')
+      throw new Error('EXPECTED_TRUNCATION')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      expect(message).toContain('AGENT_RESPONSE_TRUNCATED:ReviewAgent')
+      expect(message).toContain('stopReason=max_tokens')
+      expect(message).toContain('provider=zai')
+      expect(message).toContain('model=glm-5')
+      expect(message).toContain('maxTokens=4096')
+      expect(message).toContain('outputTokens=4096')
+    }
   })
 
   it('throws contract error when JSON does not match schema', async () => {

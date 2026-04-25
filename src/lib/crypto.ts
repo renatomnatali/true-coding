@@ -9,8 +9,13 @@ function getEncryptionKey(): Buffer {
   if (!key) {
     throw new Error('ENCRYPTION_KEY environment variable is required')
   }
-  // Key should be 32 bytes (256 bits) base64 encoded
-  return Buffer.from(key, 'base64')
+  const buffer = Buffer.from(key, 'base64')
+  if (buffer.length !== 32) {
+    throw new Error(
+      `ENCRYPTION_KEY must be 32 bytes (256 bits) base64-encoded; got ${buffer.length} bytes`
+    )
+  }
+  return buffer
 }
 
 export function encrypt(text: string): string {

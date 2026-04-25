@@ -105,7 +105,20 @@ async function approveBusiness(projectId: string, businessPlan: unknown) {
     if (!technicalPlan) {
       return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Falha ao extrair TechnicalPlan da resposta' }, { status: 500 })
     }
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.startsWith('AI_PROVIDER_MISCONFIGURED:')
+    ) {
+      return NextResponse.json(
+        {
+          error: 'AI_PROVIDER_MISCONFIGURED',
+          message: 'Configuração do provedor de IA inválida',
+        },
+        { status: 503 }
+      )
+    }
+
     return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Erro ao gerar Plano Técnico' }, { status: 500 })
   }
 
@@ -150,7 +163,20 @@ async function approveTechnical(projectId: string, businessPlan: unknown, techni
     if (!uxPlan) {
       return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Falha ao extrair UXPlan da resposta' }, { status: 500 })
     }
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.startsWith('AI_PROVIDER_MISCONFIGURED:')
+    ) {
+      return NextResponse.json(
+        {
+          error: 'AI_PROVIDER_MISCONFIGURED',
+          message: 'Configuração do provedor de IA inválida',
+        },
+        { status: 503 }
+      )
+    }
+
     return NextResponse.json({ error: 'GENERATION_ERROR', message: 'Erro ao gerar Plano de UX' }, { status: 500 })
   }
 

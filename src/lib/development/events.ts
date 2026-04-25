@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client'
 import type { DevelopmentEvent } from '@/types/development'
 import { getRetryBoundarySequence } from '@/lib/development/retry-boundary'
 
-function mapRunEventType(eventType: string): DevelopmentEvent['eventType'] {
+export function mapRunEventType(eventType: string): DevelopmentEvent['eventType'] {
   switch (eventType) {
     case 'RUN_STATUS':
       return 'run_status'

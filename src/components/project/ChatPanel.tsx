@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useProjectLayout } from './ProjectLayout'
 import { PlanGenerationOverlay } from './PlanGenerationOverlay'
+import { ExecutionFeedPanel } from './ExecutionFeedPanel'
 import { FEATURES } from '@/config/features'
 import { QUICK_REPLIES_BY_QUESTION } from '@/types'
 
@@ -68,6 +69,7 @@ interface QuestionProgress {
 interface ChatPanelProps {
   projectId: string
   projectName: string
+  projectStatus?: string
   initialMessages?: Message[]
   /** STATE RESTORATION: If businessPlan exists, start in "plan ready" state */
   initialPlanReady?: boolean
@@ -80,6 +82,7 @@ interface ChatPanelProps {
 export function ChatPanel({
   projectId,
   projectName: _projectName,
+  projectStatus = 'IDEATION',
   initialMessages = [],
   initialPlanReady = false,
   initialQuestionProgress = null,
@@ -98,6 +101,14 @@ export function ChatPanel({
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false)
   // STATE RESTORATION (per docs/ux/BEHAVIORS.md - CP-01/02): If businessPlan exists, start in "plan ready"
   const [planReady, setPlanReady] = useState(initialPlanReady)
+  const executionFeedEnabled =
+    FEATURES.EXECUTION_CHAT_FEED && FEATURES.AUTONOMOUS_DEVELOPMENT_V1
+  const [activeTab, setActiveTab] = useState<'discovery' | 'execution'>(
+    executionFeedEnabled &&
+    (projectStatus === 'GENERATING' || projectStatus === 'DEPLOYING')
+      ? 'execution'
+      : 'discovery'
+  )
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const hasRespondedOnce = useRef(false)
@@ -109,6 +120,17 @@ export function ChatPanel({
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    if (!executionFeedEnabled) {
+      setActiveTab('discovery')
+      return
+    }
+
+    if (projectStatus === 'GENERATING' || projectStatus === 'DEPLOYING') {
+      setActiveTab('execution')
+    }
+  }, [executionFeedEnabled, projectStatus])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -292,7 +314,34 @@ export function ChatPanel({
       {/* Header - matching mockup */}
       <div className="border-b p-4">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Discovery</h2>
+          {executionFeedEnabled ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveTab('discovery')}
+                className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${
+                  activeTab === 'discovery'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Discovery
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('execution')}
+                className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${
+                  activeTab === 'execution'
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Execução
+              </button>
+            </div>
+          ) : (
+            <h2 className="text-lg font-semibold text-gray-900">Discovery</h2>
+          )}
           <button
             onClick={() => setChatOpen(false)}
             className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
@@ -302,7 +351,7 @@ export function ChatPanel({
           </button>
         </div>
         {/* Progress Bar - visual like mockup */}
-        {FEATURES.PROGRESS_TRACKING && (
+        {activeTab === 'discovery' && FEATURES.PROGRESS_TRACKING && (
           <div className="flex items-center gap-3">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div
@@ -321,7 +370,12 @@ export function ChatPanel({
 
       {/* Messages - matching mockup */}
       <div className="flex-1 overflow-y-auto p-4">
-        {messages.length === 0 && !planReady ? (
+        {activeTab === 'execution' ? (
+          <ExecutionFeedPanel
+            projectId={projectId}
+            projectStatus={projectStatus}
+          />
+        ) : messages.length === 0 && !planReady ? (
           <div className="flex flex-col gap-3">
             {/* Initial AI message like mockup */}
             <div className="flex gap-3">
@@ -410,7 +464,7 @@ export function ChatPanel({
       </div>
 
       {/* Quick Replies - matching mockup */}
-      {FEATURES.QUICK_REPLIES && quickReplies.length > 0 && (
+      {activeTab === 'discovery' && FEATURES.QUICK_REPLIES && quickReplies.length > 0 && (
         <div className="border-t p-4">
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
             SUGESTÕES RÁPIDAS
@@ -434,27 +488,29 @@ export function ChatPanel({
       )}
 
       {/* Input - matching mockup */}
-      <div className="border-t p-4">
-        <div className="flex gap-2">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Digite sua resposta..."
-            className="flex-1 resize-none rounded-md border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
-            rows={1}
-            disabled={isLoading}
-          />
-          <button
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim() || isLoading}
-            className="rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-          >
-            Enviar
-          </button>
+      {activeTab === 'discovery' && (
+        <div className="border-t p-4">
+          <div className="flex gap-2">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Digite sua resposta..."
+              className="flex-1 resize-none rounded-md border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
+              rows={1}
+              disabled={isLoading}
+            />
+            <button
+              onClick={() => sendMessage(input)}
+              disabled={!input.trim() || isLoading}
+              className="rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              Enviar
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <PlanGenerationOverlay kind="business" visible={isGeneratingPlan} />
     </div>

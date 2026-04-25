@@ -45,21 +45,21 @@ interface GenerationProgressProps {
 
 const STAGE_LABELS: Record<string, string> = {
   loading_templates: 'Carregando templates...',
-  generating_files: 'Gerando codigo...',
-  validating: 'Validando codigo...',
-  committing: 'Gravando no repositorio...',
+  generating_files: 'Gerando código...',
+  validating: 'Validando código...',
+  committing: 'Gravando no repositório...',
 }
 
 function mapGenerateErrorMessage(codeOrMessage: string): string {
   const trimmed = codeOrMessage.trim()
   const known: Record<string, string> = {
-    PROJECT_ID_REQUIRED: 'Projeto invalido para geracao.',
-    PROJECT_NOT_FOUND: 'Projeto nao encontrado.',
-    TECHNICAL_PLAN_REQUIRED: 'Plano tecnico ausente. Gere/aprove o plano antes da geracao.',
-    GITHUB_NOT_CONNECTED: 'GitHub nao conectado para este projeto.',
-    UNAUTHORIZED: 'Sessao expirada. Faca login novamente.',
-    FORBIDDEN: 'Voce nao tem permissao para gerar este projeto.',
-    INTERNAL_ERROR: 'Falha interna durante a geracao.',
+    PROJECT_ID_REQUIRED: 'Projeto inválido para geração.',
+    PROJECT_NOT_FOUND: 'Projeto não encontrado.',
+    TECHNICAL_PLAN_REQUIRED: 'Plano técnico ausente. Gere/aprove o plano antes da geração.',
+    GITHUB_NOT_CONNECTED: 'GitHub não conectado para este projeto.',
+    UNAUTHORIZED: 'Sessão expirada. Faça login novamente.',
+    FORBIDDEN: 'Você não tem permissão para gerar este projeto.',
+    INTERNAL_ERROR: 'Falha interna durante a geração.',
   }
 
   return known[trimmed] ?? trimmed
@@ -190,7 +190,7 @@ export function GenerationProgress({
 
       if (!finished && !failed) {
         throw new Error(
-          'A geracao foi interrompida antes da conclusao. Tente novamente.'
+          'A geração foi interrompida antes da conclusão. Tente novamente.'
         )
       }
     } catch (err) {
@@ -230,7 +230,7 @@ export function GenerationProgress({
             <div>
               <h3 className="font-semibold">Pronto para gerar</h3>
               <p className="text-sm text-muted-foreground">
-                Inicie a geracao para criar os arquivos e commitar no repositorio.
+                Inicie a geração para criar os arquivos e commitar no repositório.
               </p>
             </div>
           </>
@@ -250,7 +250,7 @@ export function GenerationProgress({
           <>
             <XCircle className="h-6 w-6 text-red-500" />
             <div>
-              <h3 className="font-semibold">Erro na geracao</h3>
+              <h3 className="font-semibold">Erro na geração</h3>
               <p className="text-sm text-red-500">{error}</p>
             </div>
           </>
@@ -334,7 +334,7 @@ export function GenerationProgress({
             className="inline-flex items-center justify-center w-full h-10 px-4 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Github className="h-4 w-4 mr-2" />
-            Ver repositorio no GitHub
+            Ver repositório no GitHub
             <ExternalLink className="h-4 w-4 ml-2" />
           </a>
         </div>
@@ -343,7 +343,7 @@ export function GenerationProgress({
       {/* Retry Button */}
       {status === 'idle' && (
         <Button onClick={startGeneration} className="w-full">
-          Iniciar geracao
+          Iniciar geração
         </Button>
       )}
       {status === 'error' && (

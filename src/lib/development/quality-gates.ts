@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { GateExecutionOptions, GateRunOutput } from './types'
 import { scanWorkspaceFiles, scanWorkspaceForEnvFiles, type ScanCheck, type ScanFinding } from './code-scanner'
+import { fileExists } from './utils'
 
 type CommandType = 'INSTALL' | 'BUILD' | 'UNIT' | 'BDD'
 type GateCommandExecutor = (
@@ -73,15 +74,6 @@ function runAllowedCommand(command: string[], cwd: string): Promise<{ passed: bo
 
 function nowMs(): number {
   return Date.now()
-}
-
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await fs.access(filePath)
-    return true
-  } catch {
-    return false
-  }
 }
 
 async function ensureWorkspaceDependencies(
