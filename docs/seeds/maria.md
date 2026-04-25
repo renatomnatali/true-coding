@@ -14,7 +14,7 @@ Popula o banco com o estado canônico da Maria em modo **"projeto exportado v1.0
 | `User` | 1 | `clerkId=seed-maria-clerk-id`, `personaTag=FOUNDER`, `workspaceMode=SOLO` |
 | `CreditLedger` | 1 | `balance=1`, `tier=TRIAL` (resíduo pós-jornada) |
 | `ProductContext` | 1 | 9 campos POLICY-010 preenchidos, 3 bets, 4 assumptions |
-| `Project` | 1 | `phase=ESPECIFICACAO`, `stageKey=exportar`, `version=v1.0` |
+| `Project` | 1 | `stage=ACTIVE` (TRC-ADR-025), `stageKey=exportar`, `version=v1.0` |
 | `PlanBlock` | 14 | 6 NEGOCIO + 4 UX + 4 TECNICO, todos `APPROVED` |
 | `DecisionDraft` | 2 | `CB-DEC-001` e `CB-DEC-002` (pending, Inbox) |
 | `RiskDraft` | 2 | `CB-RISK-001` e `CB-RISK-002` (pending, Inbox) |
@@ -25,7 +25,7 @@ Conteúdo vem de `Spec/Jornada Coleta inicial/src/data.jsx` e `data-risks.jsx` (
 
 ## Quando usar
 
-- **Testes manuais** da UI em dev: abrir qualquer tela da Fase Especificação já com 14 blocos, Inbox populada e Product Context completo.
+- **Testes manuais** da UI em dev: abrir qualquer tela da área de Especificação (TRC-ADR-025: nome de área visual, não fase) já com 14 blocos, Inbox populada e Product Context completo.
 - **Demos internas**: apresentar o produto para stakeholders com dados realistas e consistentes.
 - **Reuso em testes unitários**: `src/test/fixtures/maria-canonical.ts` expõe os mesmos objetos consumidos pelo seed — componentes React e serviços podem importar sem precisar tocar no DB.
 

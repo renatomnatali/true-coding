@@ -13,9 +13,9 @@ datasource db {
 // ============================================================================
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
+  id        String  @id @default(cuid())
+  clerkId   String  @unique
+  email     String  @unique
   name      String?
   avatarUrl String?
 
@@ -85,12 +85,18 @@ model Project {
   // Deploy Phase
   netlifySiteId String?
   productionUrl String?
-  lastDeployAt    DateTime?
+  lastDeployAt  DateTime?
 
-  // Spec-as-a-Service (TRC-ADR-008 / ADR-012)
-  phase     ProjectPhase @default(ESPECIFICACAO)
-  stageKey  String       @default("discovery_q1")
-  version   String       @default("v1.0")
+  // Spec-as-a-Service (TRC-ADR-008) + Gestão contínua (TRC-ADR-025)
+  // ADR-0025 supersedes TRC-ADR-012: não há "fase de Especificação" e "fase
+  // de Gestão" sequenciais; o projeto vive em 2 stages permanentes:
+  //   - BOOTSTRAP: Discovery + 3 planos não aprovados
+  //   - ACTIVE:    planos aprovados → gestão contínua (Decision/Risk/Feature
+  //                Registry vivos desde dia 1; export é evento pontual e não
+  //                muda stage).
+  stage       ProjectStage @default(BOOTSTRAP)
+  stageKey    String       @default("discovery_q1")
+  version     String       @default("v1.0")
   // Deprecated: JSON blobs antigos preservados para migration TRC-14.6.
   // Nova estrutura vive em PlanBlock (plan_blocks).
   legacyPlans Json?
@@ -115,9 +121,16 @@ model Project {
   @@map("projects")
 }
 
-enum ProjectPhase {
-  ESPECIFICACAO
-  GESTAO
+// TRC-ADR-025: ciclo de vida do projeto.
+// BOOTSTRAP → primeira passada (Discovery + 3 planos não aprovados).
+// ACTIVE    → planos aprovados; gestão contínua permanente (sem retorno).
+// A transição BOOTSTRAP → ACTIVE acontece automaticamente quando os 3 planos
+// (NEGOCIO/UX/TECNICO) atingem o estado aprovado; não há transição manual,
+// nem caminho de volta. Export gera bundle de especificação como evento
+// pontual e NÃO altera o stage.
+enum ProjectStage {
+  BOOTSTRAP
+  ACTIVE
 }
 
 enum ProjectStatus {
@@ -253,24 +266,24 @@ enum DeploymentStatus {
 // ============================================================================
 
 model DevelopmentRun {
-  id        String               @id @default(cuid())
+  id        String  @id @default(cuid())
   projectId String
-  project   Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  status           DevelopmentRunStatus @default(QUEUED)
-  currentIteration Int                  @default(0)
-  totalIterations  Int                  @default(0)
-  plansSnapshot    Json?
-  errorSummary     String?              @db.Text
-  workerSandboxPath String?             @db.VarChar(500)
+  status            DevelopmentRunStatus @default(QUEUED)
+  currentIteration  Int                  @default(0)
+  totalIterations   Int                  @default(0)
+  plansSnapshot     Json?
+  errorSummary      String?              @db.Text
+  workerSandboxPath String?              @db.VarChar(500)
 
   startedAt  DateTime?
   canceledAt DateTime?
   finishedAt DateTime?
 
-  iterations   IterationRun[]
-  agentTasks   AgentTaskRun[]
-  events       RunEvent[]
+  iterations IterationRun[]
+  agentTasks AgentTaskRun[]
+  events     RunEvent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -294,18 +307,18 @@ model IterationRun {
   runId String
   run   DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
-  index       Int
-  name        String
-  branchName  String?
-  status      IterationStatus @default(PENDING)
-  attemptCount Int            @default(0)
-  scope       Json?
-  gherkinPath String?
+  index        Int
+  name         String
+  branchName   String?
+  status       IterationStatus @default(PENDING)
+  attemptCount Int             @default(0)
+  scope        Json?
+  gherkinPath  String?
 
   startedAt  DateTime?
   finishedAt DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   agentTasks   AgentTaskRun[]
   qualityGates QualityGateRun[]
@@ -334,19 +347,19 @@ model AgentTaskRun {
   iterationId String?
   iteration   IterationRun? @relation(fields: [iterationId], references: [id], onDelete: SetNull)
 
-  agentName  String
-  inputHash  String
-  output     Json?
-  status     AgentTaskStatus @default(PENDING)
-  durationMs Int?
-  tokenUsage Int?
-  cost       Decimal? @db.Decimal(10, 4)
-  errorMessage String? @db.Text
+  agentName    String
+  inputHash    String
+  output       Json?
+  status       AgentTaskStatus @default(PENDING)
+  durationMs   Int?
+  tokenUsage   Int?
+  cost         Decimal?        @db.Decimal(10, 4)
+  errorMessage String?         @db.Text
 
-  startedAt DateTime?
+  startedAt  DateTime?
   finishedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@index([runId])
   @@index([iterationId])
@@ -372,9 +385,9 @@ model QualityGateRun {
   logsRef    String?
   durationMs Int?
 
-  startedAt DateTime?
+  startedAt  DateTime?
   finishedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   @@unique([iterationId, gateType])
   @@index([iterationId])
@@ -390,18 +403,18 @@ enum QualityGateType {
 }
 
 model RunEvent {
-  id      String         @id @default(cuid())
-  runId   String
-  run     DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  id    String         @id @default(cuid())
+  runId String
+  run   DevelopmentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   iterationId String?
   iteration   IterationRun? @relation(fields: [iterationId], references: [id], onDelete: SetNull)
 
-  sequence  Int         @default(autoincrement())
+  sequence  Int          @default(autoincrement())
   eventType RunEventType
   message   String?
   payload   Json?
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
 
   @@index([runId, sequence])
   @@index([iterationId])
@@ -429,12 +442,12 @@ model ProductContext {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userSegment        String @db.Text
+  userSegment        String        @db.Text
   // JTBD estruturado: tres slots (situation, motivation, outcome).
   // Shape: { situation: string, motivation: string, outcome: string }
   primaryJtbd        Json
-  currentAlternative String @db.Text
-  doNothingImpact    String @db.Text
+  currentAlternative String        @db.Text
+  doNothingImpact    String        @db.Text
   primaryMetric      String
   stage              ProductStage
   // 1 a 3 bets, cada um string "Estamos apostando que X".

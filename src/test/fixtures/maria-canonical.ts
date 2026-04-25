@@ -19,7 +19,7 @@ import {
   PlanType,
   PlatformTier,
   ProductStage,
-  ProjectPhase,
+  ProjectStage,
   ReviewCadence,
   RiskCategory,
 } from '@prisma/client'
@@ -113,12 +113,16 @@ export const MARIA_PRODUCT_CONTEXT: MariaProductContext = {
 // ----------------------------------------------------------------------------
 // Project Cafeteria Beta (estado pós-export v1.0)
 // ----------------------------------------------------------------------------
+// stage = ACTIVE: a Maria já aprovou os 3 planos (NEGOCIO/UX/TECNICO) e está
+// em gestão contínua (TRC-ADR-025). O export para v1.0 é um evento pontual,
+// não muda o stage. stageKey="exportar" indica o ponto da jornada UI onde
+// ela está parada (visualizando o bundle exportado), não o ciclo de vida.
 
 export const MARIA_PROJECT = {
   name: 'Cafeteria Beta Pedidos',
   description:
     'Mini-app web de pedidos de retirada com pagamento Pix antecipado para a Cafeteria Beta (Campinas).',
-  phase: ProjectPhase.ESPECIFICACAO,
+  stage: ProjectStage.ACTIVE,
   stageKey: 'exportar',
   version: 'v1.0',
 } as const

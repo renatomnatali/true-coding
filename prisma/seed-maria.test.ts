@@ -169,14 +169,16 @@ describeIfDb('seed-maria', () => {
 
   // --------------------------------------------------------------------------
   // Cenário 3: Project tem metadata de pós-export v1.0.
+  // TRC-ADR-025: Maria já aprovou os 3 planos → stage=ACTIVE (gestão contínua).
+  // O export para v1.0 é evento pontual e NÃO muda o stage.
   // --------------------------------------------------------------------------
-  it('Project tem stageKey=exportar, version=v1.0, phase=ESPECIFICACAO', async () => {
+  it('Project tem stageKey=exportar, version=v1.0, stage=ACTIVE', async () => {
     const result = await seedMaria({ prisma, logger: silentLogger })
     const project = await prisma.project.findUniqueOrThrow({
       where: { id: result.projectId },
     })
     expect(project.name).toBe(MARIA_PROJECT.name)
-    expect(project.phase).toBe('ESPECIFICACAO')
+    expect(project.stage).toBe('ACTIVE')
     expect(project.stageKey).toBe('exportar')
     expect(project.version).toBe('v1.0')
   })
